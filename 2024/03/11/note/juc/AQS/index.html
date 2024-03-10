@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   
   
-  <title>1Stack1</title>
+  <title>AQS | 1Stack1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
 <meta property="og:type" content="article">
-<meta property="og:title" content="1Stack1">
-<meta property="og:url" content="https://1stack1.github.io/2024/03/11/JUC/AQS/index.html">
+<meta property="og:title" content="AQS">
+<meta property="og:url" content="https://1stack1.github.io/2024/03/11/note/juc/AQS/index.html">
 <meta property="og:site_name" content="1Stack1">
 <meta property="og:description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
 <meta property="og:locale" content="en_US">
@@ -27,8 +27,8 @@
 <meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190549899.png">
 <meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190603894.png">
 <meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190617127.png">
-<meta property="article:published_time" content="2024-03-10T16:04:57.095Z">
-<meta property="article:modified_time" content="2023-06-04T15:32:02.500Z">
+<meta property="article:published_time" content="2024-03-10T16:17:32.000Z">
+<meta property="article:modified_time" content="2024-03-10T16:18:01.327Z">
 <meta property="article:author" content="1Stack1">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://1stack1.github.io/AQS.assets/image-20230419190041184.png">
@@ -86,15 +86,25 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-JUC/AQS" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-note/juc/AQS" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2024/03/11/JUC/AQS/" class="article-date">
-  <time class="dt-published" datetime="2024-03-10T16:04:57.095Z" itemprop="datePublished">2024-03-11</time>
+    <a href="/2024/03/11/note/juc/AQS/" class="article-date">
+  <time class="dt-published" datetime="2024-03-10T16:17:32.000Z" itemprop="datePublished">2024-03-11</time>
 </a>
     
   </div>
   <div class="article-inner">
     
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      AQS
+    </h1>
+  
+
+      </header>
     
     <div class="e-content article-entry" itemprop="articleBody">
       
@@ -302,13 +312,13 @@
 
 
 
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    释放共享资源</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Semaphore 方法, 方便阅读, 放在此处</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">release</span><span class="params">()</span> &#123;</span><br><span class="line">    sync.releaseShared(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AQS 继承过来的方法, 方便阅读, 放在此处</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">releaseShared</span><span class="params">(<span class="type">int</span> arg)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (tryReleaseShared(arg)) &#123; </span><br><span class="line">        doReleaseShared(); <span class="comment">//在队列中unpark一个线程</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Sync 继承过来的方法, 方便阅读, 放在此处</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">tryReleaseShared</span><span class="params">(<span class="type">int</span> releases)</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">current</span> <span class="operator">=</span> getState();</span><br><span class="line">        <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> current + releases;</span><br><span class="line">        <span class="keyword">if</span> (next &lt; current) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Maximum permit count exceeded&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(current, next))</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//AQS类的方法</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doReleaseShared</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">h</span> <span class="operator">=</span> head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="literal">null</span> &amp;&amp; h != tail) &#123;	<span class="comment">//队列既不是空队列,也不是只有哨兵节点</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">ws</span> <span class="operator">=</span> h.waitStatus;</span><br><span class="line">            <span class="keyword">if</span> (ws == Node.SIGNAL) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!compareAndSetWaitStatus(h, Node.SIGNAL, <span class="number">0</span>))</span><br><span class="line">                    <span class="keyword">continue</span>;            </span><br><span class="line">                unparkSuccessor(h);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (ws == <span class="number">0</span> &amp;&amp;</span><br><span class="line">                     !compareAndSetWaitStatus(h, <span class="number">0</span>, Node.PROPAGATE))</span><br><span class="line">                <span class="keyword">continue</span>;                </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (h == head)                   </span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    释放共享资源</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Semaphore 方法, 方便阅读, 放在此处</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">release</span><span class="params">()</span> &#123;</span><br><span class="line">    sync.releaseShared(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AQS 继承过来的方法, 方便阅读, 放在此处</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">releaseShared</span><span class="params">(<span class="type">int</span> arg)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (tryReleaseShared(arg)) &#123; </span><br><span class="line">        doReleaseShared(); <span class="comment">//在队列中unpark一个线程</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Sync 继承过来的方法, 方便阅读, 放在此处</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">tryReleaseShared</span><span class="params">(<span class="type">int</span> releases)</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">current</span> <span class="operator">=</span> getState();</span><br><span class="line">        <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> current + releases;</span><br><span class="line">        <span class="keyword">if</span> (next &lt; current) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Maximum permit count exceeded&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(current, next))</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//AQS类的方法</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doReleaseShared</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">h</span> <span class="operator">=</span> head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="literal">null</span> &amp;&amp; h != tail) &#123;	<span class="comment">//队列既不是空队列,也不是只有哨兵节点</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">ws</span> <span class="operator">=</span> h.waitStatus;</span><br><span class="line">            <span class="keyword">if</span> (ws == Node.SIGNAL) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!compareAndSetWaitStatus(h, Node.SIGNAL, <span class="number">0</span>))</span><br><span class="line">                    <span class="keyword">continue</span>;            </span><br><span class="line">                unparkSuccessor(h);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (ws == <span class="number">0</span> &amp;&amp;</span><br><span class="line">                     !compareAndSetWaitStatus(h, <span class="number">0</span>, Node.PROPAGATE))</span><br><span class="line">                <span class="keyword">continue</span>;                </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (h == head)                   </span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/JUC/AQS/" data-id="cltlphgcn0001fknubptv3dis" data-title="" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/AQS/" data-id="cltlpz2yt0000w4nu9j3g6uln" data-title="AQS" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -317,15 +327,6 @@
   
     
 <nav id="article-nav">
-  
-    <a href="/2024/03/11/JUC/cas/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          (no title)
-        
-      </div>
-    </a>
   
   
     <a href="/2024/03/11/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
@@ -368,23 +369,11 @@
       <ul>
         
           <li>
-            <a href="/2024/03/11/JUC/volitile/">(no title)</a>
+            <a href="/2024/03/11/note/juc/AQS/">AQS</a>
           </li>
         
           <li>
-            <a href="/2024/03/11/JUC/ThreadLocal/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2024/03/11/JUC/synchronized/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2024/03/11/JUC/Future/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2024/03/11/JUC/ConcurrentHashMap/">(no title)</a>
+            <a href="/2024/03/11/hello-world/">Hello World</a>
           </li>
         
       </ul>
