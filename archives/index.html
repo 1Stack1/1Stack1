@@ -8,30 +8,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AQS">
+<meta property="og:title" content="AQS.md">
 <meta property="og:url" content="https://1stack1.github.io/2024/03/11/note/juc/AQS/index.html">
 <meta property="og:site_name" content="1Stack1">
 <meta property="og:description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190041184.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419185922426.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419185941383.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190244474.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190325126.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190337744.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190358666.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190428798.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190444473.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190501636.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190537899.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190549899.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190603894.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190617127.png">
-<meta property="article:published_time" content="2024-03-10T16:17:32.000Z">
-<meta property="article:modified_time" content="2024-03-10T16:18:01.327Z">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190041184.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419185922426-1710173058095.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419185941383.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190244474.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190325126.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190337744-1710173000935.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190358666.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190428798.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190444473.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190501636.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190537899.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190549899.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190603894.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190617127.png">
+<meta property="article:published_time" content="2024-03-11T15:50:50.000Z">
+<meta property="article:modified_time" content="2024-03-11T16:11:01.998Z">
 <meta property="article:author" content="1Stack1">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://1stack1.github.io/AQS.assets/image-20230419190041184.png">
+<meta name="twitter:image" content="https://1stack1.github.io/.io//image-20230419190041184.png">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -118,7 +118,7 @@
     <li>
         <div class="all active" data-rel="All">All
             
-                <small>(2)</small>
+                <small>(8)</small>
             
         </div>
     </li>
@@ -136,7 +136,7 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="2">
+<input type="hidden" id="yelog_site_posts_number" value="8">
 
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
@@ -192,17 +192,71 @@
            href="/2024/03/11/note/juc/AQS/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="AQS">AQS</span>
-            <span class="post-date" title="2024-03-11 00:17:32">2024/03/11</span>
+            <span class="post-title" title="AQS.md">AQS.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
         </a>
         
         
         <a  class="All "
-           href="/2024/03/11/hello-world/"
+           href="/2024/03/11/note/juc/ConcurrentHashMap/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="Hello World">Hello World</span>
-            <span class="post-date" title="2024-03-11 00:00:35">2024/03/11</span>
+            <span class="post-title" title="ConcurrentHashMap.md">ConcurrentHashMap.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/cas/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="cas.md">cas.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/Executor/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Executor.md">Executor.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/Future/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Future.md">Future.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/volitile/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="volitile.md">volitile.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/ThreadLocal/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="ThreadLocal.md">ThreadLocal.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/synchronized/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="synchronized.md">synchronized.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
         </a>
         
         <div id="no-item-tips">

@@ -2,36 +2,36 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Hello World | 1Stack1</title>
+  <title>cas.md | 1Stack1</title>
   <meta name="keywords" content="">
-  <meta name="description" content="Hello World | 1Stack1">
+  <meta name="description" content="cas.md | 1Stack1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AQS">
+<meta property="og:title" content="AQS.md">
 <meta property="og:url" content="https://1stack1.github.io/2024/03/11/note/juc/AQS/index.html">
 <meta property="og:site_name" content="1Stack1">
 <meta property="og:description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190041184.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419185922426.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419185941383.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190244474.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190325126.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190337744.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190358666.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190428798.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190444473.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190501636.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190537899.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190549899.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190603894.png">
-<meta property="og:image" content="https://1stack1.github.io/AQS.assets/image-20230419190617127.png">
-<meta property="article:published_time" content="2024-03-10T16:17:32.000Z">
-<meta property="article:modified_time" content="2024-03-10T16:18:01.327Z">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190041184.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419185922426-1710173058095.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419185941383.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190244474.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190325126.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190337744-1710173000935.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190358666.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190428798.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190444473.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190501636.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190537899.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190549899.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190603894.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190617127.png">
+<meta property="article:published_time" content="2024-03-11T15:50:50.000Z">
+<meta property="article:modified_time" content="2024-03-11T16:11:01.998Z">
 <meta property="article:author" content="1Stack1">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://1stack1.github.io/AQS.assets/image-20230419190041184.png">
+<meta name="twitter:image" content="https://1stack1.github.io/.io//image-20230419190041184.png">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -118,7 +118,7 @@
     <li>
         <div class="all active" data-rel="All">All
             
-                <small>(2)</small>
+                <small>(8)</small>
             
         </div>
     </li>
@@ -136,7 +136,7 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="2">
+<input type="hidden" id="yelog_site_posts_number" value="8">
 
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
@@ -192,17 +192,71 @@
            href="/2024/03/11/note/juc/AQS/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="AQS">AQS</span>
-            <span class="post-date" title="2024-03-11 00:17:32">2024/03/11</span>
+            <span class="post-title" title="AQS.md">AQS.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
         </a>
         
         
         <a  class="All "
-           href="/2024/03/11/hello-world/"
+           href="/2024/03/11/note/juc/ConcurrentHashMap/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="Hello World">Hello World</span>
-            <span class="post-date" title="2024-03-11 00:00:35">2024/03/11</span>
+            <span class="post-title" title="ConcurrentHashMap.md">ConcurrentHashMap.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/cas/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="cas.md">cas.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/Executor/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Executor.md">Executor.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/Future/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Future.md">Future.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/volitile/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="volitile.md">volitile.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/ThreadLocal/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="ThreadLocal.md">ThreadLocal.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/synchronized/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="synchronized.md">synchronized.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
         </a>
         
         <div id="no-item-tips">
@@ -223,9 +277,9 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-note/juc/cas" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Hello World</h1>
+        <h1 class="article-title">cas.md</h1>
     
     <div class="article-meta">
         
@@ -235,7 +289,7 @@
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2024-03-11 00:00:35'>2024-03-11 00:00</time>
+            Created At : <time class="date" title='Updated At: 2024-03-12 00:11:16'>2024-03-11 23:50</time>
         
     </div>
     <div class="article-meta">
@@ -246,7 +300,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick-Start"><span class="toc-text">Quick Start</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-a-new-post"><span class="toc-text">Create a new post</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Run-server"><span class="toc-text">Run server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generate-static-files"><span class="toc-text">Generate static files</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deploy-to-remote-sites"><span class="toc-text">Deploy to remote sites</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8"><span class="toc-text">典型应用</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -262,19 +316,14 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+        <p>如下源代码释义所示，这部分主要为CAS相关操作的方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	*  CAS</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> o         包含要修改field的对象</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> offset    对象中某field的偏移量</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> expected  期望值</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> update    更新值</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span>          true | false</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapObject</span><span class="params">(Object o, <span class="type">long</span> offset,  Object expected, Object update)</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapInt</span><span class="params">(Object o, <span class="type">long</span> offset, <span class="type">int</span> expected,<span class="type">int</span> update)</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapLong</span><span class="params">(Object o, <span class="type">long</span> offset, <span class="type">long</span> expected, <span class="type">long</span> update)</span>;</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<p>什么是CAS? 即比较并替换，实现并发算法时常用到的一种技术。CAS操作包含三个操作数——内存位置、预期原值及新值。执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。我们都知道，CAS是一条CPU的原子指令（cmpxchg指令），不会造成所谓的数据不一致问题，Unsafe提供的CAS方法（如compareAndSwapXXX）底层实现即为CPU指令cmpxchg。</p>
+<h4 id="典型应用"><a href="#典型应用" class="headerlink" title="典型应用"></a>典型应用</h4><p>CAS在java.util.concurrent.atomic相关类、Java AQS、CurrentHashMap等实现上有非常广泛的应用。如下图所示，AtomicInteger的实现中，静态字段valueOffset即为字段value的内存偏移地址，valueOffset的值在AtomicInteger初始化时，在静态代码块中通过Unsafe的objectFieldOffset方法获取。在AtomicInteger中提供的线程安全方法中，通过字段valueOffset的值可以定位到AtomicInteger对象中value的内存地址，从而可以根据CAS实现对value字段的原子操作。</p>
+<p><img src="/.io//3bacb938ca6e63d6c79c2bb48d3f608f189412.png" alt="img"></p>
+<p>下图为某个AtomicInteger对象自增操作前后的内存示意图，对象的基地址baseAddress&#x3D;“0x110000”，通过baseAddress+valueOffset得到value的内存地址valueAddress&#x3D;“0x11000c”；然后通过CAS进行原子性的更新操作，成功则返回，否则继续重试，直到更新成功为止。</p>
+<p><img src="/.io//6e8b1fe5d5993d17a4c5b69bb72ac51d89826.png" alt="img"></p>
 
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 jaytp@qq.com </span>

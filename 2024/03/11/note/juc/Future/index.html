@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Future.md | 1Stack1</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="Future.md | 1Stack1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AQS.md">
+<meta property="og:url" content="https://1stack1.github.io/2024/03/11/note/juc/AQS/index.html">
+<meta property="og:site_name" content="1Stack1">
+<meta property="og:description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190041184.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419185922426-1710173058095.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419185941383.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190244474.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190325126.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190337744-1710173000935.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190358666.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190428798.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190444473.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190501636.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190537899.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190549899.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190603894.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190617127.png">
+<meta property="article:published_time" content="2024-03-11T15:50:50.000Z">
+<meta property="article:modified_time" content="2024-03-11T16:11:01.998Z">
+<meta property="article:author" content="1Stack1">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://1stack1.github.io/.io//image-20230419190041184.png">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 7.1.1"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>1Stack1</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="github"
+               href="https://github.com/1Stack1"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-github"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:cehan1001@gmail.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="All">All
+            
+                <small>(8)</small>
+            
+        </div>
+    </li>
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="8">
+
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/AQS/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="AQS.md">AQS.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/ConcurrentHashMap/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="ConcurrentHashMap.md">ConcurrentHashMap.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/cas/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="cas.md">cas.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/Executor/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Executor.md">Executor.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/Future/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="Future.md">Future.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/volitile/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="volitile.md">volitile.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/ThreadLocal/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="ThreadLocal.md">ThreadLocal.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2024/03/11/note/juc/synchronized/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="synchronized.md">synchronized.md</span>
+            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-note/juc/Future" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Future.md</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2024-03-12 00:11:58'>2024-03-11 23:50</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Future"><span class="toc-text">Future</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#FutureTask"><span class="toc-text">FutureTask</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CompetableFuture"><span class="toc-text">CompetableFuture</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CompletableFuture%E7%9A%84%E8%83%8C%E6%99%AF%E5%92%8C%E5%AE%9A%E4%B9%89"><span class="toc-text">CompletableFuture的背景和定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CompletableFuture%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-text">CompletableFuture的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CompletableFuture%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">CompletableFuture的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CompletableFuture%E5%8E%9F%E7%90%86"><span class="toc-text">CompletableFuture原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CompletableFuture%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3"><span class="toc-text">CompletableFuture的设计思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-text">整体流程</span></a></li></ol></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h1><p><code>Future</code> 类是异步思想的典型运用，主要用在一些需要执行耗时任务的场景，避免程序一直原地等待耗时任务执行完成，执行效率太低。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// V 代表了Future执行的任务返回值的类型</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Future</span>&lt;V&gt; &#123;</span><br><span class="line">    <span class="comment">// 取消任务执行</span></span><br><span class="line">    <span class="comment">// 成功取消返回 true，否则返回 false</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">cancel</span><span class="params">(<span class="type">boolean</span> mayInterruptIfRunning)</span>;</span><br><span class="line">    <span class="comment">// 判断任务是否被取消</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isCancelled</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 判断任务是否已经执行完成</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isDone</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取任务执行结果</span></span><br><span class="line">    V <span class="title function_">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException;</span><br><span class="line">    <span class="comment">// 指定时间内没有返回计算结果就抛出 TimeOutException 异常</span></span><br><span class="line">    V <span class="title function_">get</span><span class="params">(<span class="type">long</span> timeout, TimeUnit unit)</span></span><br><span class="line">        <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutExceptio</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h2><p><code>FutureTask</code> 提供了 <code>Future</code> 接口的基本实现，常用来封装 <code>Callable</code> 和 <code>Runnable</code>，具有取消任务、查看任务是否执行完成以及获取任务执行结果的方法。</p>
+<p>比如<code>ExecutorService.submit()</code> 方法返回的其实就是 <code>Future</code> 的实现类 <code>FutureTask</code> 。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;T&gt; Future&lt;T&gt; <span class="title function_">submit</span><span class="params">(Callable&lt;T&gt; task)</span>;</span><br><span class="line">Future&lt;?&gt; submit(Runnable task);</span><br></pre></td></tr></table></figure>
+
+<p>FutureTask类的结构：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FutureTask</span>&lt;V&gt; <span class="keyword">implements</span> <span class="title class_">RunnableFuture</span>&lt;V&gt; &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">RunnableFuture</span>&lt;V&gt; <span class="keyword">extends</span> <span class="title class_">Runnable</span>, Future&lt;V&gt; &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>FutureTask</code> 有两个构造函数，可传入 <code>Callable</code> 或者 <code>Runnable</code> 对象。实际上，传入 <code>Runnable</code> 对象也会在方法内部转换为<code>Callable</code> 对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">FutureTask</span><span class="params">(Callable&lt;V&gt; callable)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (callable == <span class="literal">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NullPointerException</span>();</span><br><span class="line">    <span class="built_in">this</span>.callable = callable;</span><br><span class="line">    <span class="built_in">this</span>.state = NEW;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="title function_">FutureTask</span><span class="params">(Runnable runnable, V result)</span> &#123;</span><br><span class="line">    <span class="comment">// 通过适配器RunnableAdapter来将Runnable对象runnable转换成Callable对象</span></span><br><span class="line">    <span class="built_in">this</span>.callable = Executors.callable(runnable, result);</span><br><span class="line">    <span class="built_in">this</span>.state = NEW;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>FutureTask</code>相当于对<code>Callable</code> 进行了封装，管理着任务执行的情况，存储了 <code>Callable</code> 的 <code>call</code> 方法的任务执行结果。</p>
+<h1 id="CompetableFuture"><a href="#CompetableFuture" class="headerlink" title="CompetableFuture"></a>CompetableFuture</h1><h2 id="CompletableFuture的背景和定义"><a href="#CompletableFuture的背景和定义" class="headerlink" title="CompletableFuture的背景和定义"></a>CompletableFuture的背景和定义</h2><p>CompletableFuture是由Java 8引入的，在Java8之前我们一般通过Future实现异步。</p>
+<ul>
+<li><strong>Future用于表示异步计算的结果，只能通过阻塞或者轮询的方式获取结果，而且不支持设置回调方法</strong>，Java 8之前若要设置回调一般会使用guava的ListenableFuture，回调的引入又会导致臭名昭著的<strong>回调地狱</strong></li>
+<li>CompletableFuture对Future进行了扩展，可以通过设置回调的方式处理计算结果，同时也支持组合操作，支持进一步的编排，同时一定程度解决了回调地狱的问题。</li>
+</ul>
+<h2 id="CompletableFuture的定义"><a href="#CompletableFuture的定义" class="headerlink" title="CompletableFuture的定义"></a>CompletableFuture的定义</h2><p><img src="/.io//75a9710d2053b2fa0654c67cd7f35a0c18774.png" alt="图4 CompletableFuture的定义"></p>
+<p>CompletableFuture实现了两个接口（如上图所示）：Future、CompletionStage。</p>
+<p>Future表示异步计算的结果。</p>
+<p>CompletionStage用于表示异步执行过程中的一个步骤（Stage），这个步骤可能是由另外一个CompletionStage触发的，随着当前步骤的完成，也可能会触发其他一系列CompletionStage的执行。从而我们可以根据实际业务对这些步骤进行多样化的编排组合，CompletionStage接口正是定义了这样的能力，我们可以通过其提供的thenAppy、thenCompose等函数式编程方法来组合编排这些步骤。</p>
+<h2 id="CompletableFuture的使用"><a href="#CompletableFuture的使用" class="headerlink" title="CompletableFuture的使用"></a>CompletableFuture的使用</h2><p>使用CompletableFuture也是构建依赖树的过程。一个CompletableFuture的完成会触发另外一系列依赖它的CompletableFuture的执行：</p>
+<p><img src="/.io//b14b861db9411b2373b80100fee0b92f15076.png" alt="图5 请求执行流程"></p>
+<ul>
+<li><p>零依赖：CompletableFuture的创建</p>
+<p><img src="/.io//ff663f95c86e22928c0bb94fc6bd8b8715722.png" alt="图6 零依赖"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1、使用runAsync或supplyAsync发起异步调用</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result1&quot;</span>;</span><br><span class="line">&#125;, executor);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2、CompletableFuture.completedFuture()直接创建一个已完成状态的CompletableFuture</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf2 = CompletableFuture.completedFuture(<span class="string">&quot;result2&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//3、先初始化一个未完成的CompletableFuture，然后通过complete()、completeExceptionally()，完成该CompletableFuture</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf = <span class="keyword">new</span> <span class="title class_">CompletableFuture</span>&lt;&gt;();</span><br><span class="line">cf.complete(<span class="string">&quot;success&quot;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一元依赖：依赖一个CF</p>
+</li>
+</ul>
+<p><img src="/.io//373a334e7e7e7d359e8f042c7c9075e215479.png" alt="图7 一元依赖"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; cf3 = cf1.thenApply(result1 -&gt; &#123;</span><br><span class="line">  <span class="comment">//result1为CF1的结果</span></span><br><span class="line">  <span class="comment">//......</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result3&quot;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>二元依赖：依赖两个CF</li>
+</ul>
+<p><img src="/.io//fa4c8669b4cf63b7a89cfab0bcb693b216006.png" alt="图8 二元依赖"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; cf4 = cf1.thenCombine(cf2, (result1, result2) -&gt; &#123;</span><br><span class="line">  <span class="comment">//result1和result2分别为cf1和cf2的结果</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result4&quot;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>多元依赖：依赖多个CF</li>
+</ul>
+<p><img src="/.io//92248abd0a5b11dd36f9ccb1f1233d4e16045.png" alt="图9 多元依赖"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;Void&gt; cf6 = CompletableFuture.allOf(cf3, cf4, cf5);</span><br></pre></td></tr></table></figure>
+
+<h2 id="CompletableFuture原理"><a href="#CompletableFuture原理" class="headerlink" title="CompletableFuture原理"></a>CompletableFuture原理</h2><p>CompletableFuture中包含两个字段：<strong>result</strong>和<strong>stack</strong>。</p>
+<p>result用于存储当前CompletableFuture的结果，stack（Completion）表示当前CF完成后需要触发的依赖动作（Dependency Actions），去触发依赖它的CF的计算，依赖动作可以有多个（表示有多个依赖它的CF），以栈（<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Treiber_stack">Treiber stack</a>）的形式存储，stack表示栈顶元素。</p>
+<p><img src="/.io//82aa288ea62d74c03afcd2308d302b6910425.png" alt="图10 CF基本结构"></p>
+<p>这种方式类似“观察者模式”，依赖动作（Dependency Action）都封装在一个单独Completion子类中。下面是Completion类关系结构图。CompletableFuture中的每个方法都对应了图中的一个Completion的子类，Completion本身是<strong>观察者</strong>的基类。</p>
+<ul>
+<li>UniCompletion继承了Completion，是一元依赖的基类，例如thenApply的实现类UniApply就继承自UniCompletion。</li>
+<li>BiCompletion继承了UniCompletion，是二元依赖的基类，同时也是多元依赖的基类。例如thenCombine的实现类BiRelay就继承自BiCompletion。</li>
+</ul>
+<p><img src="/.io//5a889b90d0f2c2a0f6a4f294b9094194112106.png" alt="图11 CF类图"></p>
+<p>图11 CF类图</p>
+<h3 id="CompletableFuture的设计思想"><a href="#CompletableFuture的设计思想" class="headerlink" title="CompletableFuture的设计思想"></a>CompletableFuture的设计思想</h3><p>按照类似“观察者模式”的设计思想，原理分析可以从“观察者”和“被观察者”两个方面着手。</p>
+<p>由于回调种类多，但结构差异不大，所以这里单以一元依赖中的thenApply为例</p>
+<p><img src="/.io//f45b271b656f3ae243875fcb2af36a1141224.png" alt="图12 thenApply简图"></p>
+<p><strong>3.3.1.1 被观察者</strong></p>
+<ol>
+<li>每个CompletableFuture都可以被看作一个被观察者，其内部有一个Completion类型的链表成员变量stack，用来存储注册到其中的所有观察者。当被观察者执行完成后会弹栈stack属性，依次通知注册到其中的观察者。上面例子中步骤fn2就是作为观察者被封装在UniApply中。</li>
+<li>被观察者CF中的result属性，用来存储返回结果数据。这里可能是一次RPC调用的返回值，也可能是任意对象，在上面的例子中对应步骤fn1的执行结果。</li>
+</ol>
+<p><strong>3.3.1.2 观察者</strong></p>
+<p>CompletableFuture支持很多回调方法，例如thenAccept、thenApply、exceptionally等，这些方法接收一个函数类型的参数f，生成一个Completion类型的对象（即观察者），并将入参函数f赋值给Completion的成员变量fn，然后检查当前CF是否已处于完成状态（即result !&#x3D; null），如果已完成直接触发fn，否则将观察者Completion加入到CF的观察者链stack中，再次尝试触发，如果被观察者未执行完则其执行完毕之后通知触发。</p>
+<ol>
+<li>观察者中的dep属性：指向其对应的CompletableFuture，在上面的例子中dep指向CF2。</li>
+<li>观察者中的src属性：指向其依赖的CompletableFuture，在上面的例子中src指向CF1。</li>
+<li>观察者Completion中的fn属性：用来存储具体的等待被回调的函数。这里需要注意的是不同的回调方法（thenAccept、thenApply、exceptionally等）接收的函数类型也不同，即fn的类型有很多种，在上面的例子中fn指向fn2。</li>
+</ol>
+<h3 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h3><p><strong>一元依赖</strong></p>
+<p>这里仍然以thenApply为例来说明一元依赖的流程：</p>
+<ol>
+<li>将观察者Completion注册到CF1，此时CF1将Completion压栈。</li>
+<li>当CF1的操作运行完成时，会将结果赋值给CF1中的result属性。</li>
+<li>依次弹栈，通知观察者尝试运行。</li>
+</ol>
+<p><img src="/.io//f449bbc62d4a1f8e9e4998929196513d165269.gif" alt="图13 执行流程简要说明"></p>
+<p><strong>Q1</strong>：在观察者注册之前，如果CF已经执行完成，并且已经发出通知，那么这时观察者由于错过了通知是不是将永远不会被触发呢 ？</p>
+<p> <strong>A1</strong>：不会。在注册时检查依赖的CF是否已经完成。如果未完成（即result &#x3D;&#x3D; null）则将观察者入栈，如果已完成（result !&#x3D; null）则直接触发观察者操作。</p>
+<p><strong>Q2</strong>：在”入栈“前会有”result &#x3D;&#x3D; null“的判断，这两个操作为非原子操作，CompletableFufure的实现也没有对两个操作进行加锁，完成时间在这两个操作之间，观察者仍然得不到通知，是不是仍然无法触发？</p>
+<p><img src="/.io//6b4aeae7085f7d77d9f33799734f3b926723.png" alt="图14 入栈校验"></p>
+<p><strong>A2</strong>：不会。入栈之后再次检查CF是否完成，如果完成则触发。</p>
+<p><strong>Q3</strong>：当依赖多个CF时，观察者会被压入所有依赖的CF的栈中，每个CF完成的时候都会进行，那么会不会导致一个操作被多次执行呢 ？如下图所示，即当CF1、CF2同时完成时，如何避免CF3被多次触发。</p>
+<p><img src="/.io//316ff338f8dab2826a5d32dfb75ffede4158.png" alt="图15 多次触发"></p>
+<p>图15 多次触发</p>
+<p><strong>A3</strong>：CompletableFuture的实现是这样解决该问题的：观察者在执行之前会先通过CAS操作设置一个状态位，将status由0改为1。如果观察者已经执行过了，那么CAS操作将会失败，取消执行。</p>
+<p>通过对以上3个问题的分析可以看出，CompletableFuture在处理并行问题时，全程无加锁操作，极大地提高了程序的执行效率。我们将并行问题考虑纳入之后，可以得到完善的整体流程图如下所示：</p>
+<p><img src="/.io//606323a07fb7e31cb91f46c879d99b8d735272.gif" alt="图16 完整流程"></p>
+<p>CompletableFuture支持的回调方法十分丰富，但是正如上一章节的整体流程图所述，他们的整体流程是一致的。所有回调复用同一套流程架构，不同的回调监听通过<strong>策略模式</strong>实现差异化。</p>
+<p>** 二元依赖**</p>
+<p>我们以thenCombine为例来说明二元依赖：</p>
+<p><img src="/.io//b969e49a7eedbd52b014f86e86dcd3fc49634.png" alt="图17 二元依赖数据结构"></p>
+<p>thenCombine操作表示依赖两个CompletableFuture。其观察者实现类为BiApply，如上图所示，BiApply通过src和snd两个属性关联被依赖的两个CF，fn属性的类型为BiFunction。与单个依赖不同的是，在依赖的CF未完成的情况下，thenCombine会尝试将BiApply压入这两个被依赖的CF的栈中，每个被依赖的CF完成时都会尝试触发观察者BiApply，BiApply会检查两个依赖是否都完成，如果完成则开始执行。这里为了解决重复触发的问题，同样用的是上一章节提到的CAS操作，执行时会先通过CAS设置状态位，避免重复触发。</p>
+<p><strong>多元依赖</strong></p>
+<p>依赖多个CompletableFuture的回调方法包括<code>allOf</code>、<code>anyOf</code>，区别在于<code>allOf</code>观察者实现类为BiRelay，需要所有被依赖的CF完成后才会执行回调；而<code>anyOf</code>观察者实现类为OrRelay，任意一个被依赖的CF完成后就会触发。二者的实现方式都是将多个被依赖的CF构建成一棵平衡二叉树，执行结果层层通知，直到根节点，触发回调监听。</p>
+<p><img src="/.io//cef5469b5ec2e67ecca1b99a07260e4e22003.png" alt="图18 多元依赖结构树"></p>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 jaytp@qq.com </span>
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 Yelog
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
