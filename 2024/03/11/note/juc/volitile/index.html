@@ -2,479 +2,99 @@
 <html>
 <head>
   <meta charset="utf-8">
+  
+  
   <title>volitile.md | 1Stack1</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="volitile.md | 1Stack1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="什么是volitilevolatile可以说是一个轻量级的synchronized，一般作用于变量，在多处理器开发的过程中保证了内存的可见性。相比于synchronized关键字，volatile关键字的执行成本更低，效率更高。 volatile的作用 并发编程的三大特性为可见性、有序性和原子性。通常来讲volatile可以保证可见性和有序性。   可见性：volatile可以保证不同线程对共享变">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AQS.md">
-<meta property="og:url" content="https://1stack1.github.io/2024/03/11/note/juc/AQS/index.html">
+<meta property="og:title" content="volitile.md">
+<meta property="og:url" content="https://1stack1.github.io/2024/03/11/note/juc/volitile/index.html">
 <meta property="og:site_name" content="1Stack1">
-<meta property="og:description" content="介绍AQS 就是一个抽象类，主要用来构建锁和同步器，为他们的实现提供了通用功能的实现 核心思想AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是基于 CLH 锁 （Craig, Landin, and Hagersten lock">
+<meta property="og:description" content="什么是volitilevolatile可以说是一个轻量级的synchronized，一般作用于变量，在多处理器开发的过程中保证了内存的可见性。相比于synchronized关键字，volatile关键字的执行成本更低，效率更高。 volatile的作用 并发编程的三大特性为可见性、有序性和原子性。通常来讲volatile可以保证可见性和有序性。   可见性：volatile可以保证不同线程对共享变">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190041184.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419185922426-1710173058095.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419185941383.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190244474.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190325126.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190337744-1710173000935.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190358666.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190428798.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190444473.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190501636.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190537899.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190549899.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190603894.png">
-<meta property="og:image" content="https://1stack1.github.io/.io//image-20230419190617127.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20240312000916482.png">
+<meta property="og:image" content="https://1stack1.github.io/.io//image-20240312000929262.png">
 <meta property="article:published_time" content="2024-03-11T15:50:50.000Z">
-<meta property="article:modified_time" content="2024-03-11T16:11:01.998Z">
+<meta property="article:modified_time" content="2024-03-11T16:12:34.694Z">
 <meta property="article:author" content="1Stack1">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://1stack1.github.io/.io//image-20230419190041184.png">
+<meta name="twitter:image" content="https://1stack1.github.io/.io//image-20240312000916482.png">
+  
+    <link rel="alternate" href="/atom.xml" title="1Stack1" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
 
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
 
-<link rel="icon" href="/img/avatar.jpg">
-
-<link href="/css/style.css?v=1.1.0" rel="stylesheet">
-
-<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
-
-<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
-
-<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-<script src="/js/titleTip.js?v=1.1.0" ></script>
-
-<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
-<script>
-    hljs.initHighlightingOnLoad();
-</script>
-
-<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
-
-
-
-<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
-
-<script src="/js/iconfont.js?v=1.1.0" ></script>
-
+  
+  
 <meta name="generator" content="Hexo 7.1.1"></head>
-<div style="display: none">
-  <input class="theme_disqus_on" value="false">
-  <input class="theme_preload_comment" value="">
-  <input class="theme_blog_path" value="">
-  <input id="theme_shortcut" value="true" />
-  <input id="theme_highlight_on" value="true" />
-  <input id="theme_code_copy" value="true" />
-</div>
-
-
 
 <body>
-<aside class="nav">
-    <div class="nav-left">
-        <a href="/"
-   class="avatar_target">
-    <img class="avatar"
-         src="/img/avatar.jpg"/>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">1Stack1</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://1Stack1.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-note/juc/volitile" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/11/note/juc/volitile/" class="article-date">
+  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
 </a>
-<div class="author">
-    <span>1Stack1</span>
-</div>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      volitile.md
+    </h1>
+  
 
-<div class="icon">
+      </header>
     
-        
-            <a title="rss"
-               href="/atom.xml"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-rss"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="github"
-               href="https://github.com/yelog"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-github"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="facebook"
-               href="https://www.facebook.com/faker.tops"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-facebook"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-    
-        
-    
-        
-            <a title="instagram"
-               href="https://www.facebook.com/faker.tops"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-instagram"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="reddit"
-               href="https://www.reddit.com/user/yelog/"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-reddit"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="weibo"
-               href="http://weibo.com/u/2307534817"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-weibo"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="jianshu"
-               href="https://www.jianshu.com/u/ff56736de7cf"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-jianshu"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="zhihu"
-               href="https://www.zhihu.com/people/jaytp/activities"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-zhihu"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-    
-        
-            <a title="oschina"
-               href="https://my.oschina.net/yelog"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-oschina"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-    
-        
-            <a title="email"
-               href="mailto:jaytp@qq.com"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-email"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="qq"
-               href="http://wpa.qq.com/msgrd?v=3&uin=872336115&site=qq&menu=yes"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-qq"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="kugou"
-               href="https://www.kugou.com/"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-kugou"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="neteasemusic"
-               href="https://music.163.com/#/user/home?id=88151013"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-neteasemusic"></use>
-                    </svg>
-                
-            </a>
-        
-    
-</div>
-
-
-
-
-
-<ul>
-    <li>
-        <div class="all active" data-rel="All">All
-            
-                <small>(8)</small>
-            
-        </div>
-    </li>
-    
-</ul>
-<div class="left-bottom">
-    <div class="menus">
-        
-            
-            
-            
-    </div>
-    <div>
-        
-            <a class="about  hasFriend  site_url"
-               
-               href="/about">About</a>
-        
-        <a style="width: 50%"
-                
-                                           class="friends">Friends</a>
-        
-    </div>
-</div>
-<input type="hidden" id="yelog_site_posts_number" value="8">
-
-<div style="display: none">
-    <span id="busuanzi_value_site_uv"></span>
-    <span id="busuanzi_value_site_pv"></span>
-</div>
-
-    </div>
-    <div class="nav-right">
-        <div class="friends-area">
-    <div class="friends-title">
-        Links
-        <i class="iconfont icon-left"></i>
-    </div>
-    <div class="friends-content">
-        <ul>
-            
-            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
-            
-        </ul>
-    </div>
-</div>
-        <div class="title-list">
-    <div class="right-top">
-        <div id="default-panel">
-            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
-            <div class="right-title">All</div>
-            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
-        </div>
-        <div id="search-panel">
-            <i class="iconfont icon-left" data-title="返回"></i>
-            <input id="local-search-input" autocomplete="off"/>
-            <label class="border-line" for="input"></label>
-            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
-            <i class="iconfont icon-tag" data-title="标签"></i>
-        </div>
-        <div id="outline-panel" style="display: none">
-            <div class="right-title">大纲</div>
-            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
-        </div>
-    </div>
-
-    <div class="tags-list">
-    <input id="tag-search" />
-    <div class="tag-wrapper">
-        
-    </div>
-
-</div>
-
-    
-    <nav id="title-list-nav">
-        
-        
-        <a  class="All "
-           href="/2024/03/11/note/juc/AQS/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="AQS.md">AQS.md</span>
-            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
-        </a>
-        
-        
-        <a  class="All "
-           href="/2024/03/11/note/juc/ConcurrentHashMap/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="ConcurrentHashMap.md">ConcurrentHashMap.md</span>
-            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
-        </a>
-        
-        
-        <a  class="All "
-           href="/2024/03/11/note/juc/cas/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="cas.md">cas.md</span>
-            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
-        </a>
-        
-        
-        <a  class="All "
-           href="/2024/03/11/note/juc/Executor/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="Executor.md">Executor.md</span>
-            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
-        </a>
-        
-        
-        <a  class="All "
-           href="/2024/03/11/note/juc/Future/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="Future.md">Future.md</span>
-            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
-        </a>
-        
-        
-        <a  class="All "
-           href="/2024/03/11/note/juc/volitile/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="volitile.md">volitile.md</span>
-            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
-        </a>
-        
-        
-        <a  class="All "
-           href="/2024/03/11/note/juc/ThreadLocal/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="ThreadLocal.md">ThreadLocal.md</span>
-            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
-        </a>
-        
-        
-        <a  class="All "
-           href="/2024/03/11/note/juc/synchronized/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="synchronized.md">synchronized.md</span>
-            <span class="post-date" title="2024-03-11 23:50:50">2024/03/11</span>
-        </a>
-        
-        <div id="no-item-tips">
-
-        </div>
-    </nav>
-    <div id="outline-list">
-    </div>
-</div>
-
-    </div>
-    <div class="hide-list">
-        <div class="semicircle" data-title="切换全屏 快捷键 s">
-            <div class="brackets first"><</div>
-            <div class="brackets">&gt;</div>
-        </div>
-    </div>
-</aside>
-<div id="post">
-    <div class="pjax">
-        <article id="post-note/juc/volitile" class="article article-type-post" itemscope itemprop="blogPost">
-    
-        <h1 class="article-title">volitile.md</h1>
-    
-    <div class="article-meta">
-        
-        
-        
-        
-    </div>
-    <div class="article-meta">
-        
-            Created At : <time class="date" title='Updated At: 2024-03-12 00:12:34'>2024-03-11 23:50</time>
-        
-    </div>
-    <div class="article-meta">
-        
-        
-        <span id="busuanzi_container_page_pv">
-            Views 👀 :<span id="busuanzi_value_page_pv">
-                <span class="count-comment">
-                    <span class="spinner">
-                      <div class="cube1"></div>
-                      <div class="cube2"></div>
-                    </span>
-                </span>
-            </span>
-        </span>
-        
-        
-    </div>
-    
-    <div class="toc-ref">
-    
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFvolitile"><span class="toc-text">什么是volitile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#volatile%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">volatile的作用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E5%86%85%E5%AD%98%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-text">Java内存的可见性问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BB%A3%E7%A0%81%E4%BC%9A%E9%87%8D%E6%8E%92%E5%BA%8F%EF%BC%9F"><span class="toc-text">为什么代码会重排序？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%8E%92%E5%BA%8F%E5%9C%A8%E5%B9%B6%E5%8F%91%E6%83%85%E5%86%B5%E4%B8%8B%E4%BC%9A%E5%BC%95%E5%8F%91%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">重排序在并发情况下会引发什么问题？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#voliatile%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-text">voliatile的实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile%E5%AE%9E%E7%8E%B0%E5%86%85%E5%AD%98%E5%8F%AF%E8%A7%81%E6%80%A7%E5%8E%9F%E7%90%86"><span class="toc-text">volatile实现内存可见性原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile%E5%AE%9E%E7%8E%B0%E6%9C%89%E5%BA%8F%E6%80%A7%E5%8E%9F%E7%90%86"><span class="toc-text">volatile实现有序性原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#volatile%E8%83%BD%E4%BD%BF%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C%E5%8F%98%E6%88%90%E4%B8%80%E4%B8%AA%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C%E5%90%97"><span class="toc-text">volatile能使一个非原子操作变成一个原子操作吗</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#volatile%E3%80%81synchronized%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">volatile、synchronized的区别</span></a></li></ol>
-    
-<style>
-    .left-col .switch-btn,
-    .left-col .switch-area {
-        display: none;
-    }
-    .toc-level-3 i,
-    .toc-level-3 ol {
-        display: none !important;
-    }
-</style>
-</div>
-    
-    <div class="article-entry" itemprop="articleBody">
+    <div class="e-content article-entry" itemprop="articleBody">
       
         <h1 id="什么是volitile"><a href="#什么是volitile" class="headerlink" title="什么是volitile"></a>什么是volitile</h1><p><code>volatile</code>可以说是一个轻量级的<code>synchronized</code>，一般作用于<strong>变量</strong>，在多处理器开发的过程中保证了内存的可见性。相比于<code>synchronized</code>关键字，<code>volatile</code>关键字的执行成本更低，效率更高。</p>
 <h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><blockquote>
@@ -538,193 +158,133 @@
 </ul>
 
       
-       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 jaytp@qq.com </span>
     </div>
+    <footer class="article-footer">
+      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/volitile/" data-id="cltn57su90004tcnuc3g41p72" data-title="volitile.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/03/11/note/juc/Future/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Future.md
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/03/11/note/juc/ThreadLocal/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">ThreadLocal.md</div>
+    </a>
+  
+</nav>
+
+  
 </article>
 
 
-<p>
-    <a  class="dashang" onclick="dashangToggle()">💰</a>
-</p>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li></ul>
+    </div>
+  </div>
 
 
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/AQS/">AQS.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/ConcurrentHashMap/">ConcurrentHashMap.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/cas/">cas.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/Executor/">Executor.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/Future/">Future.md</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
 
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 1Stack1<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
 
-
-
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
     
 
 
+<script src="/js/jquery-3.6.4.min.js"></script>
 
 
-    </div>
-    <div class="copyright">
-        <p class="footer-entry">
-    ©2016-2020 Yelog
-</p>
-<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
 
-    </div>
-    <div class="full-toc">
-        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
-<a class="" id="rocket" ></a>
-
-    </div>
-</div>
-
-<div class="hide_box" onclick="dashangToggle()"></div>
-<div class="shang_box">
-    <a class="shang_close"  onclick="dashangToggle()">×</a>
-    <div class="shang_tit">
-        <p>Help us with donation</p>
-    </div>
-    <div class="shang_payimg">
-        <div class="pay_img">
-            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
-            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
-        </div>
-    </div>
-    <div class="shang_payselect">
-        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
-    </div>
-</div>
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
 
 
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
 </body>
-<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
-
-<script src="/js/script.js?v=1.1.0" ></script>
-<script>
-    var img_resize = 'default';
-    function initArticle() {
-        /*渲染对应的表格样式*/
-        
-            $("#post .pjax table").addClass("green_title");
-        
-
-        /*渲染打赏样式*/
-        
-        $("input[name=pay]").on("click", function () {
-            if($("input[name=pay]:checked").val()=="weixin"){
-                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
-            } else {
-                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
-            }
-        })
-        
-
-        /*高亮代码块行号*/
-        
-
-        /*访问数量*/
-        
-        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
-        
-
-        /*代码高亮，行号对齐*/
-        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
-
-        
-        
-    }
-
-    /*打赏页面隐藏与展示*/
-    
-    function dashangToggle() {
-        $(".shang_box").fadeToggle();
-        $(".hide_box").fadeToggle();
-    }
-    
-
-</script>
-
-<!--加入行号的高亮代码块样式-->
-
-<!--自定义样式设置-->
-<style>
-    
-    
-    .nav {
-        width: 542px;
-    }
-    .nav.fullscreen {
-        margin-left: -542px;
-    }
-    .nav-left {
-        width: 120px;
-    }
-    
-    
-    @media screen and (max-width: 1468px) {
-        .nav {
-            width: 492px;
-        }
-        .nav.fullscreen {
-            margin-left: -492px;
-        }
-        .nav-left {
-            width: 100px;
-        }
-    }
-    
-    
-    @media screen and (max-width: 1024px) {
-        .nav {
-            width: 492px;
-            margin-left: -492px
-        }
-        .nav.fullscreen {
-            margin-left: 0;
-        }
-    }
-    
-    @media screen and (max-width: 426px) {
-        .nav {
-            width: 100%;
-        }
-        .nav-left {
-            width: 100%;
-        }
-    }
-    
-    
-    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
-        color: #383636;
-    }
-    
-    
-    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
-        color: #5e5e5f;
-    }
-    
-    
-    .nav-right nav a.hover, #local-search-result a.hover{
-        background-color: #e2e0e0;
-    }
-    
-    
-
-    /*列表样式*/
-    
-
-    /* 背景图样式 */
-    
-    
-
-
-    /*引用块样式*/
-    
-
-    /*文章列表背景图*/
-    
-
-    
-</style>
-
-
-
-
-
-
-
 </html>
