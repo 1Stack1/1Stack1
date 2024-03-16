@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta property="og:type" content="website">
 <meta property="og:title" content="1Stack1">
-<meta property="og:url" content="https://1stack1.github.io/index.html">
+<meta property="og:url" content="https://username.github.io/index.html">
 <meta property="og:site_name" content="1Stack1">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="1Stack1">
@@ -60,7 +60,7 @@
         <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://1Stack1.github.io"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://username.github.io"></form>
       </div>
     </div>
   </div>
@@ -68,6 +68,581 @@
 
       <div class="outer">
         <section id="main">
+  
+    <article id="post-note/jvm/jvm" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/11/note/jvm/jvm/" class="article-date">
+  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/jvm/">jvm</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/03/11/note/jvm/jvm/">jvm.md</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="jvm的组成"><a href="#jvm的组成" class="headerlink" title="jvm的组成"></a>jvm的组成</h1><h2 id="PC"><a href="#PC" class="headerlink" title="PC"></a>PC</h2><blockquote>
+<p>什么是程序计数器</p>
+</blockquote>
+<p>线程私有的，每个线程一份，内部保存的字节码的行号。用于记录正在执行的字节码指令的地址。</p>
+<blockquote>
+<p>程序计数器作用</p>
+</blockquote>
+<ul>
+<li><p>字节码解释器通过改变程序计数器来依次读取指令，从而实现代码的流程控制。</p>
+</li>
+<li><p>在多线程的情况下，程序计数器用于记录当前线程执行的位置，从而当线程被切换回来的时候能够知道该线程上次运行到哪儿了。</p>
+</li>
+</ul>
+<h2 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h2><blockquote>
+<p>详细介绍一下堆</p>
+</blockquote>
+<p>线程共享的区域：主要用来保存对象实例，数组等，内存不够则抛出OutOfMemoryError异常。</p>
+<p>组成：年轻代+老年代</p>
+<ul>
+<li><p>年轻代被划分为三部分，Eden区和两个大小严格相同的Survivor区</p>
+</li>
+<li><p>老年代主要保存生命周期长的对象，一般是一些老的对象</p>
+</li>
+</ul>
+<p>lJdk1.7和1.8的区别</p>
+<ul>
+<li><p>1.7中有有一个永久代，存储的是类信息、静态变量、常量、编译后的代码</p>
+</li>
+<li><p>1.8移除了永久代，把数据存储到了本地内存的元空间中，防止内存溢出</p>
+</li>
+</ul>
+<p><img src="/2024/03/11/note/jvm/jvm/java-runtime-data-areas-jdk1.7.png" alt="Java 运行时数据区域（JDK1.7）"></p>
+<p><img src="/2024/03/11/note/jvm/jvm/java-runtime-data-areas-jdk1.8.png" alt="Java 运行时数据区域（JDK1.8 ）"></p>
+<blockquote>
+<p>JDK8的JVM为什么取消了堆中的永久代 &#x2F; 方法区</p>
+</blockquote>
+<p>JDK 8取消了永久代主要是为了解决永久代的一些问题。永久代是一种特殊的堆区域，用于存储类信息、方法信息、常量池等数据。但是永久代容易导致内存溢出，而且垃圾回收效率低下，特别是在大量使用反射、动态代理等技术的情况下。此外，永久代的大小是固定的，无法动态调整，这也会导致一些问题。</p>
+<p>为了解决这些问题，JDK 8引入了元空间（Metaspace）来代替永久代。元空间是存储在本地内存中的一部分。本地内存是由操作系统分配和管理的，它的大小不受Java虚拟机堆大小的限制，因此可以更好地支持动态调整元空间大小的需求。同时，由于本地内存不是Java虚拟机的堆内存，所以可以避免一些与堆内存相关的问题，例如Java虚拟机堆内存溢出等问题。</p>
+<blockquote>
+<p>JDK 1.7 为什么要将字符串常量池从方法区移动到堆中？</p>
+</blockquote>
+<p>主要是因为永久代（方法区实现）的 GC 回收效率太低，只有在整堆收集 (Full GC)的时候才会被执行 GC。Java 程序中通常会有大量的被创建的字符串等待回收，将字符串常量池放到堆中，能够更高效及时地回收字符串内存。</p>
+<h2 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h2><blockquote>
+<p>介绍一下虚拟机栈</p>
+</blockquote>
+<ul>
+<li><p>每个线程运行时所需要的内存，称为虚拟机栈</p>
+</li>
+<li><p>每个栈由多个栈帧（frame）组成，对应着每次方法调用时所占用的内存</p>
+</li>
+<li><p>每个线程只能有一个活动栈帧，对应着当前正在执行的那个方法</p>
+</li>
+</ul>
+<blockquote>
+<p>垃圾回收是否涉及栈内存？</p>
+</blockquote>
+<p>垃圾回收主要指就是堆内存，而在栈中当栈帧弹栈以后，内存就会释放</p>
+<blockquote>
+<p>栈内存分配越大越好吗？</p>
+</blockquote>
+<p>默认的栈内存通常为1024k，栈帧过大会导致线程数变少</p>
+<blockquote>
+<p>方法内的局部变量是否线程安全？</p>
+</blockquote>
+<ul>
+<li><p>如果方法内局部变量没有逃离方法的作用范围，它是线程安全的</p>
+</li>
+<li><p>如果是局部变量引用了对象，并逃离方法的作用范围，需要考虑线程安全</p>
+</li>
+</ul>
+<blockquote>
+<p>有哪些栈内存溢出情况</p>
+</blockquote>
+<ul>
+<li><p>栈帧过多导致栈内存溢出，典型问题：递归调用</p>
+</li>
+<li><p>栈帧过大导致栈内存溢出</p>
+</li>
+</ul>
+<blockquote>
+<p>堆栈的区别是什么？</p>
+</blockquote>
+<ul>
+<li><p>栈内存一般会用来存储局部变量和方法调用，但堆内存是用来存储Java对象和数组的的。堆会GC垃圾回收，而栈不会。</p>
+</li>
+<li><p>栈内存是线程私有的，而堆内存是线程共有的。</p>
+</li>
+<li><p>两者异常错误不同，但如果栈内存或者堆内存不足都会抛出异常。</p>
+<p>​        栈空间不足：java.lang.StackOverFlowError。</p>
+</li>
+</ul>
+<p>​			堆空间不足：java.lang.OutOfMemoryError。</p>
+<blockquote>
+<p>栈可能出现的错误</p>
+</blockquote>
+<p><strong><code>StackOverFlowError</code>：</strong> 若栈的内存大小不允许动态扩展，那么当线程请求栈的深度超过当前 Java 虚拟机栈的最大深度的时候，就抛出 <code>StackOverFlowError</code> 错误。</p>
+<p><strong><code>OutOfMemoryError</code>：</strong> 如果栈的内存大小可以动态扩展， 如果虚拟机在动态扩展栈时无法申请到足够的内存空间，则抛出<code>OutOfMemoryError</code>异常。</p>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><blockquote>
+<p>能不能解释一下方法区？</p>
+</blockquote>
+<ul>
+<li><p>方法区(Method Area)是各个线程共享的内存区域</p>
+</li>
+<li><p>主要存储类的信息、运行时常量池</p>
+</li>
+<li><p>虚拟机启动的时候创建，关闭虚拟机时释放</p>
+</li>
+<li><p>如果方法区域中的内存无法满足分配请求，则会抛出OutOfMemoryError: Metaspace</p>
+</li>
+</ul>
+<blockquote>
+<p>介绍一下常量池</p>
+</blockquote>
+<p>可以看作是一张表，虚拟机指令根据这张常量表找到要执行的类名、方法名、参数类型、字面量等信息。</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518215257658.png" alt="image-20230518215257658"></p>
+<blockquote>
+<p>介绍一下运行时常量池</p>
+</blockquote>
+<p>常量池是 *.class 文件中的，当该类被加载，它的常量池信息就会放入运行时常量池，并把里面的符号地址变为真实地址</p>
+<blockquote>
+<p><strong>方法区和永久代以及元空间是什么关系呢？</strong> </p>
+</blockquote>
+<p>方法区和永久代以及元空间的关系很像 Java 中接口和类的关系，类实现了接口，这里的类就可以看作是永久代和元空间，接口可以看作是方法区，也就是说永久代以及元空间是 HotSpot 虚拟机对虚拟机规范中方法区的两种实现方式。并且，永久代是 JDK 1.8 之前的方法区实现，JDK 1.8 及以后方法区的实现变成了元空间。</p>
+<h2 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h2><blockquote>
+<p>你听过直接内存吗？</p>
+</blockquote>
+<ul>
+<li><p>并不属于JVM中的内存结构，不由JVM进行管理。是虚拟机的系统内存</p>
+</li>
+<li><p>常见于 NIO 操作时，用于数据缓冲区，分配回收成本较高，但读写性能高，不受 JVM 内存回收管理</p>
+<p>NIO，引入了一种基于通道与缓存区的 I&#x2F;O 方式，它可以直接使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆中的 DirectByteBuffer 对象作为这块内存的引用进行操作。这样就能在一些场景中显著提高性能，因为避免了在 Java 堆和 Native 堆之间来回复制数据。</p>
+</li>
+</ul>
+<p>示例：</p>
+<p>常规IO，多了一次缓冲区复制：</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518220309201.png" alt="image-20230518220309201"></p>
+<p>NIO：</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518220319779.png" alt="image-20230518220319779"></p>
+<h1 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h1><h2 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h2><p>1.<strong>类加载检查</strong>，虚拟机遇到一条 new 指令时，首先将去检查这个指令的参数是否能在<strong>常量池</strong>中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那必须先执行相应的类加载过程。</p>
+<p>2.<strong>分配内存</strong>，在<strong>类加载检查</strong>通过后，接下来虚拟机将为新生对象<strong>分配内存</strong>。对象所需的内存大小在类加载完成后便可确定。<strong>分配方式</strong>有 <strong>“指针碰撞”</strong> 和 <strong>“空闲列表”</strong> 两种，<strong>选择哪种分配方式由 Java 堆是否规整决定，而 Java 堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定</strong>。</p>
+<p>3.<strong>初始化零值</strong>，内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头），这一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
+<p>4.<strong>设置对象头</strong>，初始化零值完成之后，<strong>虚拟机要对对象进行必要的设置</strong>，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。 <strong>这些信息存放在对象头中。</strong> 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
+<p>5。<strong>执行 init 方法</strong>，在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，<code>&lt;init&gt;</code> 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
+<blockquote>
+<p>内存分配的方式有？</p>
+</blockquote>
+<p>指针碰撞： </p>
+<ul>
+<li>适用场合：堆内存规整（即没有内存碎片）的情况下。</li>
+<li>原理：用过的内存全部整合到一边，没有用过的内存放在另一边，中间有一个分界指针，只需要向着没用过的内存方向将该指针移动对象内存大小位置即可。</li>
+<li>使用该分配方式的 GC 收集器：Serial, ParNew</li>
+</ul>
+<p>空闲列表： </p>
+<ul>
+<li>适用场合：堆内存不规整的情况下。</li>
+<li>原理：虚拟机会维护一个列表，该列表中会记录哪些内存块是可用的，在分配的时候，找一块儿足够大的内存块儿来划分给对象实例，最后更新列表记录。</li>
+<li>使用该分配方式的 GC 收集器：CMS</li>
+</ul>
+<blockquote>
+<p>内存分配并发问题</p>
+</blockquote>
+<ul>
+<li><strong>CAS+失败重试</strong></li>
+<li><strong>TLAB：</strong> 为<strong>每一个线程</strong>预先在 Eden 区分配一块儿内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配</li>
+</ul>
+<h2 id="对象内存布局"><a href="#对象内存布局" class="headerlink" title="对象内存布局"></a>对象内存布局</h2><p>在 Hotspot 虚拟机中，对象在内存中的布局可以分为 3 块区域：<strong>对象头</strong>、<strong>实例数据</strong>和<strong>对齐填充</strong>。</p>
+<p><strong>Hotspot 虚拟机的对象头包括两部分信息</strong>：</p>
+<ul>
+<li>第一部分用于存储对象自身的运行时数据（哈希码、GC 分代年龄、锁状态标志等等）</li>
+<li>类型指针</li>
+</ul>
+<blockquote>
+<p>什么是对齐填充？</p>
+</blockquote>
+<p><strong>对齐填充部分不是必然存在的，也没有什么特别的含义，仅仅起占位作用。</strong> 因为 Hotspot 虚拟机的自动内存管理系统要求对象起始地址必须是 8 字节的整数倍，换句话说就是对象的大小必须是 8 字节的整数倍。而对象头部分正好是 8 字节的倍数（1 倍或 2 倍），因此，当对象实例数据部分没有对齐时，就需要通过对齐填充来补全。</p>
+<h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2><p> Java 程序通过栈上的 reference 数据来操作堆上的具体对象。对象的访问方式由虚拟机实现而定，目前主流的访问方式有：<strong>使用句柄</strong>、<strong>直接指针</strong>。</p>
+<ul>
+<li><p>句柄</p>
+<p>如果使用句柄的话，那么 Java 堆中将会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与对象类型数据各自的具体地址信息。</p>
+</li>
+</ul>
+<p><img src="/2024/03/11/note/jvm/jvm/access-location-of-object-handle.png" alt="对象的访问定位-使用句柄"></p>
+<ul>
+<li><p>直接指针—–&gt;HotSpot 主要采用的方法</p>
+<p>如果使用直接指针访问，reference 中存储的直接就是对象的地址。</p>
+</li>
+</ul>
+<p><img src="https://oss.javaguide.cn/github/javaguide/java/jvm/access-location-of-object-handle-direct-pointer.png" alt="对象的访问定位-直接指针"></p>
+<ul>
+<li>使用句柄来访问的最大好处是 reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。</li>
+<li>使用直接指针访问方式最大的好处就是速度快，它节省了一次指针定位的时间开销。</li>
+</ul>
+<h1 id="Class文件"><a href="#Class文件" class="headerlink" title="Class文件"></a>Class文件</h1><h2 id="Class文件结构"><a href="#Class文件结构" class="headerlink" title="Class文件结构"></a>Class文件结构</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic; <span class="comment">//Class 文件的标志</span></span><br><span class="line">    u2             minor_version;<span class="comment">//Class 的小版本号</span></span><br><span class="line">    u2             major_version;<span class="comment">//Class 的大版本号</span></span><br><span class="line">    u2             constant_pool_count;<span class="comment">//常量池的数量</span></span><br><span class="line">    cp_info        constant_pool[constant_pool_count-<span class="number">1</span>];<span class="comment">//常量池</span></span><br><span class="line">    u2             access_flags;<span class="comment">//Class 的访问标记</span></span><br><span class="line">    u2             this_class;<span class="comment">//当前类</span></span><br><span class="line">    u2             super_class;<span class="comment">//父类</span></span><br><span class="line">    u2             interfaces_count;<span class="comment">//接口</span></span><br><span class="line">    u2             interfaces[interfaces_count];<span class="comment">//一个类可以实现多个接口</span></span><br><span class="line">    u2             fields_count;<span class="comment">//Class 文件的字段属性</span></span><br><span class="line">    field_info     fields[fields_count];<span class="comment">//一个类可以有多个字段</span></span><br><span class="line">    u2             methods_count;<span class="comment">//Class 文件的方法数量</span></span><br><span class="line">    method_info    methods[methods_count];<span class="comment">//一个类可以有个多个方法</span></span><br><span class="line">    u2             attributes_count;<span class="comment">//此类的属性表中的属性数</span></span><br><span class="line">    attribute_info attributes[attributes_count];<span class="comment">//属性表集合</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="魔数"><a href="#魔数" class="headerlink" title="魔数"></a>魔数</h3><p>每个 Class 文件的头 4 个字节称为魔数（Magic Number）,它的唯一作用是<strong>确定这个文件是否为一个能被虚拟机接收的 Class 文件</strong>。</p>
+<h3 id="版本号"><a href="#版本号" class="headerlink" title="版本号"></a>版本号</h3><p>第 5 和第 6 位是<strong>次版本号</strong>，第 7 和第 8 位是<strong>主版本号</strong>。</p>
+<p>高版本的 Java 虚拟机可以执行低版本编译器生成的 Class 文件，但是低版本的 Java 虚拟机不能执行高版本编译器生成的 Class 文件。</p>
+<h3 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h3><p>紧接着主次版本号之后的是常量池。</p>
+<p>常量池主要存放两大常量：字面量和符号引用。字面量比较接近于 Java 语言层面的的常量概念，如文本字符串、声明为 final 的常量值等。而符号引用则属于编译原理方面的概念。包括下面三类常量：</p>
+<ul>
+<li>类和接口的全限定名</li>
+<li>字段的名称和描述符</li>
+<li>方法的名称和描述符</li>
+</ul>
+<h3 id="访问标志"><a href="#访问标志" class="headerlink" title="访问标志"></a>访问标志</h3><p>在常量池结束之后，紧接着的两个字节代表访问标志，这个标志用于识别一些类或者接口层次的访问信息，包括：这个 Class 是类还是接口，是否为 <code>public</code> 或者 <code>abstract</code> 类型，如果是类的话是否声明为 <code>final</code> 等等。</p>
+<h3 id="当前类、父类、接口索引集合"><a href="#当前类、父类、接口索引集合" class="headerlink" title="当前类、父类、接口索引集合"></a>当前类、父类、接口索引集合</h3><p>ava 类的继承关系由类索引、父类索引和接口索引集合三项确定。类索引、父类索引和接口索引集合按照顺序排在访问标志之后，</p>
+<p>类索引用于确定这个类的全限定名，父类索引用于确定这个类的父类的全限定名，由于 Java 语言的单继承，所以父类索引只有一个，除了 <code>java.lang.Object</code> 之外，所有的 Java 类都有父类，因此除了 <code>java.lang.Object</code> 外，所有 Java 类的父类索引都不为 0。</p>
+<p>接口索引集合用来描述这个类实现了那些接口，这些被实现的接口将按 <code>implements</code> (如果这个类本身是接口的话则是<code>extends</code>) 后的接口顺序从左到右排列在接口索引集合中。</p>
+<h3 id="字段表，方法表，属性表集合"><a href="#字段表，方法表，属性表集合" class="headerlink" title="字段表，方法表，属性表集合"></a>字段表，方法表，属性表集合</h3><h1 id="加载器"><a href="#加载器" class="headerlink" title="加载器"></a>加载器</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
+<p>什么是类加载器</p>
+</blockquote>
+<p>JVM只会运行二进制文件，类加载器的作用就是将字节码文件加载到JVM中，从而让Java程序能够启动起来。</p>
+<blockquote>
+<p>类加载器有哪些</p>
+</blockquote>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518220708554.png" alt="image-20230518220708554"></p>
+<h2 id="类加载器加载过程"><a href="#类加载器加载过程" class="headerlink" title="类加载器加载过程"></a>类加载器加载过程</h2><p>类从加载到虚拟机中开始，直到卸载为止，它的整个生命周期包括了：加载、验证、准备、解析、初始化、使用和卸载这7个阶段。其中，验证、准备和解析这三个部分统称为连接（linking）</p>
+<h3 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h3><ul>
+<li><p>通过类的全名，获取类的二进制数据流。</p>
+</li>
+<li><p>解析类的二进制数据流到方法区内的数据结构（Java类模型） </p>
+</li>
+<li><p>创建java.lang.Class类的实例，表示该类型。作为方法区这个类的各种数据的访问入口</p>
+</li>
+</ul>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518231128900.png" alt="image-20230518231128900"></p>
+<h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><p>验证类是否符合 JVM规范，安全性检查</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518231346662.png" alt="image-20230518231346662"></p>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p><strong>为类变量分配内存并设置类变量初始值</strong></p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518231652324.png" alt="image-20230518231652324"></p>
+<h3 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h3><p><strong>把类中的符号引用转换为直接引用</strong>，比如：方法中调用了其他方法，方法名可以理解为符号引用，而直接引用就是使用指针直接指向方法。</p>
+<p>从</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518232126886.png" alt="image-20230518232126886"></p>
+<p>到</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230518232211678.png" alt="image-20230518232211678"></p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p><strong>对类的静态变量，静态代码块执行初始化操作</strong></p>
+<ul>
+<li><p>如果初始化一个类的时候，其父类尚未初始化，则优先初始化其父类。</p>
+</li>
+<li><p>如果同时包含多个静态变量和静态代码块，则按照自上而下的顺序依次执行。</p>
+</li>
+<li><p>当只使用父类的静态变量(或从子类获取父类的静态变量)就会只初始化父类的静态代码块，而不会初始化子类的静态代码块。</p>
+</li>
+</ul>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>JVM 开始从入口方法开始执行用户的程序代码</p>
+<ul>
+<li><p>调用静态类成员信息（比如：静态字段、静态方法）</p>
+</li>
+<li><p>使用new关键字为其创建对象实例</p>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><p>加载:查找和导入class文件</p>
+</li>
+<li><p>验证:保证加载类的准确性</p>
+</li>
+<li><p>准备:为类变量分配内存并设置类变量初始值</p>
+</li>
+<li><p>解析:把类中的符号引用转换为直接引用</p>
+</li>
+<li><p>初始化:对类的静态变量，静态代码块执行初始化操作</p>
+</li>
+<li><p>使用:JVM 开始从入口方法开始执行用户的程序代码</p>
+</li>
+<li><p>卸载:当用户程序代码执行完毕后，JVM便开始销毁创建的Class对象。</p>
+</li>
+</ul>
+<h2 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h2><blockquote>
+<p>什么是双亲委派模型？</p>
+</blockquote>
+<p>加载某一个类，先委托上一级的加载器进行加载，如果上级加载器也有上级，则会继续向上委托，如果该类委托上级没有被加载，子加载器尝试加载该类</p>
+<blockquote>
+<p>JVM为什么采用双亲委派机制？</p>
+</blockquote>
+<ul>
+<li><p>通过双亲委派机制可以避免某一个类被重复加载，当父类已经加载后则无需重复加载，保证唯一性。</p>
+</li>
+<li><p>为了安全，保证类库API不会被修改</p>
+</li>
+</ul>
+<h1 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h1><h2 id="垃圾对象判断方法"><a href="#垃圾对象判断方法" class="headerlink" title="垃圾对象判断方法"></a>垃圾对象判断方法</h2><blockquote>
+<p>对象什么时候可以被垃圾器回收</p>
+</blockquote>
+<p>如果一个或多个对象没有任何的引用指向它了，那么这个对象现在就是垃圾，如果定位了垃圾，则有可能会被垃圾回收器回收。</p>
+<blockquote>
+<p>定位垃圾的方式</p>
+</blockquote>
+<ul>
+<li><p>引用计数法</p>
+<p>一个对象被引用了一次，在当前的对象头上递增一次引用次数，如果这个对象的引用次数为0，代表这个对象可回收。</p>
+<p>当对象间出现了循环引用的话，则引用计数法可能就会失效。</p>
+</li>
+<li><p>可达性分析算法</p>
+<p>现在的虚拟机采用的都是通过可达性分析算法来确定哪些内容是垃圾。</p>
+<p>扫描堆中的对象，看是否能够沿着 GC Root 对象 为起点的引用链找到该对象，找不到，表示可以回收。</p>
+</li>
+</ul>
+<blockquote>
+<p>哪些对象可以作为 GC Root </p>
+</blockquote>
+<ul>
+<li>虚拟机栈（栈帧中的本地变量表）中引用的对象</li>
+<li>方法区中类静态属性引用的对象</li>
+<li>方法区中常量引用的对象</li>
+</ul>
+<blockquote>
+<p>如何判断一个常量是废弃常量？</p>
+</blockquote>
+<p>假如在字符串常量池中存在字符串 “abc”，如果当前没有任何 String 对象引用该字符串常量的话，就说明常量 “abc” 就是废弃常量，如果这时发生内存回收的话而且有必要的话，”abc” 就会被系统清理出常量池了。</p>
+<blockquote>
+<p>如何判断一个类是否可以被回收？</p>
+</blockquote>
+<ul>
+<li>该类所有的实例都已经被回收，也就是 Java 堆中不存在该类的任何实例。</li>
+<li>加载该类的 <code>ClassLoader</code> 已经被回收。</li>
+<li>该类对应的 <code>java.lang.Class</code> 对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</li>
+</ul>
+<p>虚拟机可以对满足上述 3 个条件的无用类进行回收，这里说的仅仅是“可以”，而并不是和对象一样不使用了就会必然被回收。</p>
+<h2 id="垃圾回收算法"><a href="#垃圾回收算法" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h2><blockquote>
+<p>JVM 垃圾回收算法有哪些？</p>
+</blockquote>
+<ul>
+<li><p>标记清除算法：垃圾回收分为2个阶段，分别是标记和清除,效率高,有磁盘碎片，内存不连续——一般不使用</p>
+</li>
+<li><p>标记整理算法：标记清除算法一样，将存活对象都向内存另一端移动，然后清理边界以外的垃圾，无碎片，对象需要移动，效率低——一般用于老年代</p>
+</li>
+<li><p>复制算法：将原有的内存空间一分为二，每次只用其中的一块,正在使用的对象复制到另一个内存空间中，然后将该内存空间清空，交换两个内存的角色，完成垃圾的回收;无碎片，内存使用率低——–一般用于年轻代</p>
+</li>
+</ul>
+<h3 id="标记清除算法"><a href="#标记清除算法" class="headerlink" title="标记清除算法"></a>标记清除算法</h3><p><img src="/2024/03/11/note/jvm/jvm/image-20230519124100778.png" alt="image-20230519124100778"></p>
+<h3 id="标记整理算法"><a href="#标记整理算法" class="headerlink" title="标记整理算法"></a>标记整理算法</h3><p><img src="/2024/03/11/note/jvm/jvm/image-20230519124123636.png" alt="image-20230519124123636"></p>
+<h3 id="复制算法"><a href="#复制算法" class="headerlink" title="复制算法"></a>复制算法</h3><p><img src="/2024/03/11/note/jvm/jvm/image-20230519124141657.png" alt="image-20230519124141657"></p>
+<h2 id="分代垃圾回收"><a href="#分代垃圾回收" class="headerlink" title="分代垃圾回收"></a>分代垃圾回收</h2><blockquote>
+<p>说一下JVM中的分代回收</p>
+</blockquote>
+<p>根据对象存活周期的不同将内存分为几块。一般将 Java 堆分为新生代和老年代，这样我们就可以根据各个年代的特点选择合适的垃圾收集算法。</p>
+<p>比如在新生代中，每次收集都会有大量对象死去，所以可以选择”标记-复制“算法，只需要付出少量对象的复制成本就可以完成每次垃圾收集。而老年代的对象存活几率是比较高的，所以我们必须选择“标记-清除”或“标记-整理”算法进行垃圾收集。</p>
+<blockquote>
+<p>堆的区域划分</p>
+</blockquote>
+<ul>
+<li><p>堆被分为了两份：新生代和老年代【1：2】</p>
+</li>
+<li><p>对于新生代，内部又被分为了三个区域。Eden区，幸存者区survivor(分成from和to)【8：1：1】</p>
+</li>
+</ul>
+<blockquote>
+<p>对象回收分代回收过程</p>
+</blockquote>
+<ul>
+<li>新创建的对象，都会先分配到eden区</li>
+<li>当Eden内存不足，标记Eden与 from（现阶段没有）的存活对象</li>
+<li>将存活对象采用复制算法复制到to中，复制完毕后，Eden和 from 内存都得到释放</li>
+<li>经过一段时间后Eden的内存又出现不足，标记eden区域to区存活的对象，将其复制到from区</li>
+<li>当幸存区对象熬过几次回收（最多15次），晋升到老年代（当幸存区内存不足或大对象会提前晋升）</li>
+</ul>
+<blockquote>
+<p>为什么大对象直接进入老年代</p>
+</blockquote>
+<p>大对象就是需要大量连续内存空间的对象（比如：字符串、数组）。</p>
+<p>大对象直接进入老年代主要是为了避免为大对象分配内存时由于<strong>分配担保机制</strong>带来的复制而降低效率</p>
+<blockquote>
+<p>什么是分配担保机制</p>
+</blockquote>
+<p>只要老年代的连续空间大于新生代对象总大小或者历次晋升的平均大小，就会进行 Minor GC，否则将进行 Full GC</p>
+<blockquote>
+<p>对象什么时候进入老年代</p>
+</blockquote>
+<p>虚拟机给每个对象一个对象年龄（Age）计数器，大部分情况，对象都会首先在 Eden 区域分配。如果对象在 Eden 出生并经过第一次 Minor GC 后仍然能够存活，并且能被 Survivor 容纳的话，将被移动到 Survivor 空间（s0 或者 s1）中，并将对象年龄设为 1(Eden 区-&gt;Survivor 区后对象的初始年龄变为 1)。</p>
+<p>对象在 Survivor 中每熬过一次 MinorGC,年龄就增加 1 岁，当它的年龄增加到一定程度（默认为 15 岁），就会被晋升到老年代中。对象晋升到老年代的年龄阈值，可以通过参数 <code>-XX:MaxTenuringThreshold</code> 来设置。</p>
+<blockquote>
+<p>MinorGC、 Mixed GC 、 FullGC的区别是什么？</p>
+</blockquote>
+<ul>
+<li>部分收集<ul>
+<li>MinorGC【young GC】发生在新生代的垃圾回收，暂停时间短（STW）———&gt;STW（Stop-The-World）：暂停所有应用程序线程，等待垃圾回收的完成。</li>
+<li>MajorGC【old GC】只对老年代收集。</li>
+<li>Mixed GC 【混合GC】新生代 + 老年代部分区域的垃圾回收，G1 收集器特有</li>
+</ul>
+</li>
+<li>FullGC【整堆GC】： 新生代 + 老年代完整垃圾回收，暂停时间长（STW），应尽力避免</li>
+</ul>
+<blockquote>
+<p>对象可以被回收，就代表一定会被回收吗？</p>
+</blockquote>
+<p>即使在可达性分析法中不可达的对象，也并非是“非死不可”的，这时候它们暂时处于“缓刑阶段”，要真正宣告一个对象死亡，至少要经历两次标记过程；</p>
+<p>可达性分析法中不可达的对象被第一次标记并且进行一次筛选，(筛选的条件是此对象是否有必要执行 <code>finalize</code> 方法。当对象没有覆盖 <code>finalize</code> 方法，或 <code>finalize</code> 方法已经被虚拟机调用过时，虚拟机将这两种情况视为没有必要执行,<em>finalize方法在JDK9已被去掉</em>)。</p>
+<p>被判定为需要执行的对象将会被放在一个队列中进行第二次标记，除非这个对象与引用链上的任何一个对象建立关联，否则就会被真的回收。</p>
+<h2 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><blockquote>
+<p>在jvm中，实现了多种垃圾收集器，主要包括</p>
+</blockquote>
+<ul>
+<li><p>串行垃圾收集器：Serial(色vu) GC、Serial Old GC</p>
+</li>
+<li><p>并行垃圾收集器：Parallel(破ruiv) Old GC、ParNew GC</p>
+</li>
+<li><p>CMS（并发）垃圾收集器：CMS GC，作用在老年代</p>
+</li>
+<li><p>G1垃圾收集器，作用在新生代和老年代</p>
+</li>
+</ul>
+<h3 id="串行垃圾回收器"><a href="#串行垃圾回收器" class="headerlink" title="串行垃圾回收器"></a>串行垃圾回收器</h3><p><img src="/2024/03/11/note/jvm/jvm/image-20230519130712659.png" alt="image-20230519130712659"></p>
+<h3 id="并行垃圾回收器"><a href="#并行垃圾回收器" class="headerlink" title="并行垃圾回收器"></a>并行垃圾回收器</h3><p><img src="/2024/03/11/note/jvm/jvm/image-20230519130737803.png" alt="image-20230519130737803"></p>
+<h3 id="并发垃圾回收器"><a href="#并发垃圾回收器" class="headerlink" title="并发垃圾回收器"></a>并发垃圾回收器</h3><p><img src="/2024/03/11/note/jvm/jvm/cms-garbage-collector.png" alt="CMS 收集器"></p>
+<p>整个过程分为四个步骤：</p>
+<ul>
+<li><strong>初始标记：</strong> 暂停所有的其他线程，并记录下直接与 root 相连的对象，速度很快 ；</li>
+<li><strong>并发标记：</strong> 从GC Roots直接关联对象开始遍历整个对象图的过程，可以和用户线程并发执行</li>
+<li><strong>重新标记：</strong>所有用户线程暂停，修正并发标记期间，因用户线程继续运作而导致标记产生变动部分对象的标记记录，远比并发标记时间短</li>
+<li><strong>并发清除：</strong> 开启用户线程，同时 GC 线程开始对未标记的区域做清扫。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li><strong>对 CPU 资源敏感；</strong></li>
+<li><strong>无法处理浮动垃圾；</strong></li>
+<li><strong>它使用的回收算法-“标记-清除”算法会导致收集结束时会有大量空间碎片产生</strong></li>
+</ul>
+<blockquote>
+<p>什么是浮动垃圾？</p>
+</blockquote>
+<p>在并发标记阶段本来可达的对象，由于用户线程的作用变得不可达了，即产生新的垃圾对象，CMS将无法对这些垃圾对象进行标记，最终导致这些新产生的垃圾对象没有被及时回收。</p>
+<blockquote>
+<p>在重新标记阶段会修正由于用户线程运作而导致对象的标记产生变动的记录，那为什么还有浮动垃圾产生？ </p>
+</blockquote>
+<p>由于标记阶段是从 GC Roots开始标记可达对象，那么在并发标记阶段可能产生两种变动：</p>
+<p>1）本来可达的对象，变得不可达了</p>
+<p>2）本来不可达的对象，变得可达了</p>
+<p>如果在并发标记阶段中，用户线程new了一个对象，而它在初始标记和并发标记中无法从GC Roots可达，如果没有重新标记阶段将这个对象标记为可达，那么在并发清除阶段被回收，这是严重的错误。</p>
+<p>相比之下，浮动垃圾是可容忍的问题，由于从可达变为不可达的变化需要重新从GC Roots开始遍历，相当于再次完成初始标记和并发标记的工作，这样会造成增加重新标记阶段的开销，所带来的暂停时间是追求低延迟的CMS不能容忍的。</p>
+<h3 id="G1垃圾回收器"><a href="#G1垃圾回收器" class="headerlink" title="G1垃圾回收器"></a>G1垃圾回收器</h3><ul>
+<li><p>应用于新生代和老年代，在JDK9之后默认使用G1</p>
+</li>
+<li><p>划分成多个区域，每个区域都可以充当 eden，survivor，old， humongous，其中 humongous 专为大对象准备</p>
+</li>
+<li><p>采用复制算法</p>
+</li>
+<li><p>响应时间与吞吐量兼顾</p>
+</li>
+<li><p>分成三个阶段：新生代回收(stw)、并发标记(重新标记stw)、混合收集</p>
+</li>
+<li><p>如果并发失败（即回收速度赶不上创建新对象速度），会触发 Full GC</p>
+</li>
+</ul>
+<p><a href="G1%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8.pptx">G1垃圾回收器执行过程</a></p>
+<p>G1运行示意图</p>
+<p><img src="/2024/03/11/note/jvm/jvm/g1-garbage-collector.png" alt="G1 收集器"></p>
+<blockquote>
+<p>G1优点</p>
+</blockquote>
+<ul>
+<li><p><strong>并行与并发</strong></p>
+</li>
+<li><p><strong>分代收集</strong>：虽然 G1 可以不需要其他收集器配合就能独立管理整个 GC 堆，但是还是保留了分代的概念。</p>
+</li>
+<li><p><strong>空间整合</strong>：与 CMS 的“标记-清除”算法不同，G1 从整体来看是基于“标记-整理”算法实现的收集器；从局部上来看是基于“标记-复制”算法实现的。</p>
+</li>
+<li><p><strong>可预测的停顿</strong>：这是 G1 相对于 CMS 的另一个大优势，降低停顿时间是 G1 和 CMS 共同的关注点，但 G1 除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为 M 毫秒的时间片段内，消耗在垃圾收集上的时间不得超过 N 毫秒。</p>
+</li>
+</ul>
+<h2 id="四种引用"><a href="#四种引用" class="headerlink" title="四种引用"></a>四种引用</h2><blockquote>
+<p>强引用、软引用、弱引用、虚引用的区别?</p>
+</blockquote>
+<ul>
+<li>强引用：只要所有 GC Roots 能找到，就不会被回收</li>
+<li>软引用：需要配合SoftReference使用，内存空间足够，垃圾回收器就不会回收它，如果内存空间不足了，就会回收这些对象的内存。</li>
+<li>弱引用：需要配合WeakReference使用，不管内存是否足够，只要发生 GC，都会被回收。</li>
+<li>虚引用：必须配合引用队列使用，被引用对象回收时，会将虚引用PhantomReference入队，由 Reference Handler 线程调用虚引用相关方法释放直接内存</li>
+</ul>
+<h1 id="jvm实践"><a href="#jvm实践" class="headerlink" title="jvm实践"></a>jvm实践</h1><blockquote>
+<p>JVM 调优的参数可以在哪里设置参数值</p>
+</blockquote>
+<ul>
+<li>war包部署在tomcat中设置</li>
+</ul>
+<p>​    修改TOMCAT_HOME&#x2F;bin&#x2F;catalina.sh文件</p>
+<ul>
+<li>jar包部署在启动参数设置</li>
+</ul>
+<p>​     java -Xms512m -Xmx1024m -jar xxxx.jar</p>
+<h2 id="JVM-调优的参数"><a href="#JVM-调优的参数" class="headerlink" title="JVM 调优的参数"></a>JVM 调优的参数</h2><h3 id="设置堆空间大小"><a href="#设置堆空间大小" class="headerlink" title="设置堆空间大小"></a>设置堆空间大小</h3><p>设置堆的初始大小和最大大小，为了防止垃圾收集器在初始大小、最大大小之间收缩堆而产生额外的时间，通常把最大、初始大小设置为相同的值。</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230519170926738.png" alt="image-20230519170926738"></p>
+<p>堆空间设置多少合适？</p>
+<ul>
+<li><p>最大大小的默认值是物理内存的1&#x2F;4，初始大小是物理内存的1&#x2F;64</p>
+</li>
+<li><p>堆太小，可能会频繁的导致年轻代和老年代的垃圾回收，会产生stw，暂停用户线程</p>
+</li>
+<li><p>堆内存大肯定是好的，存在风险，假如发生了fullgc,它会扫描整个堆空间，暂停用户线程的时间长</p>
+</li>
+<li><p>设置参考推荐：尽量大，也要考察一下当前计算机其他程序的内存使用情况</p>
+</li>
+</ul>
+<h3 id="设置虚拟机栈大小"><a href="#设置虚拟机栈大小" class="headerlink" title="设置虚拟机栈大小"></a>设置虚拟机栈大小</h3><p>虚拟机栈的设置：每个线程默认会开启1M的内存，用于存放栈帧、调用参数、局部变量等，但一般256K就够用。通常减少每个线程的堆栈，可以产生更多的线程，但这实际上还受限于操作系统。</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230519171032734.png" alt="image-20230519171032734"></p>
+<h3 id="Eden区和两个Survivor区的大小比例"><a href="#Eden区和两个Survivor区的大小比例" class="headerlink" title="Eden区和两个Survivor区的大小比例"></a>Eden区和两个Survivor区的大小比例</h3><p>设置年轻代中Eden区和两个Survivor区的大小比例。该值如果不设置，则默认比例为8:1:1。通过增大Eden区的大小，来减少YGC发生的次数，但有时我们发现，虽然次数减少了，但Eden区满的时候，由于占用的空间较大，导致释放缓慢，此时STW的时间较长，因此需要按照程序情况去调优。</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230519171117997.png" alt="image-20230519171117997"></p>
+<h3 id="年轻代晋升老年代阈值"><a href="#年轻代晋升老年代阈值" class="headerlink" title="年轻代晋升老年代阈值"></a>年轻代晋升老年代阈值</h3><p><img src="/2024/03/11/note/jvm/jvm/image-20230519171147620.png" alt="image-20230519171147620"></p>
+<h3 id="设置垃圾回收收集器"><a href="#设置垃圾回收收集器" class="headerlink" title="设置垃圾回收收集器"></a>设置垃圾回收收集器</h3><p><img src="/2024/03/11/note/jvm/jvm/image-20230519171223932.png" alt="image-20230519171223932"></p>
+<h2 id="JVM-调优的工具"><a href="#JVM-调优的工具" class="headerlink" title="JVM 调优的工具"></a>JVM 调优的工具</h2><p>命令工具</p>
+<ul>
+<li><p>jps     进程状态信息</p>
+</li>
+<li><p>jstack   查看java进程内线程的堆栈信息</p>
+</li>
+<li><p>jmap   查看堆转信息</p>
+</li>
+<li><p>jhat    堆转储快照分析工具</p>
+</li>
+<li><p>jstat   JVM统计监测工具</p>
+</li>
+</ul>
+<p>可视化工具</p>
+<ul>
+<li><p>jconsole   用于对jvm的内存，线程，类 的监控</p>
+</li>
+<li><p>VisualVM  能够监控线程，内存情况</p>
+</li>
+</ul>
+<h2 id="内存泄漏排查"><a href="#内存泄漏排查" class="headerlink" title="内存泄漏排查"></a>内存泄漏排查</h2><blockquote>
+<p>java内存泄露的排查思路？</p>
+</blockquote>
+<p>内存泄漏通常是指堆内存，通常是指一些大对象不被回收的情况</p>
+<p>1、通过jmap或设置jvm参数(当项目刚启动就闪退只能使用参数方式)获取堆内存快照dump</p>
+<p>2、通过工具， VisualVM去分析dump文件，VisualVM可以加载离线的dump文件</p>
+<p>3、通过查看堆信息的情况，可以大概定位内存溢出是哪行代码出了问题</p>
+<p>4、找到对应的代码，通过阅读上下文的情况，进行修复即可</p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230519173039491.png" alt="image-20230519173039491"></p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230519173052273.png" alt="image-20230519173052273"></p>
+<p><img src="/2024/03/11/note/jvm/jvm/image-20230519173107112.png" alt="image-20230519173107112"></p>
+<h2 id="CPU飙升排查"><a href="#CPU飙升排查" class="headerlink" title="CPU飙升排查"></a>CPU飙升排查</h2><p>1.使用top命令查看占用cpu的情况</p>
+<p>2.通过top命令查看后，可以查看是哪一个进程占用cpu较高</p>
+<p>3.使用ps命令查看进程中的线程信息</p>
+<p>4.使用jstack命令查看进程中哪些线程出现了问题，最终定位问题</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://username.github.io/2024/03/11/note/jvm/jvm/" data-id="cltu174sx000048nubumu1pha" data-title="jvm.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
   
     <article id="post-note/juc/AQS" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
@@ -101,12 +676,12 @@
 <li>第一是“饥饿问题”在锁竞争激烈的情况下，可能存在一个线程一直被其他线程”插队“而一直获取不到锁的情况。</li>
 <li>第二是性能问题。在实际的多处理上运行的自旋锁在锁竞争激烈时性能较差。</li>
 </ul>
-<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p><img src="/.io//image-20230419190041184.png" alt="image-20230419190041184"></p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p><img src="/2024/03/11/note/juc/AQS/image-20230419190041184.png" alt="image-20230419190041184"></p>
 <h2 id="同步状态state"><a href="#同步状态state" class="headerlink" title="同步状态state"></a>同步状态state</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 共享变量，使用volatile修饰保证线程可见性</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="type">int</span> state;</span><br><span class="line"></span><br><span class="line"><span class="comment">//final表示无法被子类重写</span></span><br><span class="line"><span class="comment">//返回同步状态的当前值</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">getState</span><span class="params">()</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> state;</span><br><span class="line">&#125;</span><br><span class="line"> <span class="comment">// 设置同步状态的值</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">setState</span><span class="params">(<span class="type">int</span> newState)</span> &#123;</span><br><span class="line">     state = newState;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//原子地（CAS操作）将同步状态值设置为给定值update如果当前同步状态的值等于expect（期望值）</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">compareAndSetState</span><span class="params">(<span class="type">int</span> expect, <span class="type">int</span> update)</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="built_in">this</span>, stateOffset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/.io//image-20230419185922426-1710173058095.png"></p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419185922426-1710173058095.png"></p>
 <p><code>如reentrantLock</code></p>
-<p><img src="/.io//image-20230419185941383.png"></p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419185941383.png"></p>
 <p><code>如同步工具类</code></p>
 <h2 id="Node数据结构"><a href="#Node数据结构" class="headerlink" title="Node数据结构"></a>Node数据结构</h2><p>解释一下几个方法和属性值的含义：</p>
 <table>
@@ -201,12 +776,12 @@
 <li><p>Node 的创建是懒惰的</p>
 </li>
 <li><p>其中第一个 Node 称为 Dummy（哑元）或哨兵，用来占位，并不关联线程</p>
-<p><img src="/.io//image-20230419190244474.png"></p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419190244474.png"></p>
 <p>当前线程进入 acquireQueued 逻辑</p>
 <p>1.acquireQueued 会在一个死循环中不断尝试获得锁，失败后进入 park 阻塞</p>
 <p>2.如果自己是紧邻着 head（排第二位），那么再次 tryAcquire 尝试获取锁，当然这时 state 仍为 1，失败</p>
 <p>3.进入 shouldParkAfterFailedAcquire 逻辑，将前驱 node，即 head 的 waitStatus 改为 -1，这次返回 false</p>
-<p><img src="/.io//image-20230419190325126.png"></p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419190325126.png"></p>
 </li>
 </ul>
 <ol start="4">
@@ -217,9 +792,9 @@
 <li><p>进入 parkAndCheckInterrupt， Thread-1 park（灰色表示）</p>
 </li>
 </ol>
-<p>  <img src="/.io//image-20230419190337744-1710173000935.png"></p>
+<p>  <img src="/2024/03/11/note/juc/AQS/image-20230419190337744-1710173000935.png"></p>
 <p>  再次有多个线程经历上述过程竞争失败，变成这个样子</p>
-<p>  <img src="/.io//image-20230419190358666.png" alt="image-20230419190444473"></p>
+<p>  <img src="/2024/03/11/note/juc/AQS/image-20230419190358666.png" alt="image-20230419190444473"></p>
 <h4 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h4><h5 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h5><h6 id="非公平锁"><a href="#非公平锁" class="headerlink" title="非公平锁"></a>非公平锁</h6><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">lock</span>():</span><br><span class="line">    <span class="keyword">if</span> casState成功:</span><br><span class="line">        设置当前线程为独占线程</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    	acquire(<span class="number">1</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">acquire</span>(<span class="params"><span class="built_in">int</span> arg</span>):</span><br><span class="line">    <span class="keyword">if</span> tryAcquire(arg)失败 &amp;&amp; acquireQueued(addWaiter(Node.EXCLUSIVE), arg)成功(即在acquireQueued中被打断):</span><br><span class="line">        自己中断</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tryAcquire</span>(<span class="params"><span class="built_in">int</span> acquires</span>):</span><br><span class="line">    nonfairTryAcquire(acquires)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">nonfairTryAcquire</span>(<span class="params"><span class="built_in">int</span> acquires</span>):</span><br><span class="line">    <span class="keyword">if</span> state为<span class="number">0</span>:</span><br><span class="line">        <span class="keyword">if</span> cas替换state为acquires</span><br><span class="line">            设置当前线程为独占线程</span><br><span class="line">            <span class="keyword">return</span> true</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">elif</span> 当前线程为独占线程</span><br><span class="line">        设置State = state + acquires</span><br><span class="line">        <span class="keyword">return</span> true;</span><br><span class="line">    <span class="keyword">return</span> false;</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">addWaiter</span>(<span class="params">Node mode</span>):</span><br><span class="line">    <span class="keyword">if</span> tail指针不为null:</span><br><span class="line">        新建节点的prev指针指向之前查询的tail指针(是之前查询的，tail可能在该步骤前就被其他线程修改)</span><br><span class="line">    	<span class="keyword">if</span> cas tail指针指向创建的node成功:</span><br><span class="line">            之前查询tail指向的节点的<span class="built_in">next</span>指针指向创建的node            </span><br><span class="line">            <span class="keyword">return</span> 创建的node;</span><br><span class="line">    enq(创建的节点) ---阻塞队列创建哨兵节点并插入创建的节点</span><br><span class="line">    <span class="keyword">return</span> 创建的节点;</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">enq</span>(<span class="params">final Node node</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> true:</span><br><span class="line">        <span class="keyword">if</span> tail指向null:</span><br><span class="line">	         <span class="keyword">if</span> 创建一个节点cas 作为head 成功:</span><br><span class="line">                tail = head</span><br><span class="line">        <span class="keyword">else</span> </span><br><span class="line">            将实参node的prev指针指向之前查询到的tail</span><br><span class="line">            <span class="keyword">if</span> CAS将参数node作为tail成功</span><br><span class="line">                之前查询到的tail的<span class="built_in">next</span>指向node</span><br><span class="line">                <span class="keyword">return</span> 之前查询到的tail   </span><br><span class="line"><span class="comment">#在阻塞队列中再次尝试获取资源    </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">acquireQueued</span>(<span class="params">final Node node, <span class="built_in">int</span> arg</span>):	</span><br><span class="line">	boolean failed = true;</span><br><span class="line">	<span class="keyword">try</span> :		</span><br><span class="line">		boolean interrupted = false;<span class="comment"># 标记等待过程中是否中断过</span></span><br><span class="line">		<span class="comment"># 开始自旋，要么获取锁，要么中断</span></span><br><span class="line">		<span class="keyword">while</span> true:</span><br><span class="line">			获取当前节点的前驱节点			</span><br><span class="line">        	 <span class="keyword">if</span> 前驱节点是head指向的节点 &amp;&amp; tryAcquire(arg) :</span><br><span class="line">        		head指向该节点,该节点的thread和prev属性设置为null,前驱节点设置为null,failed=false</span><br><span class="line">        		<span class="keyword">return</span> interrupted</span><br><span class="line">			</span><br><span class="line">			// 说明p(前驱节点)为头节点且当前没有获取到锁（可能是非公平锁被抢占了）或者是p不为头结点，这个时候就要判断当前node是否要被阻塞（被阻塞条件：前驱节点的waitStatus为-<span class="number">1</span>），防止无限循环浪费资源。具体两个方法下面细细分析</span><br><span class="line">			<span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) //当该node应该被阻塞执行下一个条件即将该线程中断</span><br><span class="line">                &amp;&amp; parkAndCheckInterrupt())</span><br><span class="line">				interrupted = true;</span><br><span class="line">		</span><br><span class="line">	 <span class="keyword">finally</span>:</span><br><span class="line">		<span class="keyword">if</span> (failed)</span><br><span class="line">			cancelAcquire(node);	</span><br><span class="line"><span class="comment">#获取资源失败后是否应该阻塞    </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shouldParkAfterFailedAcquire</span>(<span class="params">Node pred, Node node</span>):</span><br><span class="line">	<span class="keyword">if</span> 前驱节点状态处于唤醒:</span><br><span class="line">		<span class="keyword">return</span> true;	</span><br><span class="line">	<span class="keyword">if</span> 前驱节点处于取消状态:</span><br><span class="line">		do &#123;</span><br><span class="line">			当前节点prev指针和前驱节点指针一起指向之前查询到的前驱节点的prev指向	</span><br><span class="line">		&#125; <span class="keyword">while</span> (前驱节点处于取消状态)</span><br><span class="line">         做完操作后的前驱节点的<span class="built_in">next</span>指向当前节点		</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		cas 设置前驱节点状态为唤醒状态</span><br><span class="line">	<span class="keyword">return</span> false;</span><br><span class="line"><span class="comment">#主要用于挂起当前线程，阻塞调用栈，返回当前线程的中断状态</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parkAndCheckInterrupt</span>():</span><br><span class="line">    LockSupport.park(this);</span><br><span class="line">    <span class="keyword">return</span> Thread.interrupted();  </span><br></pre></td></tr></table></figure>
 
 <h6 id="公平锁"><a href="#公平锁" class="headerlink" title="公平锁"></a>公平锁</h6><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">lock</span>():</span><br><span class="line">   acquire(<span class="number">1</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">acquire</span>(<span class="params"><span class="built_in">int</span> arg</span>):</span><br><span class="line">    <span class="keyword">if</span> tryAcquire(arg)失败 &amp;&amp; acquireQueued(addWaiter(Node.EXCLUSIVE), arg)成功:</span><br><span class="line">        自己中断</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tryAcquire</span>(<span class="params"><span class="built_in">int</span> acquires</span>):</span><br><span class="line">    final Thread current = Thread.currentThread();</span><br><span class="line">    <span class="built_in">int</span> c = getState();</span><br><span class="line">    <span class="keyword">if</span> state为<span class="number">0</span>:</span><br><span class="line">        <span class="keyword">if</span> (在阻塞队列中没有比该线程等待时间更久的线程 &amp;&amp; cas设置state从<span class="number">0</span>到acquires成功) :</span><br><span class="line">            设置当前线程为持有线程</span><br><span class="line">            <span class="keyword">return</span> true;     </span><br><span class="line">    <span class="keyword">elif</span> 当前线程为持有线程:</span><br><span class="line">        设置state为state+acquires</span><br><span class="line">        <span class="keyword">return</span> true;    </span><br><span class="line">    <span class="keyword">return</span> false;</span><br></pre></td></tr></table></figure>
@@ -247,11 +822,11 @@
 <li><p>设置 exclusiveOwnerThread 为 null</p>
 </li>
 <li><p>state &#x3D; 0</p>
-<p><img src="/.io//image-20230419190428798.png" alt="image-20230419190444473"></p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419190428798.png" alt="image-20230419190444473"></p>
 </li>
 </ul>
 <p>当前队列不为 null，并且 head 的 waitStatus &#x3D; -1，进入 unparkSuccessor 流程<br>找到队列中离 head 最近的一个 Node（没取消的），unpark 恢复其运行，本例中即为 Thread-1<br>回到 Thread-1 的 acquireQueued 流程</p>
-<p><img src="/.io//image-20230419190444473.png"></p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419190444473.png"></p>
 <p>如果加锁成功（没有竞争），会设置</p>
 <ul>
 <li>exclusiveOwnerThread 为 Thread-1，state &#x3D; 1</li>
@@ -259,7 +834,7 @@
 <li>原本的 head 因为从链表断开，而可被垃圾回收</li>
 </ul>
 <p>如果这时候有其它线程来竞争（非公平的体现），例如这时有 Thread-4 来了<br>如果不巧又被 Thread-4 占了先</p>
-<p><img src="/.io//image-20230419190501636.png" alt="image-20230419190501636"></p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419190501636.png" alt="image-20230419190501636"></p>
 <ul>
 <li>Thread-4 被设置为 exclusiveOwnerThread，state &#x3D; 1</li>
 <li>Thread-1 再次进入 acquireQueued 流程，获取锁失败，重新进入 park 阻塞</li>
@@ -279,10 +854,10 @@
 
 <h4 id="可打断模式"><a href="#可打断模式" class="headerlink" title="可打断模式"></a>可打断模式</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">NonfairSync</span> <span class="keyword">extends</span> <span class="title class_">Sync</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">acquireInterruptibly</span><span class="params">(<span class="type">int</span> arg)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="keyword">if</span> (Thread.interrupted())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InterruptedException</span>();</span><br><span class="line">        <span class="comment">// 如果没有获得到锁, 进入 ㈠</span></span><br><span class="line">        <span class="keyword">if</span> (!tryAcquire(arg))</span><br><span class="line">            doAcquireInterruptibly(arg);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ㈠ 可打断的获取锁流程</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doAcquireInterruptibly</span><span class="params">(<span class="type">int</span> arg)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> addWaiter(Node.EXCLUSIVE);</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">failed</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">p</span> <span class="operator">=</span> node.predecessor();</span><br><span class="line">                <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                    setHead(node);</span><br><span class="line">                    p.next = <span class="literal">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    failed = <span class="literal">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                    parkAndCheckInterrupt()) &#123;</span><br><span class="line">                    <span class="comment">// 在 park 过程中如果被 interrupt 会进入此</span></span><br><span class="line">                    <span class="comment">// 这时候抛出异常, 而不会再次进入 for (;;)</span></span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InterruptedException</span>();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (failed)</span><br><span class="line">                cancelAcquire(node);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="Semaphore"><a href="#Semaphore" class="headerlink" title="Semaphore"></a>Semaphore</h2><h3 id="流程-2"><a href="#流程-2" class="headerlink" title="流程"></a>流程</h3><p>刚开始，permits（state）为 3，这时 5 个线程来获取资源<br><img src="/.io//image-20230419190537899.png"><br>假设其中 Thread-1，Thread-2，Thread-4 cas 竞争成功，而 Thread-0 和 Thread-3 竞争失败，进入 AQS 队列<br>park 阻塞</p>
-<p><img src="/.io//image-20230419190549899.png" alt="image-20230419190549899">这时 Thread-4 释放了 permits，状态如下</p>
-<p><img src="/.io//image-20230419190603894.png" alt="image-20230419190603894">接下来 Thread-0 竞争成功，permits 再次设置为 0，设置自己为 head 节点，断开原来的 head 节点，unpark 接<br>下来的 Thread-3 节点，但由于 permits 是 0，因此 Thread-3 在尝试不成功后再次进入 park 状态</p>
-<p><img src="/.io//image-20230419190617127.png" alt="image-20230419190617127"></p>
+<h2 id="Semaphore"><a href="#Semaphore" class="headerlink" title="Semaphore"></a>Semaphore</h2><h3 id="流程-2"><a href="#流程-2" class="headerlink" title="流程"></a>流程</h3><p>刚开始，permits（state）为 3，这时 5 个线程来获取资源<br><img src="/2024/03/11/note/juc/AQS/image-20230419190537899.png"><br>假设其中 Thread-1，Thread-2，Thread-4 cas 竞争成功，而 Thread-0 和 Thread-3 竞争失败，进入 AQS 队列<br>park 阻塞</p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419190549899.png" alt="image-20230419190549899">这时 Thread-4 释放了 permits，状态如下</p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419190603894.png" alt="image-20230419190603894">接下来 Thread-0 竞争成功，permits 再次设置为 0，设置自己为 head 节点，断开原来的 head 节点，unpark 接<br>下来的 Thread-3 节点，但由于 permits 是 0，因此 Thread-3 在尝试不成功后再次进入 park 状态</p>
+<p><img src="/2024/03/11/note/juc/AQS/image-20230419190617127.png" alt="image-20230419190617127"></p>
 <h3 id="源码-2"><a href="#源码-2" class="headerlink" title="源码"></a>源码</h3><h4 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    构造方法</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line">NonfairSync(<span class="type">int</span> <span class="keyword">permits</span>) &#123;</span><br><span class="line">    <span class="comment">// permits 即 state</span></span><br><span class="line">    <span class="built_in">super</span>(<span class="keyword">permits</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Sync类</span></span><br><span class="line">Sync(<span class="type">int</span> <span class="keyword">permits</span>) &#123;</span><br><span class="line">    setState(<span class="keyword">permits</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//AQS类</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">setState</span><span class="params">(<span class="type">int</span> newState)</span> &#123;</span><br><span class="line">    state = newState;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <h4 id="acquire方法-1"><a href="#acquire方法-1" class="headerlink" title="acquire方法"></a>acquire方法</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">acquire</span>():</span><br><span class="line">    <span class="keyword">return</span> acquireSharedInterruptibly(<span class="number">1</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">acquireSharedInterruptibly</span>(<span class="params"><span class="built_in">int</span> arg</span>):</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)	<span class="comment">#&lt;0,说明没有共享资源了</span></span><br><span class="line">        doAcquireSharedInterruptibly(arg);</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tryAcquireShared</span>(<span class="params"><span class="built_in">int</span> acquires</span>):</span><br><span class="line">    <span class="keyword">return</span> nonfairTryAcquireShared(acquires)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">nonfairTryAcquireShared</span>(<span class="params"><span class="built_in">int</span> acquires</span>)</span><br><span class="line">	<span class="keyword">while</span> true:</span><br><span class="line">        <span class="keyword">if</span> state - acquires &lt; <span class="number">0</span> || cas设置状态成功:</span><br><span class="line">            <span class="keyword">return</span> state - acquires <span class="comment">#&lt;0,tryAcquire失败;cas成功,返回&gt;0,tryAcquire成功</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">doAcquireSharedInterruptibly</span>(<span class="params"><span class="built_in">int</span> arg</span>):</span><br><span class="line">    addWaiter(节点)</span><br><span class="line">    boolean failed = true;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">while</span> true:                </span><br><span class="line">            <span class="keyword">if</span> 前驱节点为head: </span><br><span class="line">                tryAcquireShared(arg)</span><br><span class="line">                <span class="keyword">if</span> 尝试成功:                        </span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.<span class="built_in">next</span> = null;</span><br><span class="line">                    failed = false;</span><br><span class="line">                    <span class="keyword">return</span>;                                    </span><br><span class="line">                <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                    parkAndCheckInterrupt())</span><br><span class="line">                throw new InterruptedException();<span class="comment">#可打断模式             </span></span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">       <span class="keyword">if</span> (failed)</span><br><span class="line">          cancelAcquire(node)        </span><br></pre></td></tr></table></figure>
@@ -301,7 +876,149 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/AQS/" data-id="cltlpz2yt0000w4nu9j3g6uln" data-title="AQS.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://username.github.io/2024/03/11/note/juc/AQS/" data-id="cltu174t1000148nudxdj8y59" data-title="AQS.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-note/juc/Future" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/11/note/juc/Future/" class="article-date">
+  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/juc/">juc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/03/11/note/juc/Future/">Future.md</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h1><p><code>Future</code> 类是异步思想的典型运用，主要用在一些需要执行耗时任务的场景，避免程序一直原地等待耗时任务执行完成，执行效率太低。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// V 代表了Future执行的任务返回值的类型</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Future</span>&lt;V&gt; &#123;</span><br><span class="line">    <span class="comment">// 取消任务执行</span></span><br><span class="line">    <span class="comment">// 成功取消返回 true，否则返回 false</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">cancel</span><span class="params">(<span class="type">boolean</span> mayInterruptIfRunning)</span>;</span><br><span class="line">    <span class="comment">// 判断任务是否被取消</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isCancelled</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 判断任务是否已经执行完成</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isDone</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取任务执行结果</span></span><br><span class="line">    V <span class="title function_">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException;</span><br><span class="line">    <span class="comment">// 指定时间内没有返回计算结果就抛出 TimeOutException 异常</span></span><br><span class="line">    V <span class="title function_">get</span><span class="params">(<span class="type">long</span> timeout, TimeUnit unit)</span></span><br><span class="line">        <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutExceptio</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h2><p><code>FutureTask</code> 提供了 <code>Future</code> 接口的基本实现，常用来封装 <code>Callable</code> 和 <code>Runnable</code>，具有取消任务、查看任务是否执行完成以及获取任务执行结果的方法。</p>
+<p>比如<code>ExecutorService.submit()</code> 方法返回的其实就是 <code>Future</code> 的实现类 <code>FutureTask</code> 。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;T&gt; Future&lt;T&gt; <span class="title function_">submit</span><span class="params">(Callable&lt;T&gt; task)</span>;</span><br><span class="line">Future&lt;?&gt; submit(Runnable task);</span><br></pre></td></tr></table></figure>
+
+<p>FutureTask类的结构：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FutureTask</span>&lt;V&gt; <span class="keyword">implements</span> <span class="title class_">RunnableFuture</span>&lt;V&gt; &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">RunnableFuture</span>&lt;V&gt; <span class="keyword">extends</span> <span class="title class_">Runnable</span>, Future&lt;V&gt; &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>FutureTask</code> 有两个构造函数，可传入 <code>Callable</code> 或者 <code>Runnable</code> 对象。实际上，传入 <code>Runnable</code> 对象也会在方法内部转换为<code>Callable</code> 对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">FutureTask</span><span class="params">(Callable&lt;V&gt; callable)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (callable == <span class="literal">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NullPointerException</span>();</span><br><span class="line">    <span class="built_in">this</span>.callable = callable;</span><br><span class="line">    <span class="built_in">this</span>.state = NEW;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="title function_">FutureTask</span><span class="params">(Runnable runnable, V result)</span> &#123;</span><br><span class="line">    <span class="comment">// 通过适配器RunnableAdapter来将Runnable对象runnable转换成Callable对象</span></span><br><span class="line">    <span class="built_in">this</span>.callable = Executors.callable(runnable, result);</span><br><span class="line">    <span class="built_in">this</span>.state = NEW;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>FutureTask</code>相当于对<code>Callable</code> 进行了封装，管理着任务执行的情况，存储了 <code>Callable</code> 的 <code>call</code> 方法的任务执行结果。</p>
+<h1 id="CompetableFuture"><a href="#CompetableFuture" class="headerlink" title="CompetableFuture"></a>CompetableFuture</h1><h2 id="CompletableFuture的背景和定义"><a href="#CompletableFuture的背景和定义" class="headerlink" title="CompletableFuture的背景和定义"></a>CompletableFuture的背景和定义</h2><p>CompletableFuture是由Java 8引入的，在Java8之前我们一般通过Future实现异步。</p>
+<ul>
+<li><strong>Future用于表示异步计算的结果，只能通过阻塞或者轮询的方式获取结果，而且不支持设置回调方法</strong>，Java 8之前若要设置回调一般会使用guava的ListenableFuture，回调的引入又会导致臭名昭著的<strong>回调地狱</strong></li>
+<li>CompletableFuture对Future进行了扩展，可以通过设置回调的方式处理计算结果，同时也支持组合操作，支持进一步的编排，同时一定程度解决了回调地狱的问题。</li>
+</ul>
+<h2 id="CompletableFuture的定义"><a href="#CompletableFuture的定义" class="headerlink" title="CompletableFuture的定义"></a>CompletableFuture的定义</h2><p><img src="/2024/03/11/note/juc/Future/75a9710d2053b2fa0654c67cd7f35a0c18774.png" alt="图4 CompletableFuture的定义"></p>
+<p>CompletableFuture实现了两个接口（如上图所示）：Future、CompletionStage。</p>
+<p>Future表示异步计算的结果。</p>
+<p>CompletionStage用于表示异步执行过程中的一个步骤（Stage），这个步骤可能是由另外一个CompletionStage触发的，随着当前步骤的完成，也可能会触发其他一系列CompletionStage的执行。从而我们可以根据实际业务对这些步骤进行多样化的编排组合，CompletionStage接口正是定义了这样的能力，我们可以通过其提供的thenAppy、thenCompose等函数式编程方法来组合编排这些步骤。</p>
+<h2 id="CompletableFuture的使用"><a href="#CompletableFuture的使用" class="headerlink" title="CompletableFuture的使用"></a>CompletableFuture的使用</h2><p>使用CompletableFuture也是构建依赖树的过程。一个CompletableFuture的完成会触发另外一系列依赖它的CompletableFuture的执行：</p>
+<p><img src="/2024/03/11/note/juc/Future/b14b861db9411b2373b80100fee0b92f15076.png" alt="图5 请求执行流程"></p>
+<ul>
+<li><p>零依赖：CompletableFuture的创建</p>
+<p><img src="/2024/03/11/note/juc/Future/ff663f95c86e22928c0bb94fc6bd8b8715722.png" alt="图6 零依赖"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1、使用runAsync或supplyAsync发起异步调用</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result1&quot;</span>;</span><br><span class="line">&#125;, executor);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2、CompletableFuture.completedFuture()直接创建一个已完成状态的CompletableFuture</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf2 = CompletableFuture.completedFuture(<span class="string">&quot;result2&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//3、先初始化一个未完成的CompletableFuture，然后通过complete()、completeExceptionally()，完成该CompletableFuture</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf = <span class="keyword">new</span> <span class="title class_">CompletableFuture</span>&lt;&gt;();</span><br><span class="line">cf.complete(<span class="string">&quot;success&quot;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一元依赖：依赖一个CF</p>
+</li>
+</ul>
+<p><img src="/2024/03/11/note/juc/Future/373a334e7e7e7d359e8f042c7c9075e215479.png" alt="图7 一元依赖"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; cf3 = cf1.thenApply(result1 -&gt; &#123;</span><br><span class="line">  <span class="comment">//result1为CF1的结果</span></span><br><span class="line">  <span class="comment">//......</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result3&quot;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>二元依赖：依赖两个CF</li>
+</ul>
+<p><img src="/2024/03/11/note/juc/Future/fa4c8669b4cf63b7a89cfab0bcb693b216006.png" alt="图8 二元依赖"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; cf4 = cf1.thenCombine(cf2, (result1, result2) -&gt; &#123;</span><br><span class="line">  <span class="comment">//result1和result2分别为cf1和cf2的结果</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result4&quot;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>多元依赖：依赖多个CF</li>
+</ul>
+<p><img src="/2024/03/11/note/juc/Future/92248abd0a5b11dd36f9ccb1f1233d4e16045.png" alt="图9 多元依赖"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;Void&gt; cf6 = CompletableFuture.allOf(cf3, cf4, cf5);</span><br></pre></td></tr></table></figure>
+
+<h2 id="CompletableFuture原理"><a href="#CompletableFuture原理" class="headerlink" title="CompletableFuture原理"></a>CompletableFuture原理</h2><p>CompletableFuture中包含两个字段：<strong>result</strong>和<strong>stack</strong>。</p>
+<p>result用于存储当前CompletableFuture的结果，stack（Completion）表示当前CF完成后需要触发的依赖动作（Dependency Actions），去触发依赖它的CF的计算，依赖动作可以有多个（表示有多个依赖它的CF），以栈（<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Treiber_stack">Treiber stack</a>）的形式存储，stack表示栈顶元素。</p>
+<p><img src="/2024/03/11/note/juc/Future/82aa288ea62d74c03afcd2308d302b6910425.png" alt="图10 CF基本结构"></p>
+<p>这种方式类似“观察者模式”，依赖动作（Dependency Action）都封装在一个单独Completion子类中。下面是Completion类关系结构图。CompletableFuture中的每个方法都对应了图中的一个Completion的子类，Completion本身是<strong>观察者</strong>的基类。</p>
+<ul>
+<li>UniCompletion继承了Completion，是一元依赖的基类，例如thenApply的实现类UniApply就继承自UniCompletion。</li>
+<li>BiCompletion继承了UniCompletion，是二元依赖的基类，同时也是多元依赖的基类。例如thenCombine的实现类BiRelay就继承自BiCompletion。</li>
+</ul>
+<p><img src="/2024/03/11/note/juc/Future/5a889b90d0f2c2a0f6a4f294b9094194112106.png" alt="图11 CF类图"></p>
+<p>图11 CF类图</p>
+<h3 id="CompletableFuture的设计思想"><a href="#CompletableFuture的设计思想" class="headerlink" title="CompletableFuture的设计思想"></a>CompletableFuture的设计思想</h3><p>按照类似“观察者模式”的设计思想，原理分析可以从“观察者”和“被观察者”两个方面着手。</p>
+<p>由于回调种类多，但结构差异不大，所以这里单以一元依赖中的thenApply为例</p>
+<p><img src="/2024/03/11/note/juc/Future/f45b271b656f3ae243875fcb2af36a1141224.png" alt="图12 thenApply简图"></p>
+<p><strong>3.3.1.1 被观察者</strong></p>
+<ol>
+<li>每个CompletableFuture都可以被看作一个被观察者，其内部有一个Completion类型的链表成员变量stack，用来存储注册到其中的所有观察者。当被观察者执行完成后会弹栈stack属性，依次通知注册到其中的观察者。上面例子中步骤fn2就是作为观察者被封装在UniApply中。</li>
+<li>被观察者CF中的result属性，用来存储返回结果数据。这里可能是一次RPC调用的返回值，也可能是任意对象，在上面的例子中对应步骤fn1的执行结果。</li>
+</ol>
+<p><strong>3.3.1.2 观察者</strong></p>
+<p>CompletableFuture支持很多回调方法，例如thenAccept、thenApply、exceptionally等，这些方法接收一个函数类型的参数f，生成一个Completion类型的对象（即观察者），并将入参函数f赋值给Completion的成员变量fn，然后检查当前CF是否已处于完成状态（即result !&#x3D; null），如果已完成直接触发fn，否则将观察者Completion加入到CF的观察者链stack中，再次尝试触发，如果被观察者未执行完则其执行完毕之后通知触发。</p>
+<ol>
+<li>观察者中的dep属性：指向其对应的CompletableFuture，在上面的例子中dep指向CF2。</li>
+<li>观察者中的src属性：指向其依赖的CompletableFuture，在上面的例子中src指向CF1。</li>
+<li>观察者Completion中的fn属性：用来存储具体的等待被回调的函数。这里需要注意的是不同的回调方法（thenAccept、thenApply、exceptionally等）接收的函数类型也不同，即fn的类型有很多种，在上面的例子中fn指向fn2。</li>
+</ol>
+<h3 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h3><p><strong>一元依赖</strong></p>
+<p>这里仍然以thenApply为例来说明一元依赖的流程：</p>
+<ol>
+<li>将观察者Completion注册到CF1，此时CF1将Completion压栈。</li>
+<li>当CF1的操作运行完成时，会将结果赋值给CF1中的result属性。</li>
+<li>依次弹栈，通知观察者尝试运行。</li>
+</ol>
+<p><img src="/2024/03/11/note/juc/Future/f449bbc62d4a1f8e9e4998929196513d165269.gif" alt="图13 执行流程简要说明"></p>
+<p><strong>Q1</strong>：在观察者注册之前，如果CF已经执行完成，并且已经发出通知，那么这时观察者由于错过了通知是不是将永远不会被触发呢 ？</p>
+<p> <strong>A1</strong>：不会。在注册时检查依赖的CF是否已经完成。如果未完成（即result &#x3D;&#x3D; null）则将观察者入栈，如果已完成（result !&#x3D; null）则直接触发观察者操作。</p>
+<p><strong>Q2</strong>：在”入栈“前会有”result &#x3D;&#x3D; null“的判断，这两个操作为非原子操作，CompletableFufure的实现也没有对两个操作进行加锁，完成时间在这两个操作之间，观察者仍然得不到通知，是不是仍然无法触发？</p>
+<p><img src="/2024/03/11/note/juc/Future/6b4aeae7085f7d77d9f33799734f3b926723.png" alt="图14 入栈校验"></p>
+<p><strong>A2</strong>：不会。入栈之后再次检查CF是否完成，如果完成则触发。</p>
+<p><strong>Q3</strong>：当依赖多个CF时，观察者会被压入所有依赖的CF的栈中，每个CF完成的时候都会进行，那么会不会导致一个操作被多次执行呢 ？如下图所示，即当CF1、CF2同时完成时，如何避免CF3被多次触发。</p>
+<p><img src="/2024/03/11/note/juc/Future/316ff338f8dab2826a5d32dfb75ffede4158.png" alt="图15 多次触发"></p>
+<p>图15 多次触发</p>
+<p><strong>A3</strong>：CompletableFuture的实现是这样解决该问题的：观察者在执行之前会先通过CAS操作设置一个状态位，将status由0改为1。如果观察者已经执行过了，那么CAS操作将会失败，取消执行。</p>
+<p>通过对以上3个问题的分析可以看出，CompletableFuture在处理并行问题时，全程无加锁操作，极大地提高了程序的执行效率。我们将并行问题考虑纳入之后，可以得到完善的整体流程图如下所示：</p>
+<p><img src="/2024/03/11/note/juc/Future/606323a07fb7e31cb91f46c879d99b8d735272.gif" alt="图16 完整流程"></p>
+<p>CompletableFuture支持的回调方法十分丰富，但是正如上一章节的整体流程图所述，他们的整体流程是一致的。所有回调复用同一套流程架构，不同的回调监听通过<strong>策略模式</strong>实现差异化。</p>
+<p>** 二元依赖**</p>
+<p>我们以thenCombine为例来说明二元依赖：</p>
+<p><img src="/2024/03/11/note/juc/Future/b969e49a7eedbd52b014f86e86dcd3fc49634.png" alt="图17 二元依赖数据结构"></p>
+<p>thenCombine操作表示依赖两个CompletableFuture。其观察者实现类为BiApply，如上图所示，BiApply通过src和snd两个属性关联被依赖的两个CF，fn属性的类型为BiFunction。与单个依赖不同的是，在依赖的CF未完成的情况下，thenCombine会尝试将BiApply压入这两个被依赖的CF的栈中，每个被依赖的CF完成时都会尝试触发观察者BiApply，BiApply会检查两个依赖是否都完成，如果完成则开始执行。这里为了解决重复触发的问题，同样用的是上一章节提到的CAS操作，执行时会先通过CAS设置状态位，避免重复触发。</p>
+<p><strong>多元依赖</strong></p>
+<p>依赖多个CompletableFuture的回调方法包括<code>allOf</code>、<code>anyOf</code>，区别在于<code>allOf</code>观察者实现类为BiRelay，需要所有被依赖的CF完成后才会执行回调；而<code>anyOf</code>观察者实现类为OrRelay，任意一个被依赖的CF完成后就会触发。二者的实现方式都是将多个被依赖的CF构建成一棵平衡二叉树，执行结果层层通知，直到根节点，触发回调监听。</p>
+<p><img src="/2024/03/11/note/juc/Future/cef5469b5ec2e67ecca1b99a07260e4e22003.png" alt="图18 多元依赖结构树"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://username.github.io/2024/03/11/note/juc/Future/" data-id="cltu174t3000348nuft1rh0mo" data-title="Future.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -319,6 +1036,10 @@
   <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/juc/">juc</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -367,53 +1088,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/ConcurrentHashMap/" data-id="cltn57su40000tcnu8gyu9u48" data-title="ConcurrentHashMap.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-note/juc/cas" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/03/11/note/juc/cas/" class="article-date">
-  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2024/03/11/note/juc/cas/">cas.md</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>如下源代码释义所示，这部分主要为CAS相关操作的方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	*  CAS</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> o         包含要修改field的对象</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> offset    对象中某field的偏移量</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> expected  期望值</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> update    更新值</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span>          true | false</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapObject</span><span class="params">(Object o, <span class="type">long</span> offset,  Object expected, Object update)</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapInt</span><span class="params">(Object o, <span class="type">long</span> offset, <span class="type">int</span> expected,<span class="type">int</span> update)</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapLong</span><span class="params">(Object o, <span class="type">long</span> offset, <span class="type">long</span> expected, <span class="type">long</span> update)</span>;</span><br></pre></td></tr></table></figure>
-
-<p>什么是CAS? 即比较并替换，实现并发算法时常用到的一种技术。CAS操作包含三个操作数——内存位置、预期原值及新值。执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。我们都知道，CAS是一条CPU的原子指令（cmpxchg指令），不会造成所谓的数据不一致问题，Unsafe提供的CAS方法（如compareAndSwapXXX）底层实现即为CPU指令cmpxchg。</p>
-<h4 id="典型应用"><a href="#典型应用" class="headerlink" title="典型应用"></a>典型应用</h4><p>CAS在java.util.concurrent.atomic相关类、Java AQS、CurrentHashMap等实现上有非常广泛的应用。如下图所示，AtomicInteger的实现中，静态字段valueOffset即为字段value的内存偏移地址，valueOffset的值在AtomicInteger初始化时，在静态代码块中通过Unsafe的objectFieldOffset方法获取。在AtomicInteger中提供的线程安全方法中，通过字段valueOffset的值可以定位到AtomicInteger对象中value的内存地址，从而可以根据CAS实现对value字段的原子操作。</p>
-<p><img src="/.io//3bacb938ca6e63d6c79c2bb48d3f608f189412.png" alt="img"></p>
-<p>下图为某个AtomicInteger对象自增操作前后的内存示意图，对象的基地址baseAddress&#x3D;“0x110000”，通过baseAddress+valueOffset得到value的内存地址valueAddress&#x3D;“0x11000c”；然后通过CAS进行原子性的更新操作，成功则返回，否则继续重试，直到更新成功为止。</p>
-<p><img src="/.io//6e8b1fe5d5993d17a4c5b69bb72ac51d89826.png" alt="img"></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/cas/" data-id="cltn57su70001tcnu0clj2sog" data-title="cas.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://username.github.io/2024/03/11/note/juc/ConcurrentHashMap/" data-id="cltu174t3000448nu2r6f536d" data-title="ConcurrentHashMap.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -431,6 +1106,10 @@
   <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/juc/">juc</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -448,10 +1127,10 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <h1 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h1><p>线程池核心实现类是ThreadPoolExecutor</p>
-<h2 id="继承关系"><a href="#继承关系" class="headerlink" title="继承关系"></a>继承关系</h2><p><img src="/.io//image-20230811143847577.png" alt="image-20230811143847577"></p>
+<h2 id="继承关系"><a href="#继承关系" class="headerlink" title="继承关系"></a>继承关系</h2><p><img src="/2024/03/11/note/juc/Executor/image-20230811143847577.png" alt="image-20230811143847577"></p>
 <p>顶层接口<strong>Executor</strong>提供了一种思想：将<strong>任务提交</strong>和<strong>任务执行</strong>进行解耦。</p>
 <p><strong>ThreadPoolExecutor</strong>将会一方面<strong>维护自身的生命周期</strong>，另一方面<strong>同时管理线程和任务</strong></p>
-<h2 id="运行机制"><a href="#运行机制" class="headerlink" title="运行机制"></a>运行机制</h2><p><img src="/.io//77441586f6b312a54264e3fcf5eebe2663494.png" alt="图2 ThreadPoolExecutor运行流程"></p>
+<h2 id="运行机制"><a href="#运行机制" class="headerlink" title="运行机制"></a>运行机制</h2><p><img src="/2024/03/11/note/juc/Executor/77441586f6b312a54264e3fcf5eebe2663494.png" alt="图2 ThreadPoolExecutor运行流程"></p>
 <p>线程池在内部实际上构建了一个<strong>生产者消费者模型</strong>，将线程和任务两者解耦，并不直接关联，从而良好的缓冲任务，复用线程。</p>
 <p>线程池的运行主要分成两部分：任务管理、线程管理。</p>
 <p><strong>任务管理</strong>部分充当<strong>生产者</strong>的角色，当任务提交后，线程池会判断该任务后续的流转</p>
@@ -474,9 +1153,9 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="type">AtomicInteger</span> <span class="variable">ctl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(ctlOf(RUNNING, <span class="number">0</span>));</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">COUNT_BITS</span> <span class="operator">=</span> Integer.SIZE - <span class="number">3</span>;<span class="comment">//29</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">CAPACITY</span>   <span class="operator">=</span> (<span class="number">1</span> &lt;&lt; COUNT_BITS) - <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 3个高位的二进制数表示线程池的状态</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">RUNNING</span>    <span class="operator">=</span> -<span class="number">1</span> &lt;&lt; COUNT_BITS;<span class="comment">// 高3位：111</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">SHUTDOWN</span>   <span class="operator">=</span>  <span class="number">0</span> &lt;&lt; COUNT_BITS;<span class="comment">// 高3位：000</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">STOP</span>       <span class="operator">=</span>  <span class="number">1</span> &lt;&lt; COUNT_BITS;<span class="comment">// 高3位：001</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">TIDYING</span>    <span class="operator">=</span>  <span class="number">2</span> &lt;&lt; COUNT_BITS;<span class="comment">// 高3位：010</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">TERMINATED</span> <span class="operator">=</span>  <span class="number">3</span> &lt;&lt; COUNT_BITS;<span class="comment">// 高3位：011</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ctl拆包方法</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">runStateOf</span><span class="params">(<span class="type">int</span> c)</span>     &#123; <span class="keyword">return</span> c &amp; ~CAPACITY; &#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">workerCountOf</span><span class="params">(<span class="type">int</span> c)</span>  &#123; <span class="keyword">return</span> c &amp; CAPACITY; &#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">ctlOf</span><span class="params">(<span class="type">int</span> rs, <span class="type">int</span> wc)</span> &#123; <span class="keyword">return</span> rs | wc; &#125;</span><br></pre></td></tr></table></figure>
 
 <p>ThreadPoolExecutor的运行状态有5种，分别为：</p>
-<p><img src="/.io//62853fa44bfa47d63143babe3b5a4c6e82532.png" alt="img"></p>
+<p><img src="/2024/03/11/note/juc/Executor/62853fa44bfa47d63143babe3b5a4c6e82532.png" alt="img"></p>
 <p>其生命周期转换如下入所示：</p>
-<p><img src="/.io//582d1606d57ff99aa0e5f8fc59c7819329028.png" alt="图3 线程池生命周期"></p>
+<p><img src="/2024/03/11/note/juc/Executor/582d1606d57ff99aa0e5f8fc59c7819329028.png" alt="图3 线程池生命周期"></p>
 <h2 id="任务管理"><a href="#任务管理" class="headerlink" title="任务管理"></a>任务管理</h2><h3 id="任务调度"><a href="#任务调度" class="headerlink" title="任务调度"></a>任务调度</h3><p><strong>任务调度</strong>是线程池的主要入口，当用户提交了一个任务，<strong>接下来这个任务将如何执行</strong>都是由这个阶段决定的。</p>
 <p>所有任务的调度都是由<strong>execute方法</strong>完成的，这部分完成的工作是：</p>
 <ul>
@@ -492,7 +1171,7 @@
 <li>如果workerCount &gt;&#x3D; maximumPoolSize，并且线程池内的阻塞队列已满, 则根据拒绝策略来处理该任务, 默认的处理方式是直接抛异常。</li>
 </ol>
 <p>其执行流程如下图所示：</p>
-<p><img src="/.io//31bad766983e212431077ca8da92762050214.png" alt="图4 任务调度流程"></p>
+<p><img src="/2024/03/11/note/juc/Executor/31bad766983e212431077ca8da92762050214.png" alt="图4 任务调度流程"></p>
 <h3 id="任务缓冲"><a href="#任务缓冲" class="headerlink" title="任务缓冲"></a>任务缓冲</h3><p>线程池的思想就是将<strong>任务和线程两者解耦</strong>，不让两者直接关联，来对任务和线程的管理。</p>
 <p>线程池中是以<strong>生产者消费者模式</strong>，通过一个<strong>阻塞队列</strong>来实现的。</p>
 <p>阻塞队列缓存任务，工作线程从阻塞队列中获取任务。</p>
@@ -503,8 +1182,8 @@
 <li><p>当队列满时，存储元素的线程会等待队列可用。</p>
 </li>
 </ul>
-<p><img src="/.io//f4d89c87acf102b45be8ccf3ed83352a9497.png" alt="图5 阻塞队列"></p>
-<p><img src="/.io//725a3db5114d95675f2098c12dc331c3316963.png" alt="img"></p>
+<p><img src="/2024/03/11/note/juc/Executor/f4d89c87acf102b45be8ccf3ed83352a9497.png" alt="图5 阻塞队列"></p>
+<p><img src="/2024/03/11/note/juc/Executor/725a3db5114d95675f2098c12dc331c3316963.png" alt="img"></p>
 <h3 id="任务申请"><a href="#任务申请" class="headerlink" title="任务申请"></a>任务申请</h3><p>任务的执行有两种可能：</p>
 <ul>
 <li><p>任务直接由新创建的线程执行。</p>
@@ -514,7 +1193,7 @@
 </ul>
 <p>第一种情况仅出现在<strong>线程初始创建</strong>的时候，第二种是线程获取任务绝大多数的情况。</p>
 <p>线程需要从任务缓存模块中不断地取任务执行，帮助线程从阻塞队列中获取任务，实现线程管理模块和任务管理模块之间的通信。这部分策略由<strong>getTask方法</strong>实现，其执行流程如下图所示：</p>
-<p><img src="/.io//49d8041f8480aba5ef59079fcc7143b996706.png" alt="图6 获取任务流程图"></p>
+<p><img src="/2024/03/11/note/juc/Executor/49d8041f8480aba5ef59079fcc7143b996706.png" alt="图6 获取任务流程图"></p>
 <p>getTask这部分进行了多次判断，为的是<strong>控制线程的数量</strong>，使其符合线程池的状态。</p>
 <p>如果线程池现在不应该持有那么多线程，则会返回null值。</p>
 <p>工作线程Worker会不断接收新任务去执行，而当工作线程Worker接收不到任务的时候，就会开始被回收。</p>
@@ -547,7 +1226,7 @@
 </li>
 </ul>
 <p>Worker执行任务的模型如下图所示：</p>
-<p>  <img src="/.io//03268b9dc49bd30bb63064421bb036bf90315.png" alt="图7 Worker执行任务"></p>
+<p>  <img src="/2024/03/11/note/juc/Executor/03268b9dc49bd30bb63064421bb036bf90315.png" alt="图7 Worker执行任务"></p>
 <p>线程池需要管理线程的生命周期，需要在线程长时间不运行的时候进行回收。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">##ThreadPoolExcutor</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> HashSet&lt;Worker&gt; workers = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;Worker&gt;();</span><br></pre></td></tr></table></figure>
 
@@ -561,7 +1240,7 @@
 <p>​	4.线程池在执行shutdown方法或tryTerminate方法时会调用interruptIdleWorkers方法来中断空闲的线程，interruptIdleWorkers		方法会使用tryLock方法来判断线程池中的线程是否是空闲状态；</p>
 <p>​	5.如果线程是空闲状态则可以安全回收。</p>
 <p>  在线程回收过程中就使用到了这种特性，回收过程如下图所示：</p>
-<p>  <img src="/.io//9d8dc9cebe59122127460f81a98894bb34085.png" alt="图8 线程池回收过程"></p>
+<p>  <img src="/2024/03/11/note/juc/Executor/9d8dc9cebe59122127460f81a98894bb34085.png" alt="图8 线程池回收过程"></p>
 <h3 id="增加Worker线程"><a href="#增加Worker线程" class="headerlink" title="增加Worker线程"></a>增加Worker线程</h3><p> 增加线程是通过<strong>线程池中的addWorker方法</strong>，该方法的功能就是增加一个线程，该方法不考虑线程池是在哪个阶段增加的该线程，这个分配线程的策略是在上个步骤完成的，该步骤<strong>仅仅完成增加线程，并使它运行，最后返回是否成功这个结果。</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">boolean</span> <span class="title function_">addWorker</span><span class="params">(Runnable firstTask, <span class="type">boolean</span> core)</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -569,7 +1248,7 @@
 <li><p>firstTask参数用于指定新增的线程执行的第一个任务，该参数可以为空；</p>
 </li>
 <li><p>core参数为true表示在新增线程时会判断当前活动线程数是否少于corePoolSize，false表示新增线程前需要判断当前活动线程数是否少于maximumPoolSize</p>
-<p><img src="/.io//49527b1bb385f0f43529e57b614f59ae145454.png" alt="图9 申请线程执行流程图"></p>
+<p><img src="/2024/03/11/note/juc/Executor/49527b1bb385f0f43529e57b614f59ae145454.png" alt="图9 申请线程执行流程图"></p>
 </li>
 </ul>
 <h3 id="Worker线程回收"><a href="#Worker线程回收" class="headerlink" title="Worker线程回收"></a>Worker线程回收</h3><p> 线程池中<strong>线程的销毁</strong>依赖<strong>JVM自动的回收</strong>，线程池做的工作是<strong>根据当前线程池的状态维护一定数量的线程引用，防止这部分线程被JVM回收，当线程池决定哪些线程需要回收时，只需要将其引用消除即可</strong>。</p>
@@ -577,7 +1256,7 @@
   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">##ThreadPoolExcutor实现Runable的run接口</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">    runWorker(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line">##ThreadPoolExcutor.runWorker()  </span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">while</span> (task != <span class="literal">null</span> || (task = getTask()) != <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="comment">//执行任务</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    processWorkerExit(w, completedAbruptly);<span class="comment">//获取不到任务时，主动回收自己</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 
 <p>  线程回收的工作是在<strong>processWorkerExit方法</strong>完成的。</p>
-<p>  <img src="/.io//90ea093549782945f2c968403fdc39d415386.png" alt="图10 线程销毁流程">  </p>
+<p>  <img src="/2024/03/11/note/juc/Executor/90ea093549782945f2c968403fdc39d415386.png" alt="图10 线程销毁流程">  </p>
 <p> 事实上，在这个方法中，将线程引用移出线程池就已经结束了线程销毁的部分。</p>
 <p>但由于引起线程销毁的可能性有很多，线程池还要判断是什么引发了这次销毁，是否要改变线程池的现阶段状态，是否要根据新状态，重新分配线程。</p>
 <h3 id="Worker线程执行任务"><a href="#Worker线程执行任务" class="headerlink" title="Worker线程执行任务"></a>Worker线程执行任务</h3><p>  在Worker类中的run方法调用了runWorker方法来执行任务，runWorker方法的执行过程如下：</p>
@@ -591,11 +1270,11 @@
  5.如果getTask结果为null则跳出循环，执行processWorkerExit()方法，销毁线程。
 </code></pre>
 <p>  执行流程如下图所示：</p>
-<p>  <img src="/.io//879edb4f06043d76cea27a3ff358cb1d45243.png" alt="图11 执行任务流程"></p>
+<p>  <img src="/2024/03/11/note/juc/Executor/879edb4f06043d76cea27a3ff358cb1d45243.png" alt="图11 执行任务流程"></p>
 <h2 id="异步计算结果"><a href="#异步计算结果" class="headerlink" title="异步计算结果"></a>异步计算结果</h2><p><strong><code>Future</code></strong> 接口以及 <code>Future</code> 接口的实现类 <strong><code>FutureTask</code></strong> 类都可以代表异步计算的结果。</p>
 <p>把 <strong><code>Runnable</code>接口</strong> 或 <strong><code>Callable</code> 接口</strong> 的实现类提交给 <strong><code>ThreadPoolExecutor</code></strong> 或 <strong><code>ScheduledThreadPoolExecutor</code></strong> 执行。（调用 <code>submit()</code> 方法时会返回一个 <strong><code>FutureTask</code></strong> 对象）</p>
 <p><strong><code>Executor</code> 框架的使用示意图</strong>：</p>
-<p><img src="/.io//Executor%E6%A1%86%E6%9E%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E7%A4%BA%E6%84%8F%E5%9B%BE-36e59afa.png" alt="Executor 框架的使用示意图"></p>
+<p><img src="/2024/03/11/note/juc/Executor/Executor%E6%A1%86%E6%9E%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E7%A4%BA%E6%84%8F%E5%9B%BE-36e59afa.png" alt="Executor 框架的使用示意图"></p>
 <ol>
 <li>主线程首先要创建实现 <code>Runnable</code> 或者 <code>Callable</code> 接口的任务对象。</li>
 <li>把创建完成的实现 <code>Runnable</code>&#x2F;<code>Callable</code>接口的 对象直接交给 <code>ExecutorService</code> 执行: ExecutorService.execute（Runnable command）或者也可以把 <code>Runnable</code> 对象或<code>Callable</code> 对象提交给 <code>ExecutorService</code> 执行（<code>ExecutorService.submit（Runnable task）</code>或 <code>ExecutorService.submit（Callable &lt;T&gt; task）</code>）。</li>
@@ -625,243 +1304,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/Executor/" data-id="cltn57su80002tcnugpqi68lz" data-title="Executor.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-note/juc/Future" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/03/11/note/juc/Future/" class="article-date">
-  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2024/03/11/note/juc/Future/">Future.md</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h1><p><code>Future</code> 类是异步思想的典型运用，主要用在一些需要执行耗时任务的场景，避免程序一直原地等待耗时任务执行完成，执行效率太低。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// V 代表了Future执行的任务返回值的类型</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Future</span>&lt;V&gt; &#123;</span><br><span class="line">    <span class="comment">// 取消任务执行</span></span><br><span class="line">    <span class="comment">// 成功取消返回 true，否则返回 false</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">cancel</span><span class="params">(<span class="type">boolean</span> mayInterruptIfRunning)</span>;</span><br><span class="line">    <span class="comment">// 判断任务是否被取消</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isCancelled</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 判断任务是否已经执行完成</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isDone</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取任务执行结果</span></span><br><span class="line">    V <span class="title function_">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException;</span><br><span class="line">    <span class="comment">// 指定时间内没有返回计算结果就抛出 TimeOutException 异常</span></span><br><span class="line">    V <span class="title function_">get</span><span class="params">(<span class="type">long</span> timeout, TimeUnit unit)</span></span><br><span class="line">        <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutExceptio</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h2><p><code>FutureTask</code> 提供了 <code>Future</code> 接口的基本实现，常用来封装 <code>Callable</code> 和 <code>Runnable</code>，具有取消任务、查看任务是否执行完成以及获取任务执行结果的方法。</p>
-<p>比如<code>ExecutorService.submit()</code> 方法返回的其实就是 <code>Future</code> 的实现类 <code>FutureTask</code> 。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;T&gt; Future&lt;T&gt; <span class="title function_">submit</span><span class="params">(Callable&lt;T&gt; task)</span>;</span><br><span class="line">Future&lt;?&gt; submit(Runnable task);</span><br></pre></td></tr></table></figure>
-
-<p>FutureTask类的结构：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FutureTask</span>&lt;V&gt; <span class="keyword">implements</span> <span class="title class_">RunnableFuture</span>&lt;V&gt; &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">RunnableFuture</span>&lt;V&gt; <span class="keyword">extends</span> <span class="title class_">Runnable</span>, Future&lt;V&gt; &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><code>FutureTask</code> 有两个构造函数，可传入 <code>Callable</code> 或者 <code>Runnable</code> 对象。实际上，传入 <code>Runnable</code> 对象也会在方法内部转换为<code>Callable</code> 对象。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">FutureTask</span><span class="params">(Callable&lt;V&gt; callable)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (callable == <span class="literal">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NullPointerException</span>();</span><br><span class="line">    <span class="built_in">this</span>.callable = callable;</span><br><span class="line">    <span class="built_in">this</span>.state = NEW;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="title function_">FutureTask</span><span class="params">(Runnable runnable, V result)</span> &#123;</span><br><span class="line">    <span class="comment">// 通过适配器RunnableAdapter来将Runnable对象runnable转换成Callable对象</span></span><br><span class="line">    <span class="built_in">this</span>.callable = Executors.callable(runnable, result);</span><br><span class="line">    <span class="built_in">this</span>.state = NEW;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>FutureTask</code>相当于对<code>Callable</code> 进行了封装，管理着任务执行的情况，存储了 <code>Callable</code> 的 <code>call</code> 方法的任务执行结果。</p>
-<h1 id="CompetableFuture"><a href="#CompetableFuture" class="headerlink" title="CompetableFuture"></a>CompetableFuture</h1><h2 id="CompletableFuture的背景和定义"><a href="#CompletableFuture的背景和定义" class="headerlink" title="CompletableFuture的背景和定义"></a>CompletableFuture的背景和定义</h2><p>CompletableFuture是由Java 8引入的，在Java8之前我们一般通过Future实现异步。</p>
-<ul>
-<li><strong>Future用于表示异步计算的结果，只能通过阻塞或者轮询的方式获取结果，而且不支持设置回调方法</strong>，Java 8之前若要设置回调一般会使用guava的ListenableFuture，回调的引入又会导致臭名昭著的<strong>回调地狱</strong></li>
-<li>CompletableFuture对Future进行了扩展，可以通过设置回调的方式处理计算结果，同时也支持组合操作，支持进一步的编排，同时一定程度解决了回调地狱的问题。</li>
-</ul>
-<h2 id="CompletableFuture的定义"><a href="#CompletableFuture的定义" class="headerlink" title="CompletableFuture的定义"></a>CompletableFuture的定义</h2><p><img src="/.io//75a9710d2053b2fa0654c67cd7f35a0c18774.png" alt="图4 CompletableFuture的定义"></p>
-<p>CompletableFuture实现了两个接口（如上图所示）：Future、CompletionStage。</p>
-<p>Future表示异步计算的结果。</p>
-<p>CompletionStage用于表示异步执行过程中的一个步骤（Stage），这个步骤可能是由另外一个CompletionStage触发的，随着当前步骤的完成，也可能会触发其他一系列CompletionStage的执行。从而我们可以根据实际业务对这些步骤进行多样化的编排组合，CompletionStage接口正是定义了这样的能力，我们可以通过其提供的thenAppy、thenCompose等函数式编程方法来组合编排这些步骤。</p>
-<h2 id="CompletableFuture的使用"><a href="#CompletableFuture的使用" class="headerlink" title="CompletableFuture的使用"></a>CompletableFuture的使用</h2><p>使用CompletableFuture也是构建依赖树的过程。一个CompletableFuture的完成会触发另外一系列依赖它的CompletableFuture的执行：</p>
-<p><img src="/.io//b14b861db9411b2373b80100fee0b92f15076.png" alt="图5 请求执行流程"></p>
-<ul>
-<li><p>零依赖：CompletableFuture的创建</p>
-<p><img src="/.io//ff663f95c86e22928c0bb94fc6bd8b8715722.png" alt="图6 零依赖"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1、使用runAsync或supplyAsync发起异步调用</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result1&quot;</span>;</span><br><span class="line">&#125;, executor);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2、CompletableFuture.completedFuture()直接创建一个已完成状态的CompletableFuture</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf2 = CompletableFuture.completedFuture(<span class="string">&quot;result2&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//3、先初始化一个未完成的CompletableFuture，然后通过complete()、completeExceptionally()，完成该CompletableFuture</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf = <span class="keyword">new</span> <span class="title class_">CompletableFuture</span>&lt;&gt;();</span><br><span class="line">cf.complete(<span class="string">&quot;success&quot;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>一元依赖：依赖一个CF</p>
-</li>
-</ul>
-<p><img src="/.io//373a334e7e7e7d359e8f042c7c9075e215479.png" alt="图7 一元依赖"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; cf3 = cf1.thenApply(result1 -&gt; &#123;</span><br><span class="line">  <span class="comment">//result1为CF1的结果</span></span><br><span class="line">  <span class="comment">//......</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result3&quot;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>二元依赖：依赖两个CF</li>
-</ul>
-<p><img src="/.io//fa4c8669b4cf63b7a89cfab0bcb693b216006.png" alt="图8 二元依赖"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; cf4 = cf1.thenCombine(cf2, (result1, result2) -&gt; &#123;</span><br><span class="line">  <span class="comment">//result1和result2分别为cf1和cf2的结果</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result4&quot;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>多元依赖：依赖多个CF</li>
-</ul>
-<p><img src="/.io//92248abd0a5b11dd36f9ccb1f1233d4e16045.png" alt="图9 多元依赖"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;Void&gt; cf6 = CompletableFuture.allOf(cf3, cf4, cf5);</span><br></pre></td></tr></table></figure>
-
-<h2 id="CompletableFuture原理"><a href="#CompletableFuture原理" class="headerlink" title="CompletableFuture原理"></a>CompletableFuture原理</h2><p>CompletableFuture中包含两个字段：<strong>result</strong>和<strong>stack</strong>。</p>
-<p>result用于存储当前CompletableFuture的结果，stack（Completion）表示当前CF完成后需要触发的依赖动作（Dependency Actions），去触发依赖它的CF的计算，依赖动作可以有多个（表示有多个依赖它的CF），以栈（<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Treiber_stack">Treiber stack</a>）的形式存储，stack表示栈顶元素。</p>
-<p><img src="/.io//82aa288ea62d74c03afcd2308d302b6910425.png" alt="图10 CF基本结构"></p>
-<p>这种方式类似“观察者模式”，依赖动作（Dependency Action）都封装在一个单独Completion子类中。下面是Completion类关系结构图。CompletableFuture中的每个方法都对应了图中的一个Completion的子类，Completion本身是<strong>观察者</strong>的基类。</p>
-<ul>
-<li>UniCompletion继承了Completion，是一元依赖的基类，例如thenApply的实现类UniApply就继承自UniCompletion。</li>
-<li>BiCompletion继承了UniCompletion，是二元依赖的基类，同时也是多元依赖的基类。例如thenCombine的实现类BiRelay就继承自BiCompletion。</li>
-</ul>
-<p><img src="/.io//5a889b90d0f2c2a0f6a4f294b9094194112106.png" alt="图11 CF类图"></p>
-<p>图11 CF类图</p>
-<h3 id="CompletableFuture的设计思想"><a href="#CompletableFuture的设计思想" class="headerlink" title="CompletableFuture的设计思想"></a>CompletableFuture的设计思想</h3><p>按照类似“观察者模式”的设计思想，原理分析可以从“观察者”和“被观察者”两个方面着手。</p>
-<p>由于回调种类多，但结构差异不大，所以这里单以一元依赖中的thenApply为例</p>
-<p><img src="/.io//f45b271b656f3ae243875fcb2af36a1141224.png" alt="图12 thenApply简图"></p>
-<p><strong>3.3.1.1 被观察者</strong></p>
-<ol>
-<li>每个CompletableFuture都可以被看作一个被观察者，其内部有一个Completion类型的链表成员变量stack，用来存储注册到其中的所有观察者。当被观察者执行完成后会弹栈stack属性，依次通知注册到其中的观察者。上面例子中步骤fn2就是作为观察者被封装在UniApply中。</li>
-<li>被观察者CF中的result属性，用来存储返回结果数据。这里可能是一次RPC调用的返回值，也可能是任意对象，在上面的例子中对应步骤fn1的执行结果。</li>
-</ol>
-<p><strong>3.3.1.2 观察者</strong></p>
-<p>CompletableFuture支持很多回调方法，例如thenAccept、thenApply、exceptionally等，这些方法接收一个函数类型的参数f，生成一个Completion类型的对象（即观察者），并将入参函数f赋值给Completion的成员变量fn，然后检查当前CF是否已处于完成状态（即result !&#x3D; null），如果已完成直接触发fn，否则将观察者Completion加入到CF的观察者链stack中，再次尝试触发，如果被观察者未执行完则其执行完毕之后通知触发。</p>
-<ol>
-<li>观察者中的dep属性：指向其对应的CompletableFuture，在上面的例子中dep指向CF2。</li>
-<li>观察者中的src属性：指向其依赖的CompletableFuture，在上面的例子中src指向CF1。</li>
-<li>观察者Completion中的fn属性：用来存储具体的等待被回调的函数。这里需要注意的是不同的回调方法（thenAccept、thenApply、exceptionally等）接收的函数类型也不同，即fn的类型有很多种，在上面的例子中fn指向fn2。</li>
-</ol>
-<h3 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h3><p><strong>一元依赖</strong></p>
-<p>这里仍然以thenApply为例来说明一元依赖的流程：</p>
-<ol>
-<li>将观察者Completion注册到CF1，此时CF1将Completion压栈。</li>
-<li>当CF1的操作运行完成时，会将结果赋值给CF1中的result属性。</li>
-<li>依次弹栈，通知观察者尝试运行。</li>
-</ol>
-<p><img src="/.io//f449bbc62d4a1f8e9e4998929196513d165269.gif" alt="图13 执行流程简要说明"></p>
-<p><strong>Q1</strong>：在观察者注册之前，如果CF已经执行完成，并且已经发出通知，那么这时观察者由于错过了通知是不是将永远不会被触发呢 ？</p>
-<p> <strong>A1</strong>：不会。在注册时检查依赖的CF是否已经完成。如果未完成（即result &#x3D;&#x3D; null）则将观察者入栈，如果已完成（result !&#x3D; null）则直接触发观察者操作。</p>
-<p><strong>Q2</strong>：在”入栈“前会有”result &#x3D;&#x3D; null“的判断，这两个操作为非原子操作，CompletableFufure的实现也没有对两个操作进行加锁，完成时间在这两个操作之间，观察者仍然得不到通知，是不是仍然无法触发？</p>
-<p><img src="/.io//6b4aeae7085f7d77d9f33799734f3b926723.png" alt="图14 入栈校验"></p>
-<p><strong>A2</strong>：不会。入栈之后再次检查CF是否完成，如果完成则触发。</p>
-<p><strong>Q3</strong>：当依赖多个CF时，观察者会被压入所有依赖的CF的栈中，每个CF完成的时候都会进行，那么会不会导致一个操作被多次执行呢 ？如下图所示，即当CF1、CF2同时完成时，如何避免CF3被多次触发。</p>
-<p><img src="/.io//316ff338f8dab2826a5d32dfb75ffede4158.png" alt="图15 多次触发"></p>
-<p>图15 多次触发</p>
-<p><strong>A3</strong>：CompletableFuture的实现是这样解决该问题的：观察者在执行之前会先通过CAS操作设置一个状态位，将status由0改为1。如果观察者已经执行过了，那么CAS操作将会失败，取消执行。</p>
-<p>通过对以上3个问题的分析可以看出，CompletableFuture在处理并行问题时，全程无加锁操作，极大地提高了程序的执行效率。我们将并行问题考虑纳入之后，可以得到完善的整体流程图如下所示：</p>
-<p><img src="/.io//606323a07fb7e31cb91f46c879d99b8d735272.gif" alt="图16 完整流程"></p>
-<p>CompletableFuture支持的回调方法十分丰富，但是正如上一章节的整体流程图所述，他们的整体流程是一致的。所有回调复用同一套流程架构，不同的回调监听通过<strong>策略模式</strong>实现差异化。</p>
-<p>** 二元依赖**</p>
-<p>我们以thenCombine为例来说明二元依赖：</p>
-<p><img src="/.io//b969e49a7eedbd52b014f86e86dcd3fc49634.png" alt="图17 二元依赖数据结构"></p>
-<p>thenCombine操作表示依赖两个CompletableFuture。其观察者实现类为BiApply，如上图所示，BiApply通过src和snd两个属性关联被依赖的两个CF，fn属性的类型为BiFunction。与单个依赖不同的是，在依赖的CF未完成的情况下，thenCombine会尝试将BiApply压入这两个被依赖的CF的栈中，每个被依赖的CF完成时都会尝试触发观察者BiApply，BiApply会检查两个依赖是否都完成，如果完成则开始执行。这里为了解决重复触发的问题，同样用的是上一章节提到的CAS操作，执行时会先通过CAS设置状态位，避免重复触发。</p>
-<p><strong>多元依赖</strong></p>
-<p>依赖多个CompletableFuture的回调方法包括<code>allOf</code>、<code>anyOf</code>，区别在于<code>allOf</code>观察者实现类为BiRelay，需要所有被依赖的CF完成后才会执行回调；而<code>anyOf</code>观察者实现类为OrRelay，任意一个被依赖的CF完成后就会触发。二者的实现方式都是将多个被依赖的CF构建成一棵平衡二叉树，执行结果层层通知，直到根节点，触发回调监听。</p>
-<p><img src="/.io//cef5469b5ec2e67ecca1b99a07260e4e22003.png" alt="图18 多元依赖结构树"></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/Future/" data-id="cltn57su80003tcnu3as0aiv9" data-title="Future.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-note/juc/volitile" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/03/11/note/juc/volitile/" class="article-date">
-  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2024/03/11/note/juc/volitile/">volitile.md</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="什么是volitile"><a href="#什么是volitile" class="headerlink" title="什么是volitile"></a>什么是volitile</h1><p><code>volatile</code>可以说是一个轻量级的<code>synchronized</code>，一般作用于<strong>变量</strong>，在多处理器开发的过程中保证了内存的可见性。相比于<code>synchronized</code>关键字，<code>volatile</code>关键字的执行成本更低，效率更高。</p>
-<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><blockquote>
-<p>并发编程的三大特性为可见性、有序性和原子性。通常来讲<code>volatile</code>可以保证可见性和有序性。</p>
-</blockquote>
-<ul>
-<li>可见性：<code>volatile</code>可以保证不同线程对共享变量进行操作时的可见性。即当一个线程修改了共享变量时，另一个线程可以读取到共享变量被修改后的值。</li>
-<li>有序性：<code>volatile</code>会通过禁止指令重排序进而保证有序性。</li>
-<li>原子性：对于单个的<code>volatile</code>修饰的变量的读写是可以保证原子性的，但对于<code>i++</code>这种复合操作并不能保证原子性。这句话的意思基本上就是说<code>volatile</code>不具备原子性了。</li>
-</ul>
-<h2 id="Java内存的可见性问题"><a href="#Java内存的可见性问题" class="headerlink" title="Java内存的可见性问题"></a>Java内存的可见性问题</h2><p>Java的内存模型如下图所示。</p>
-<p><img src="/.io//image-20240312000916482.png" alt="image-20240312000916482"></p>
-<p>这里的本地内存并不是真实存在的，只是Java内存模型的一个抽象概念，它包含了控制器、运算器、缓存等。同时Java内存模型规定，线程对共享变量的操作必须在自己的本地内存中进行，不能直接在主内存中操作共享变量。这种内存模型会出现什么问题呢？，</p>
-<ol>
-<li>线程A获取到共享变量X的值，此时本地内存A中没有X的值，所以加载主内存中的X值并缓存到本地内存A中，线程A修改X的值为1，并将X的值刷新到主内存中，这时主内存及本地内存A中的X的值都为1。</li>
-<li>线程B需要获取共享变量X的值，此时本地内存B中没有X的值，加载主内存中的X值并缓存到本地内存B中，此时X的值为1。线程B修改X的值为2，并刷新到主内存中，此时主内存及本地内存B中的X值为2，本地内存A中的X值为1。</li>
-<li>线程A再次获取共享变量X的值，此时本地内存中存在X的值，所以直接从本地内存中A获取到了X为1的值，但此时主内存中X的值为2，到此出现了所谓内存不可见的问题。</li>
-</ol>
-<p>该问题Java内存模型是通过<code>synchronized</code>关键字和<code>volatile</code>关键字就可以解决。</p>
-<h2 id="为什么代码会重排序？"><a href="#为什么代码会重排序？" class="headerlink" title="为什么代码会重排序？"></a>为什么代码会重排序？</h2><p>计算机在执行程序的过程中，编译器和处理器通常会对指令进行重排序，这样做的目的是为了提高性能。具体可以看下面这个例子。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">java复制代码<span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">a1</span> <span class="operator">=</span> a;</span><br><span class="line"><span class="type">int</span> <span class="variable">b1</span> <span class="operator">=</span> b;</span><br><span class="line"><span class="type">int</span> <span class="variable">a2</span> <span class="operator">=</span> a + a;</span><br><span class="line"><span class="type">int</span> <span class="variable">b2</span> <span class="operator">=</span> b + b;</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
-
-<p>像这段代码，不断地交替读取a和b，会导致寄存器频繁交替存储a和b，使得代码性能下降，可对其进入如下重排序。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">java复制代码<span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">a1</span> <span class="operator">=</span> a;</span><br><span class="line"><span class="type">int</span> <span class="variable">a2</span> <span class="operator">=</span> a + a;</span><br><span class="line"><span class="type">int</span> <span class="variable">b1</span> <span class="operator">=</span> b;</span><br><span class="line"><span class="type">int</span> <span class="variable">b2</span> <span class="operator">=</span> b + b;</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
-
-<p>按照这样地顺序执行代码便可以避免交替读取a和b，这就是重排序地意义。</p>
-<h3 id="重排序在并发情况下会引发什么问题？"><a href="#重排序在并发情况下会引发什么问题？" class="headerlink" title="重排序在并发情况下会引发什么问题？"></a>重排序在并发情况下会引发什么问题？</h3><p>在单线程程序中，重排序并不会影响程序的运行结果，而在多线程场景下就不一定了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ReorderExample</span>&#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">flag</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">writer</span><span class="params">()</span>&#123;</span><br><span class="line">        a = <span class="number">1</span>;              <span class="comment">// 操作1</span></span><br><span class="line">        flag = <span class="literal">true</span>;        <span class="comment">// 操作2</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">reader</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;          <span class="comment">// 操作3</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> a + a; <span class="comment">// 操作4</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>假设线程1先执行<code>writer()</code>方法，随后线程2执行<code>reader()</code>方法，最后程序一定会得到正确的结果吗？</p>
-<p>答案是不一定的，如果代码按照下图的执行顺序执行代码则会出现问题。</p>
-<p><img src="/.io//image-20240312000929262.png" alt="image-20240312000929262"></p>
-<p>操作1和操作2进行了重排序，线程1先执行<code>flag=true</code>，然后线程2执行操作3和操作4，线程2执行操作4时不能正确读取到<code>a</code>的值，导致最终程序运行结果出问题。这也说明了在多线程代码中，重排序会破坏多线程程序的语义。</p>
-<h1 id="voliatile的实现原理"><a href="#voliatile的实现原理" class="headerlink" title="voliatile的实现原理"></a>voliatile的实现原理</h1><h2 id="volatile实现内存可见性原理"><a href="#volatile实现内存可见性原理" class="headerlink" title="volatile实现内存可见性原理"></a>volatile实现内存可见性原理</h2><p>导致内存不可见的主要原因就是Java内存模型中的本地内存和主内存之间的值不一致所导致。</p>
-<p><code>volatile</code>可以保证内存可见性的关键是<code>volatile</code>的读&#x2F;写实现了缓存一致性，缓存一致性的主要内容为：</p>
-<ul>
-<li>每个处理器会通过嗅探总线上的数据来查看自己的本地数据是否过期，一旦处理器发现自己缓存对应的内存地址被修改，就会将当前处理器的缓存设为无效状态。此时，如果处理器需要获取这个数据需重新从主内存将其读取到本地内存。</li>
-<li>当处理器写数据时，如果发现操作的是共享变量，会通知其他处理器将该变量的缓存设为无效状态。</li>
-</ul>
-<p>那缓存一致性是如何实现的呢？可以发现通过<code>volatile</code>修饰的变量，生成汇编指令时会比普通的变量多出一个<code>Lock</code>指令，这个<code>Lock</code>指令就是<code>volatile</code>关键字可以保证内存可见性的关键，它主要有两个作用：</p>
-<ul>
-<li>将当前处理器缓存的数据刷新到主内存。</li>
-<li>刷新到主内存时会使得其他处理器缓存的该内存地址的数据无效。</li>
-</ul>
-<h2 id="volatile实现有序性原理"><a href="#volatile实现有序性原理" class="headerlink" title="volatile实现有序性原理"></a>volatile实现有序性原理</h2><p>为了实现<code>volatile</code>的内存语义，编译器在生成字节码时会通过插入内存屏障来禁止指令重排序。</p>
-<p>内存屏障：内存屏障是一种CPU指令，它的作用是对该指令前和指令后的一些操作产生一定的约束，保证一些操作按顺序执行。</p>
-<ul>
-<li><p>写屏障会确保指令重排序时，不会将写屏障之前的代码排在写屏障之后;写屏障仅仅是保证之后的读能够读到最新的结果，但不能保证读跑到它前面去.</p>
-</li>
-<li><p>读屏障会确保指令重排序时，不会将读屏障之后的代码排在读屏障之前.保证后面读到的都是最新结果。</p>
-</li>
-</ul>
-<h1 id="volatile能使一个非原子操作变成一个原子操作吗"><a href="#volatile能使一个非原子操作变成一个原子操作吗" class="headerlink" title="volatile能使一个非原子操作变成一个原子操作吗"></a>volatile能使一个非原子操作变成一个原子操作吗</h1><p><code>volatile</code>只能保证可见性和有序性，对简单读写可以保证原子性。</p>
-<p>如但可以保证64位的<code>long</code>型和<code>double</code>型变量的原子性。</p>
-<p><code>对于32位的虚拟机来说，每次原子读写都是32位的，会将</code>long<code>和</code>double<code>型变量拆分成两个32位的操作来执行，这样long和double型变量的读写就不能保证原子性了，而通过volatile修饰的long和double型变量则可以保证其原子性</code>。</p>
-<h1 id="volatile、synchronized的区别"><a href="#volatile、synchronized的区别" class="headerlink" title="volatile、synchronized的区别"></a>volatile、synchronized的区别</h1><ul>
-<li><code>volatile</code>主要是保证内存的可见性和指令重排。<code>synchronized</code>主要是解决多个线程访问资源的同步性。</li>
-<li><code>volatile</code>作用于变量，<code>synchronized</code>作用于代码块或者方法。</li>
-<li><code>volatile</code>仅可以保证数据的可见性，不能保证数据的原子性。<code>synchronized</code>可以保证数据的可见性和原子性。</li>
-<li><code>volatile</code>不会造成线程的阻塞，<code>synchronized</code>会造成线程的阻塞。</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/volitile/" data-id="cltn57su90004tcnuc3g41p72" data-title="volitile.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://username.github.io/2024/03/11/note/juc/Executor/" data-id="cltu174t4000548nub8ry9gm3" data-title="Executor.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -879,6 +1322,10 @@
   <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/juc/">juc</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -946,7 +1393,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/ThreadLocal/" data-id="cltn57su90005tcnu2ovh3b37" data-title="ThreadLocal.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://username.github.io/2024/03/11/note/juc/ThreadLocal/" data-id="cltu174t5000748nu8u6rgx7g" data-title="ThreadLocal.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -964,6 +1411,10 @@
   <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/juc/">juc</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -986,26 +1437,583 @@
 <p>当只有一个线程使用这个锁，这是该锁就为偏向锁，对象的MarkWord字段中保存线程信息；</p>
 <p>当多个线程使用这把锁，但是他们是交错使用（也就是无竞争）的时候，偏向锁会升级为轻量级锁；</p>
 <p>当多个线程竞争使用这把锁，该锁就会升级为重量级锁。</p>
-<h2 id="MarkWord字段"><a href="#MarkWord字段" class="headerlink" title="MarkWord字段"></a>MarkWord字段</h2><p>以 32 位虚拟机为例<br><img src="/.io//image-20230514183035900.png" alt="image-20230514183035900"></p>
-<p><img src="/.io//image-20230514183139478.png" alt="image-20230514183139478"></p>
-<h2 id="轻量级锁使用过程"><a href="#轻量级锁使用过程" class="headerlink" title="轻量级锁使用过程"></a>轻量级锁使用过程</h2><p><img src="/.io//image-20230514183836134.png" alt="image-20230514183836134"></p>
-<h3 id="加锁过程"><a href="#加锁过程" class="headerlink" title="加锁过程"></a>加锁过程</h3><p><img src="/.io//image-20230514183853552.png" alt="image-20230514183853552"></p>
-<p><img src="/.io//image-20230514183910346.png" alt="image-20230514183910346"></p>
-<p><img src="/.io//image-20230514183927173.png" alt="image-20230514183927173"></p>
-<h3 id="解锁过程"><a href="#解锁过程" class="headerlink" title="解锁过程"></a>解锁过程</h3><p><img src="/.io//image-20230514184036841.png" alt="image-20230514184036841"></p>
-<p><img src="/.io//image-20230514184049398.png" alt="image-20230514184049398"></p>
-<h3 id="锁膨胀"><a href="#锁膨胀" class="headerlink" title="锁膨胀"></a>锁膨胀</h3><p><img src="/.io//image-20230514184126170.png" alt="image-20230514184126170"></p>
-<p><img src="/.io//image-20230514184146864.png" alt="image-20230514184146864"></p>
+<h2 id="MarkWord字段"><a href="#MarkWord字段" class="headerlink" title="MarkWord字段"></a>MarkWord字段</h2><p>以 32 位虚拟机为例<br><img src="/2024/03/11/note/juc/synchronized/image-20230514183035900.png" alt="image-20230514183035900"></p>
+<p><img src="/2024/03/11/note/juc/synchronized/image-20230514183139478.png" alt="image-20230514183139478"></p>
+<h2 id="轻量级锁使用过程"><a href="#轻量级锁使用过程" class="headerlink" title="轻量级锁使用过程"></a>轻量级锁使用过程</h2><p><img src="/2024/03/11/note/juc/synchronized/image-20230514183836134.png" alt="image-20230514183836134"></p>
+<h3 id="加锁过程"><a href="#加锁过程" class="headerlink" title="加锁过程"></a>加锁过程</h3><p><img src="/2024/03/11/note/juc/synchronized/image-20230514183853552.png" alt="image-20230514183853552"></p>
+<p><img src="/2024/03/11/note/juc/synchronized/image-20230514183910346.png" alt="image-20230514183910346"></p>
+<p><img src="/2024/03/11/note/juc/synchronized/image-20230514183927173.png" alt="image-20230514183927173"></p>
+<h3 id="解锁过程"><a href="#解锁过程" class="headerlink" title="解锁过程"></a>解锁过程</h3><p><img src="/2024/03/11/note/juc/synchronized/image-20230514184036841.png" alt="image-20230514184036841"></p>
+<p><img src="/2024/03/11/note/juc/synchronized/image-20230514184049398.png" alt="image-20230514184049398"></p>
+<h3 id="锁膨胀"><a href="#锁膨胀" class="headerlink" title="锁膨胀"></a>锁膨胀</h3><p><img src="/2024/03/11/note/juc/synchronized/image-20230514184126170.png" alt="image-20230514184126170"></p>
+<p><img src="/2024/03/11/note/juc/synchronized/image-20230514184146864.png" alt="image-20230514184146864"></p>
 <h2 id="重量级锁使用过程"><a href="#重量级锁使用过程" class="headerlink" title="重量级锁使用过程"></a>重量级锁使用过程</h2><h3 id="Monitor"><a href="#Monitor" class="headerlink" title="Monitor"></a>Monitor</h3><p>Monitor 被翻译为<code>监视器</code>或<code>管程</code></p>
 <p>每个 Java 对象都可以关联一个<code>Monitor</code>对象，如果使用 synchronized 给对象上锁（重量级）之后，该对象头的<br>Mark Word 中就被设置指向 Monitor 对象的指针</p>
 <p>Monitor 结构如下</p>
-<p><img src="/.io//image-20230514184316521.png" alt="image-20230514184316521"></p>
-<p><img src="/.io//image-20230514184330927.png" alt="image-20230514184330927"></p>
+<p><img src="/2024/03/11/note/juc/synchronized/image-20230514184316521.png" alt="image-20230514184316521"></p>
+<p><img src="/2024/03/11/note/juc/synchronized/image-20230514184330927.png" alt="image-20230514184330927"></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/synchronized/" data-id="cltn57sua0006tcnu092t0n3c" data-title="synchronized.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://username.github.io/2024/03/11/note/juc/synchronized/" data-id="cltu174t6000848nu5g8khzkf" data-title="synchronized.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-note/juc/cas" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/11/note/juc/cas/" class="article-date">
+  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/juc/">juc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/03/11/note/juc/cas/">cas.md</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>如下源代码释义所示，这部分主要为CAS相关操作的方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	*  CAS</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> o         包含要修改field的对象</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> offset    对象中某field的偏移量</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> expected  期望值</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> update    更新值</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span>          true | false</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapObject</span><span class="params">(Object o, <span class="type">long</span> offset,  Object expected, Object update)</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapInt</span><span class="params">(Object o, <span class="type">long</span> offset, <span class="type">int</span> expected,<span class="type">int</span> update)</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapLong</span><span class="params">(Object o, <span class="type">long</span> offset, <span class="type">long</span> expected, <span class="type">long</span> update)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>什么是CAS? 即比较并替换，实现并发算法时常用到的一种技术。CAS操作包含三个操作数——内存位置、预期原值及新值。执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。我们都知道，CAS是一条CPU的原子指令（cmpxchg指令），不会造成所谓的数据不一致问题，Unsafe提供的CAS方法（如compareAndSwapXXX）底层实现即为CPU指令cmpxchg。</p>
+<h4 id="典型应用"><a href="#典型应用" class="headerlink" title="典型应用"></a>典型应用</h4><p>CAS在java.util.concurrent.atomic相关类、Java AQS、CurrentHashMap等实现上有非常广泛的应用。如下图所示，AtomicInteger的实现中，静态字段valueOffset即为字段value的内存偏移地址，valueOffset的值在AtomicInteger初始化时，在静态代码块中通过Unsafe的objectFieldOffset方法获取。在AtomicInteger中提供的线程安全方法中，通过字段valueOffset的值可以定位到AtomicInteger对象中value的内存地址，从而可以根据CAS实现对value字段的原子操作。</p>
+<p><img src="/2024/03/11/note/juc/cas/3bacb938ca6e63d6c79c2bb48d3f608f189412.png" alt="img"></p>
+<p>下图为某个AtomicInteger对象自增操作前后的内存示意图，对象的基地址baseAddress&#x3D;“0x110000”，通过baseAddress+valueOffset得到value的内存地址valueAddress&#x3D;“0x11000c”；然后通过CAS进行原子性的更新操作，成功则返回，否则继续重试，直到更新成功为止。</p>
+<p><img src="/2024/03/11/note/juc/cas/6e8b1fe5d5993d17a4c5b69bb72ac51d89826.png" alt="img"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://username.github.io/2024/03/11/note/juc/cas/" data-id="cltu174t7000a48nu58hd77nt" data-title="cas.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-note/juc/volitile" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/11/note/juc/volitile/" class="article-date">
+  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/juc/">juc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/03/11/note/juc/volitile/">volitile.md</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="什么是volitile"><a href="#什么是volitile" class="headerlink" title="什么是volitile"></a>什么是volitile</h1><p><code>volatile</code>可以说是一个轻量级的<code>synchronized</code>，一般作用于<strong>变量</strong>，在多处理器开发的过程中保证了内存的可见性。相比于<code>synchronized</code>关键字，<code>volatile</code>关键字的执行成本更低，效率更高。</p>
+<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><blockquote>
+<p>并发编程的三大特性为可见性、有序性和原子性。通常来讲<code>volatile</code>可以保证可见性和有序性。</p>
+</blockquote>
+<ul>
+<li>可见性：<code>volatile</code>可以保证不同线程对共享变量进行操作时的可见性。即当一个线程修改了共享变量时，另一个线程可以读取到共享变量被修改后的值。</li>
+<li>有序性：<code>volatile</code>会通过禁止指令重排序进而保证有序性。</li>
+<li>原子性：对于单个的<code>volatile</code>修饰的变量的读写是可以保证原子性的，但对于<code>i++</code>这种复合操作并不能保证原子性。这句话的意思基本上就是说<code>volatile</code>不具备原子性了。</li>
+</ul>
+<h2 id="Java内存的可见性问题"><a href="#Java内存的可见性问题" class="headerlink" title="Java内存的可见性问题"></a>Java内存的可见性问题</h2><p>Java的内存模型如下图所示。</p>
+<p><img src="/2024/03/11/note/juc/volitile/image-20240312000916482.png" alt="image-20240312000916482"></p>
+<p>这里的本地内存并不是真实存在的，只是Java内存模型的一个抽象概念，它包含了控制器、运算器、缓存等。同时Java内存模型规定，线程对共享变量的操作必须在自己的本地内存中进行，不能直接在主内存中操作共享变量。这种内存模型会出现什么问题呢？，</p>
+<ol>
+<li>线程A获取到共享变量X的值，此时本地内存A中没有X的值，所以加载主内存中的X值并缓存到本地内存A中，线程A修改X的值为1，并将X的值刷新到主内存中，这时主内存及本地内存A中的X的值都为1。</li>
+<li>线程B需要获取共享变量X的值，此时本地内存B中没有X的值，加载主内存中的X值并缓存到本地内存B中，此时X的值为1。线程B修改X的值为2，并刷新到主内存中，此时主内存及本地内存B中的X值为2，本地内存A中的X值为1。</li>
+<li>线程A再次获取共享变量X的值，此时本地内存中存在X的值，所以直接从本地内存中A获取到了X为1的值，但此时主内存中X的值为2，到此出现了所谓内存不可见的问题。</li>
+</ol>
+<p>该问题Java内存模型是通过<code>synchronized</code>关键字和<code>volatile</code>关键字就可以解决。</p>
+<h2 id="为什么代码会重排序？"><a href="#为什么代码会重排序？" class="headerlink" title="为什么代码会重排序？"></a>为什么代码会重排序？</h2><p>计算机在执行程序的过程中，编译器和处理器通常会对指令进行重排序，这样做的目的是为了提高性能。具体可以看下面这个例子。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">java复制代码<span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">a1</span> <span class="operator">=</span> a;</span><br><span class="line"><span class="type">int</span> <span class="variable">b1</span> <span class="operator">=</span> b;</span><br><span class="line"><span class="type">int</span> <span class="variable">a2</span> <span class="operator">=</span> a + a;</span><br><span class="line"><span class="type">int</span> <span class="variable">b2</span> <span class="operator">=</span> b + b;</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>像这段代码，不断地交替读取a和b，会导致寄存器频繁交替存储a和b，使得代码性能下降，可对其进入如下重排序。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">java复制代码<span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">a1</span> <span class="operator">=</span> a;</span><br><span class="line"><span class="type">int</span> <span class="variable">a2</span> <span class="operator">=</span> a + a;</span><br><span class="line"><span class="type">int</span> <span class="variable">b1</span> <span class="operator">=</span> b;</span><br><span class="line"><span class="type">int</span> <span class="variable">b2</span> <span class="operator">=</span> b + b;</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>按照这样地顺序执行代码便可以避免交替读取a和b，这就是重排序地意义。</p>
+<h3 id="重排序在并发情况下会引发什么问题？"><a href="#重排序在并发情况下会引发什么问题？" class="headerlink" title="重排序在并发情况下会引发什么问题？"></a>重排序在并发情况下会引发什么问题？</h3><p>在单线程程序中，重排序并不会影响程序的运行结果，而在多线程场景下就不一定了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ReorderExample</span>&#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">flag</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">writer</span><span class="params">()</span>&#123;</span><br><span class="line">        a = <span class="number">1</span>;              <span class="comment">// 操作1</span></span><br><span class="line">        flag = <span class="literal">true</span>;        <span class="comment">// 操作2</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">reader</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;          <span class="comment">// 操作3</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> a + a; <span class="comment">// 操作4</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>假设线程1先执行<code>writer()</code>方法，随后线程2执行<code>reader()</code>方法，最后程序一定会得到正确的结果吗？</p>
+<p>答案是不一定的，如果代码按照下图的执行顺序执行代码则会出现问题。</p>
+<p><img src="/2024/03/11/note/juc/volitile/image-20240312000929262.png" alt="image-20240312000929262"></p>
+<p>操作1和操作2进行了重排序，线程1先执行<code>flag=true</code>，然后线程2执行操作3和操作4，线程2执行操作4时不能正确读取到<code>a</code>的值，导致最终程序运行结果出问题。这也说明了在多线程代码中，重排序会破坏多线程程序的语义。</p>
+<h1 id="voliatile的实现原理"><a href="#voliatile的实现原理" class="headerlink" title="voliatile的实现原理"></a>voliatile的实现原理</h1><h2 id="volatile实现内存可见性原理"><a href="#volatile实现内存可见性原理" class="headerlink" title="volatile实现内存可见性原理"></a>volatile实现内存可见性原理</h2><p>导致内存不可见的主要原因就是Java内存模型中的本地内存和主内存之间的值不一致所导致。</p>
+<p><code>volatile</code>可以保证内存可见性的关键是<code>volatile</code>的读&#x2F;写实现了缓存一致性，缓存一致性的主要内容为：</p>
+<ul>
+<li>每个处理器会通过嗅探总线上的数据来查看自己的本地数据是否过期，一旦处理器发现自己缓存对应的内存地址被修改，就会将当前处理器的缓存设为无效状态。此时，如果处理器需要获取这个数据需重新从主内存将其读取到本地内存。</li>
+<li>当处理器写数据时，如果发现操作的是共享变量，会通知其他处理器将该变量的缓存设为无效状态。</li>
+</ul>
+<p>那缓存一致性是如何实现的呢？可以发现通过<code>volatile</code>修饰的变量，生成汇编指令时会比普通的变量多出一个<code>Lock</code>指令，这个<code>Lock</code>指令就是<code>volatile</code>关键字可以保证内存可见性的关键，它主要有两个作用：</p>
+<ul>
+<li>将当前处理器缓存的数据刷新到主内存。</li>
+<li>刷新到主内存时会使得其他处理器缓存的该内存地址的数据无效。</li>
+</ul>
+<h2 id="volatile实现有序性原理"><a href="#volatile实现有序性原理" class="headerlink" title="volatile实现有序性原理"></a>volatile实现有序性原理</h2><p>为了实现<code>volatile</code>的内存语义，编译器在生成字节码时会通过插入内存屏障来禁止指令重排序。</p>
+<p>内存屏障：内存屏障是一种CPU指令，它的作用是对该指令前和指令后的一些操作产生一定的约束，保证一些操作按顺序执行。</p>
+<ul>
+<li><p>写屏障会确保指令重排序时，不会将写屏障之前的代码排在写屏障之后;写屏障仅仅是保证之后的读能够读到最新的结果，但不能保证读跑到它前面去.</p>
+</li>
+<li><p>读屏障会确保指令重排序时，不会将读屏障之后的代码排在读屏障之前.保证后面读到的都是最新结果。</p>
+</li>
+</ul>
+<h1 id="volatile能使一个非原子操作变成一个原子操作吗"><a href="#volatile能使一个非原子操作变成一个原子操作吗" class="headerlink" title="volatile能使一个非原子操作变成一个原子操作吗"></a>volatile能使一个非原子操作变成一个原子操作吗</h1><p><code>volatile</code>只能保证可见性和有序性，对简单读写可以保证原子性。</p>
+<p>如但可以保证64位的<code>long</code>型和<code>double</code>型变量的原子性。</p>
+<p><code>对于32位的虚拟机来说，每次原子读写都是32位的，会将</code>long<code>和</code>double<code>型变量拆分成两个32位的操作来执行，这样long和double型变量的读写就不能保证原子性了，而通过volatile修饰的long和double型变量则可以保证其原子性</code>。</p>
+<h1 id="volatile、synchronized的区别"><a href="#volatile、synchronized的区别" class="headerlink" title="volatile、synchronized的区别"></a>volatile、synchronized的区别</h1><ul>
+<li><code>volatile</code>主要是保证内存的可见性和指令重排。<code>synchronized</code>主要是解决多个线程访问资源的同步性。</li>
+<li><code>volatile</code>作用于变量，<code>synchronized</code>作用于代码块或者方法。</li>
+<li><code>volatile</code>仅可以保证数据的可见性，不能保证数据的原子性。<code>synchronized</code>可以保证数据的可见性和原子性。</li>
+<li><code>volatile</code>不会造成线程的阻塞，<code>synchronized</code>会造成线程的阻塞。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://username.github.io/2024/03/11/note/juc/volitile/" data-id="cltu174t7000b48nu97g6h1eh" data-title="volitile.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-note/计算机基础/操作系统" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="article-date">
+  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统.md</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h1><blockquote>
+<p>操作系统的内存管理主要干什么</p>
+</blockquote>
+<ul>
+<li><strong>内存的分配与回收</strong>：对进程所需的内存进行分配和释放，malloc 函数：申请内存，free 函数：释放内存。</li>
+</ul>
+<ul>
+<li><p><strong>地址转换</strong>：将程序中的虚拟地址转换成内存中的物理地址。</p>
+</li>
+<li><p><strong>内存安全</strong>：保证进程之间使用内存互不干扰，避免一些恶意程序通过修改内存来破坏系统的安全性。</p>
+<blockquote>
+<p>内存管理方式可以简单分为下面两种：</p>
+</blockquote>
+</li>
+<li><p><strong>连续内存管理</strong>：为一个用户程序分配一个连续的内存空间，内存利用率一般不高。</p>
+</li>
+<li><p><strong>非连续内存管理</strong>：允许一个程序使用的内存分布在离散或者说不相邻的内存中，相对更加灵活一些。</p>
+</li>
+</ul>
+<h2 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h2><blockquote>
+<p>什么是虚拟内存?</p>
+</blockquote>
+<p><strong>虚拟内存(Virtual Memory)</strong> 是计算机系统内存管理非常重要的一个技术，本质上来说它只是逻辑存在的，是一个假想出来的内存空间，主要作用是作为进程访问主存（物理内存）的桥梁并简化内存管理。</p>
+<blockquote>
+<p>虚拟内存有什么用？</p>
+</blockquote>
+<ul>
+<li><p>第一，虚拟内存可以使得进程对运行内存超过物理内存大小，因为程序运行符合局部性原理，CPU 访问内存会有很明显的重复访问的倾向性，对于那些没有被经常使用到的内存，我们可以把它换出到物理内存之外，比如硬盘上的 swap 区域。</p>
+</li>
+<li><p>第二，由于每个进程都有自己的页表，所以每个进程的虚拟内存空间就是相互独立的。进程也没有办法访问其他进程的页表，所以这些页表是私有的，这就解决了多进程之间地址冲突的问题。</p>
+</li>
+<li><p>第三，页表里的页表项中除了物理地址之外，还有一些标记属性的比特，比如控制一个页的读写权限，标记该页是否存在等。在内存访问方面，操作系统提供了更好的安全性。</p>
+</li>
+</ul>
+<blockquote>
+<p>没有虚拟内存有什么问题？</p>
+</blockquote>
+<ol>
+<li>用户程序可以访问任意物理内存，可能会不小心操作到系统运行必需的内存，进而造成操作系统崩溃，严重影响系统的安全。</li>
+<li>同时运行多个程序容易崩溃。比如你想同时运行一个微信和一个 QQ 音乐，微信在运行的时候给内存地址 1xxx 赋值后，QQ 音乐也同样给内存地址 1xxx 赋值，那么 QQ 音乐对内存的赋值就会覆盖微信之前所赋的值，这就可能会造成微信这个程序会崩溃。</li>
+<li>程序运行过程中使用的所有数据或指令都要载入物理内存，根据局部性原理，其中很大一部分可能都不会用到，白白占用了宝贵的物理内存资源。</li>
+</ol>
+<h2 id="内存分段机制"><a href="#内存分段机制" class="headerlink" title="内存分段机制"></a>内存分段机制</h2><blockquote>
+<p>什么是内存分段机制</p>
+</blockquote>
+<p>  程序是由若干个逻辑分段组成的，如可由代码分段、数据分段、栈段、堆段组成。<strong>不同的段是有不同的属性的，所以就用分段（Segmentation）的形式把这些段分离出来。</strong></p>
+<blockquote>
+<p>分段地址翻译过程</p>
+</blockquote>
+<p>  分段机制下的虚拟地址由两部分组成：</p>
+<ul>
+<li><strong>段号</strong>：标识着该虚拟地址属于整个虚拟地址空间中的哪一个段。</li>
+<li><strong>段内偏移量</strong>：相对于该段起始地址的偏移量。</li>
+</ul>
+<p>  具体的地址翻译过程如下：</p>
+<ol>
+<li>MMU 首先解析得到虚拟地址中的段号；</li>
+<li>通过段号去该应用程序的段表中取出对应的段信息（找到对应的段表项）；</li>
+<li>从段信息中取出该段的起始地址（物理地址）加上虚拟地址中的段内偏移量得到最终的物理地址。</li>
+</ol>
+<p>  <img src="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/a9ed979e2ed8414f9828767592aadc21.png" alt="img"></p>
+<blockquote>
+<p>通过段号一定要找到对应的段表项吗？得到最终的物理地址后对应的物理内存一定存在吗？</p>
+</blockquote>
+<p>  不一定。段表项可能并不存在：</p>
+<ul>
+<li><strong>段表项被删除</strong>：软件错误、软件恶意行为等情况可能会导致段表项被删除。</li>
+<li><strong>段表项还未创建</strong>：如果系统内存不足或者无法分配到连续的物理内存块就会导致段表项无法被创建。</li>
+</ul>
+<blockquote>
+<p>内存分段机制会导致什么内存碎片问题</p>
+</blockquote>
+<p>  由于每个段的长度不固定，所以多个段未必能恰好使用所有的内存空间，会产生了多个不连续的小物理内存，导致新的程序无法被装载，所以<strong>会出现外部内存碎片</strong>的问题。</p>
+<p>  解决「外部内存碎片」的问题就是<strong>内存交换</strong>。</p>
+<p>  这个内存交换空间，在 Linux 系统里，也就是我们常看到的 Swap 空间，这块空间是从硬盘划分出来的，用于内存与硬盘的空间交换。</p>
+<blockquote>
+<p>分段为什么会导致内存交换效率低的问题？</p>
+</blockquote>
+<p>  对于多进程的系统来说，用分段的方式，外部内存碎片是很容易产生的，产生了外部内存碎片，那不得不重新 <code>Swap</code> 内存区域，这个过程会产生性能瓶颈。</p>
+<p>  因为硬盘的访问速度要比内存慢太多了，每一次内存交换，我们都需要把一大段连续的内存数据写到硬盘上。</p>
+<p>  所以，<strong>如果内存交换的时候，交换的是一个占内存空间很大的程序，这样整个机器都会显得卡顿。</strong></p>
+<h2 id="内存分页机制"><a href="#内存分页机制" class="headerlink" title="内存分页机制"></a>内存分页机制</h2><blockquote>
+<p>什么是内存分页机制</p>
+</blockquote>
+<p>内存分页机制是一种将物理内存分割成若干个固定大小（一般是4k）的页框，同时将逻辑地址空间分割成与之对应的若干个固定大小的页。当程序访问内存时，操作系统将逻辑地址转换为物理地址，通过查找页表将逻辑页映射到物理页框，从而实现内存的分配和管理。</p>
+<blockquote>
+<p>页表有什么用？地址翻译过程是怎样的？</p>
+</blockquote>
+<p>分页管理通过 <strong>页表（Page Table）</strong> 映射虚拟地址和物理地址。</p>
+<p><img src="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/388a29f45fe947e5a49240e4eff13538-20230309234651917.png" alt="img"></p>
+<p>在分页机制下，每个应用程序都会有一个对应的页表。</p>
+<p>分页机制下的虚拟地址由两部分组成：</p>
+<ul>
+<li><strong>页号</strong>：通过虚拟页号可以从页表中取出对应的物理页号；</li>
+<li><strong>页内偏移量</strong>：物理页起始地址+页内偏移量&#x3D;物理内存地址。</li>
+</ul>
+<p>具体的地址翻译过程如下：</p>
+<ol>
+<li>MMU 首先解析得到虚拟地址中的虚拟页号；</li>
+<li>通过虚拟页号去该应用程序的页表中取出对应的物理页号（找到对应的页表项）；</li>
+<li>用该物理页号对应的物理页起始地址（物理地址）加上虚拟地址中的页内偏移量得到最终的物理地址。</li>
+</ol>
+<p><img src="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/7884f4d8db4949f7a5bb4bbd0f452609.png" alt="img"></p>
+<p>页表中还存有诸如访问标志（标识该页面有没有被访问过）、页类型（该段的类型，例如代码段、数据段等）等信息。</p>
+<blockquote>
+<p>内存分页机制会导致什么碎片化问题</p>
+</blockquote>
+<p>因为内存分页机制分配内存的最小单位是一页，即使程序不足一页大小，我们最少只能分配一个页，所以页内会出现内存浪费，所以针对<strong>内存分页机制会有内部内存碎片</strong>的现象。</p>
+<blockquote>
+<p>通过虚拟页号一定要找到对应的物理页号吗？</p>
+<p>找到了物理页号得到最终的物理地址后对应的物理页一定存在吗？</p>
+</blockquote>
+<p>不一定！可能会存在 <strong>页缺失</strong> 。也就是说，物理内存中没有对应的物理页或者物理内存中有对应的物理页但虚拟页还未和物理页建立映射（对应的页表项不存在）。</p>
+<p>页缺失（Page Fault，又名硬错误、硬中断、分页错误、寻页缺失、缺页中断、页故障等）指的是当软件试图访问已映射在虚拟地址空间中，但是目前并未被加载在物理内存中的一个分页时，由 MMU 所发出的中断。</p>
+<p>常见的页缺失有下面这两种：</p>
+<ul>
+<li><strong>硬性页缺失（Hard Page Fault）</strong>：物理内存中没有对应的物理页。于是，Page Fault Handler 会指示 CPU 从已经打开的磁盘文件中读取相应的内容到物理内存，而后交由 MMU 建立相应的虚拟页和物理页的映射关系。</li>
+<li><strong>软性页缺失（Soft Page Fault）</strong>：物理内存中有对应的物理页，但虚拟页还未和物理页建立映射。于是，Page Fault Handler 会指示 MMU 建立相应的虚拟页和物理页的映射关系。</li>
+</ul>
+<p>发生上面这两种缺页错误的时候，应用程序访问的是有效的物理内存，只是出现了物理页缺失或者虚拟页和物理页的映射关系未建立的问题。如果应用程序访问的是无效的物理内存的话，还会出现 <strong>无效缺页错误（Invalid Page Fault）</strong> 。</p>
+<blockquote>
+<p>单级页表有什么问题？</p>
+</blockquote>
+<p>在 32 位的环境下，虚拟地址空间共有 4GB，假设一个页的大小是 4KB（2^12），那么就需要大约 100 万 （2^20） 个页，每个「页表项」需要 4 个字节大小来存储，那么整个 4GB 空间的映射就需要有 <code>4MB</code> 的内存来存储页表。</p>
+<p>这 4MB 大小的页表，看起来也不是很大。但是要知道每个进程都是有自己的虚拟地址空间的，也就说都有自己的页表。</p>
+<p>那么，<code>100</code> 个进程的话，就需要 <code>400MB</code> 的内存来存储页表，这是非常大的内存了，更别说 64 位的环境了。</p>
+<blockquote>
+<p>什么是多级页表？</p>
+</blockquote>
+<p>为了解决单极页表的问题，操作系统引入了 <strong>多级页表</strong> ，多级页表对应多个页表，每个页表也前一个页表相关联。32 位系统一般为二级页表，64 位系统一般为四级页表。</p>
+<blockquote>
+<p>为什么多级页表可以减少页表占用的内存</p>
+</blockquote>
+<p>上面知道每个页表需占用 4MB 大小的空间。当把这个 100 多万个「页表项」的单级页表再分页，将页表（一级页表）分为 <code>1024</code> 个页表（二级页表），每个表（二级页表）中包含 <code>1024</code> 个「页表项」，形成<strong>二级分页</strong>。如下图所示：</p>
+<p><img src="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/19296e249b2240c29f9c52be70f611d5.png" alt="img"></p>
+<p>当然如果 4GB 的虚拟地址全部都映射到了物理内存上的话，二级分页占用空间确实是更大了，但是，因为计算机组成原理里面无处不在的<strong>局部性原理</strong>，一个进程使用到的空间远未达到 4GB，因为会存在部分对应的页表项都是空的，根本没有分配，对于已分配的页表项，如果存在最近一定时间未访问的页表，在物理内存紧张的情况下，操作系统会将页面换出到硬盘，也就是说不会占用物理内存。</p>
+<blockquote>
+<p>那么为什么不分级的页表就做不到这样节约内存呢？</p>
+</blockquote>
+<p>我们从页表的性质来看，保存在内存中的页表承担的职责是将虚拟地址翻译成物理地址。假如虚拟地址在页表中找不到对应的页表项，计算机系统就不能工作了。所以<strong>页表一定要覆盖全部虚拟地址空间，不分级的页表就需要有 100 多万个页表项来映射，而二级分页则只需要 1024 个页表项</strong>（此时一级页表覆盖到了全部虚拟地址空间，二级页表在需要时创建）。</p>
+<blockquote>
+<p>TLB 有什么用？使用 TLB 之后的地址翻译流程是怎样的？</p>
+</blockquote>
+<p>因为局部性原理，可以把最常访问的几个页表项存储到CPU中，这个 Cache 就是 TLB（<em>Translation Lookaside Buffer</em>） ，通常称为页表缓存、转址旁路缓存、快表等。</p>
+<p><img src="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/a3cdf27646b24614a64cfc5d7ccffa35.png" alt="img"></p>
+<p>在 CPU 芯片里面，封装了内存管理单元（<em>Memory Management Unit</em>）芯片，它用来完成地址转换和 TLB 的访问与交互。</p>
+<p>有了 TLB 后，那么 CPU 在寻址时，会先查 TLB，如果没找到，才会继续查常规的页表。</p>
+<p>TLB 的命中率其实是很高的，因为程序最常访问的页就那么几个。</p>
+<blockquote>
+<p>换页机制有什么用？</p>
+</blockquote>
+<p>换页机制的思想是当物理内存不够用的时候，操作系统选择将一些物理页的内容放到磁盘上去，等要用到的时候再将它们读取到物理内存中。也就是说，换页机制利用磁盘这种较低廉的存储设备扩展的物理内存。</p>
+<p>这也就解释了一个日常使用电脑常见的问题：为什么操作系统中所有进程运行所需的物理内存即使比真实的物理内存要大一些，这些进程也是可以正常运行的，只是运行速度会变慢。</p>
+<p>这同样是一种时间换空间的策略，你用 CPU 的计算时间，页的调入调出花费的时间，换来了一个虚拟的更大的物理内存空间来支持程序的运行。</p>
+<blockquote>
+<p>页机制和分段机制有哪些共同点和区别？</p>
+</blockquote>
+<p><strong>共同点</strong>：</p>
+<ul>
+<li>都是非连续内存管理的方式。</li>
+<li>都采用了地址映射的方法，将虚拟地址映射到物理地址，以实现对内存的管理和保护。</li>
+</ul>
+<p><strong>区别</strong>：</p>
+<ul>
+<li>分页机制以页面为单位进行内存管理，而分段机制以段为单位进行内存管理。页的大小是固定的，由操作系统决定，通常为 2 的幂次方。而段的大小不固定，取决于我们当前运行的程序。</li>
+<li>页是物理单位，即操作系统将物理内存划分成固定大小的页面，每个页面的大小通常是 2 的幂次方，例如 4KB、8KB 等等。而段则是逻辑单位，是为了满足程序对内存空间的逻辑需求而设计的，通常根据程序中数据和代码的逻辑结构来划分。</li>
+<li>分段机制容易出现外部内存碎片，即在段与段之间留下碎片空间(不足以映射给虚拟地址空间中的段)。分页机制解决了外部内存碎片的问题，但仍然可能会出现内部内存碎片。</li>
+</ul>
+<h2 id="段页式内存管理"><a href="#段页式内存管理" class="headerlink" title="段页式内存管理"></a>段页式内存管理</h2><p>结合了段式管理和页式管理的一种内存管理机制，把物理内存先分成若干段，每个段又继续分成若干大小相等的页。</p>
+<p><img src="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/f19ebd6f70f84083b0d87cc5e9dea8e3.png" alt="img"></p>
+<p>地址结构就由<strong>段号、段内页号和页内位移</strong>三部分组成。</p>
+<p>用于段页式地址变换的数据结构是每一个程序一张段表，每个段又建立一张页表，段表中的地址是页表的起始地址，而页表中的地址则为某页的物理页号，如图所示：</p>
+<p><img src="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/8904fb89ae0c49c4b0f2f7b5a0a7b099.png" alt="img"></p>
+<p>段页式地址变换中要得到物理地址须经过三次内存访问：</p>
+<ul>
+<li>第一次访问段表，得到页表起始地址；</li>
+<li>第二次访问页表，得到物理页号；</li>
+<li>第三次将物理页号与页内位移组合，得到物理地址。</li>
+</ul>
+<h1 id="进程管理"><a href="#进程管理" class="headerlink" title="进程管理"></a>进程管理</h1><h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><blockquote>
+<p>进程的定义</p>
+</blockquote>
+<p>进程的经典定义就是一个执行中的程序的实例</p>
+<blockquote>
+<p>PCB 是什么？包含哪些信息？</p>
+</blockquote>
+<p><strong>PCB（Process Control Block）</strong> 即进程控制块，是操作系统中用来管理和跟踪进程的数据结构，每个进程都对应着一个独立的 PCB。</p>
+<p>当操作系统创建一个新进程时，会为该进程分配一个唯一的进程 ID，并且为该进程创建一个对应的进程控制块。当进程执行时，PCB 中的信息会不断变化，操作系统会根据这些信息来管理和调度进程。</p>
+<p>PCB 主要包含下面几部分的内容：</p>
+<p><strong>进程描述信息：</strong></p>
+<ul>
+<li>进程标识符：标识各个进程，每个进程都有一个并且唯一的标识符；</li>
+<li>用户标识符：进程归属的用户，用户标识符主要为共享和保护服务；</li>
+</ul>
+<p><strong>进程控制和管理信息：</strong></p>
+<ul>
+<li>进程当前状态，如 new、ready、running、waiting 或 blocked 等；</li>
+<li>进程优先级：进程抢占 CPU 时的优先级；</li>
+</ul>
+<p><strong>资源分配清单：</strong></p>
+<ul>
+<li>有关内存地址空间或虚拟地址空间的信息，所打开文件的列表和所使用的 I&#x2F;O 设备信息。</li>
+</ul>
+<p><strong>CPU 相关信息：</strong></p>
+<ul>
+<li>CPU 中各个寄存器的值，当进程被切换时，CPU 的状态信息都会被保存在相应的 PCB 中，以便进程重新执行时，能从断点处继续执行。</li>
+</ul>
+<blockquote>
+<p>每个 PCB 是如何组织的呢？</p>
+</blockquote>
+<p>通常是通过<strong>链表</strong>的方式进行组织，把具有<strong>相同状态的进程链在一起，组成各种队列</strong>。比如：</p>
+<ul>
+<li>将所有处于就绪状态的进程链在一起，称为<strong>就绪队列</strong>；</li>
+<li>把所有因等待某事件而处于等待状态的进程链在一起就组成各种<strong>阻塞队列</strong>；</li>
+<li>另外，对于运行队列在单核 CPU 系统中则只有一个运行指针了，因为单核 CPU 在某个时间，只能运行一个程序。</li>
+</ul>
+<blockquote>
+<p>进程有哪几种状态?</p>
+</blockquote>
+<p>我们一般把进程大致分为 5 种状态，这一点和线程很像！</p>
+<ul>
+<li><p>**创建状态(new)**：进程正在被创建，尚未到就绪状态。</p>
+</li>
+<li><p>**就绪状态(ready)**：进程已处于准备运行状态，即进程获得了除了处理器之外的一切所需资源，一旦得到处理器资源(处理器分配的时间片)即可运行。</p>
+</li>
+<li><p>**运行状态(running)**：进程正在处理器上运行(单核 CPU 下任意时刻只有一个进程处于运行状态)。</p>
+</li>
+<li><p>**阻塞状态(waiting)**：又称为等待状态，进程正在等待某一事件而暂停运行如等待某资源为可用或等待 IO 操作完成。即使处理器空闲，该进程也不能运行。</p>
+</li>
+<li><p>**结束状态(terminated)**：进程正在从系统中消失。可能是进程正常结束或其他原因中断退出运行。</p>
+<blockquote>
+<p>什么是进程的上下文切换</p>
+</blockquote>
+<p>各个进程之间是共享 CPU 资源的，在不同的时候进程之间需要切换，让不同的进程可以在 CPU 执行，那么这个<strong>一个进程切换到另一个进程运行，称为进程的上下文切换</strong>。</p>
+<p>进程是由内核管理和调度的，所以进程的切换只能发生在内核态。</p>
+<p><strong>进程的上下文切换不仅包含了虚拟内存、栈、全局变量等用户空间的资源，还包括了内核堆栈、寄存器等内核空间的资源。</strong></p>
+<p>通常，会把交换的信息保存在进程的 PCB，当要运行另外一个进程的时候，我们需要从这个进程的 PCB 取出上下文，然后恢复到 CPU 中</p>
+</li>
+</ul>
+<h2 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h2><blockquote>
+<p>什么是线程</p>
+</blockquote>
+<p>线程就是进程当中的一条执行流程</p>
+<blockquote>
+<p>线程的优缺点</p>
+</blockquote>
+<p>线程的优点：</p>
+<ul>
+<li>一个进程中可以同时存在多个线程；</li>
+<li>各个线程之间可以并发执行；</li>
+<li>各个线程之间可以共享地址空间和文件等资源；</li>
+</ul>
+<p>线程的缺点：</p>
+<ul>
+<li>当进程中的一个线程崩溃时，会导致其所属进程的所有线程崩溃（这里是针对 C&#x2F;C++ 语言，Java语言中的线程奔溃不会造成进程崩溃)</li>
+</ul>
+<blockquote>
+<p>线程与进程的比较</p>
+</blockquote>
+<p>线程与进程最大的区别在于：<strong>线程是调度的基本单位，而进程则是资源拥有的基本单位</strong>。</p>
+<ul>
+<li>进程是资源（包括内存、打开的文件等）分配的单位，线程是 CPU 调度的单位；</li>
+<li>进程拥有一个完整的资源平台，而线程只独享必不可少的资源，如寄存器和栈；</li>
+<li>线程同样具有就绪、阻塞、执行三种基本状态，同样具有状态之间的转换关系；</li>
+<li>线程能减少并发执行的时间和空间开销；</li>
+</ul>
+<blockquote>
+<p>为什么线程相比进程能减少开销：</p>
+</blockquote>
+<ul>
+<li>线程的创建时间比进程快，因为进程在创建的过程中，还需要资源管理信息，比如内存管理信息、文件管理信息，而线程在创建的过程中，不会涉及这些资源管理信息，而是共享它们；</li>
+<li>线程的终止时间比进程快，因为线程释放的资源相比进程少很多；</li>
+<li>同一个进程内的线程切换比进程切换快，因为线程具有相同的地址空间（虚拟内存共享），这意味着同一个进程的线程都具有同一个页表，那么在切换的时候不需要切换页表。而对于进程之间的切换，切换的时候要把页表给切换掉，而页表的切换过程开销是比较大的；</li>
+<li>由于同一进程的各线程间共享内存和文件资源，那么在线程之间数据传递的时候，就不需要经过内核了，这就使得线程之间的数据交互效率更高了；</li>
+</ul>
+<blockquote>
+<p>线程的上下文切换</p>
+</blockquote>
+<p>所以，所谓操作系统的任务调度，实际上的调度对象是线程，而进程只是给线程提供了虚拟内存、全局变量等资源。</p>
+<blockquote>
+<p>线程上下文切换的是什么？</p>
+</blockquote>
+<ul>
+<li>当两个线程不是属于同一个进程，则切换的过程就跟进程上下文切换一样；</li>
+<li><strong>当两个线程是属于同一个进程，因为虚拟内存是共享的，所以在切换时，虚拟内存这些资源就保持不动，只需要切换线程的私有数据、寄存器等不共享的数据</strong>；</li>
+</ul>
+<h2 id="进程之间的通信"><a href="#进程之间的通信" class="headerlink" title="进程之间的通信"></a>进程之间的通信</h2><p><strong>每个进程的用户地址空间都是独立的，一般而言是不能互相访问的，但内核空间是每个进程都共享的，所以进程之间要通信必须通过内核。</strong></p>
+<blockquote>
+<p>进程间通信方式包括</p>
+</blockquote>
+<ul>
+<li><p>**管道&#x2F;匿名管道(Pipes)**：用于具有亲缘关系的父子进程间或者兄弟进程之间的通信。</p>
+</li>
+<li><p><strong>有名管道(Named Pipes)</strong> : 匿名管道由于没有名字，只能用于亲缘关系的进程间通信。有名管道克服了这个困难。不管是匿名管道还是命名管道，进程写入的数据都是<strong>缓存在内核</strong>中，另一个进程读取数据时候自然也是从内核中获取，同时通信数据都遵循<strong>先进先出</strong>原则.</p>
+</li>
+<li><p><strong>消息队列(Message Queuing)<strong>：克服了管道通信的数据是无格式的字节流的问题，消息队列实际上是保存在内核的「消息链表」，</strong>每次数据的写入和读取都需要经过用户态与内核态之间的拷贝过程。</strong></p>
+</li>
+<li><p>**共享内存(Shared memory)**：使得多个进程可以访问同一块内存空间，不同进程可以及时看到对方进程中对共享内存中数据的更新。这种方式在多进程竞争同个共享资源会造成数据的错乱，需要依靠某种同步操作，如互斥锁和信号量等。可以说这是最有用的进程间通信方式。</p>
+</li>
+<li><p>**信号量(Semaphores)**：信号量是一个计数器，用于多进程对共享数据的访问，信号量的意图在于进程间同步。这种通信方式主要用于解决与同步相关的问题并避免竞争条件。</p>
+</li>
+<li><p><strong>信号(Signal)<strong>：是一种</strong>异步通信机制</strong>，信号可以在应用进程和内核之间直接交互，内核也可以利用信号来通知用户空间的进程发生了哪些系统事件，一旦有信号发生，<strong>进程有三种方式响应信号 1. 执行默认操作、2. 捕捉信号（自编写执行操作）、3. 忽略信号</strong>。有两个信号是应用进程无法捕捉和忽略的，即 <code>SIGKILL</code> 和 <code>SIGSTOP</code>，这是为了方便我们能在任何时候结束或停止某个进程。</p>
+</li>
+<li><p><strong>套接字(Sockets)</strong> : 此方法主要用于在客户端和服务器之间通过网络进行通信。套接字是支持 TCP&#x2F;IP 的网络通信的基本操作单元，可以看做是不同主机之间的进程进行双向通信的端点，简单的说就是通信的两方的一种约定，用套接字中的相关函数来完成通信过程。</p>
+</li>
+</ul>
+<h2 id="同步与互斥"><a href="#同步与互斥" class="headerlink" title="同步与互斥"></a>同步与互斥</h2><blockquote>
+<p>什么是临界区</p>
+</blockquote>
+<p>多线程执行操作共享变量可能会导致竞争状态的一段代码，它是访问共享资源的代码片段，一定不能给多线程同时执行。</p>
+<blockquote>
+<p>什么是互斥</p>
+</blockquote>
+<p><strong>保证一个线程在临界区执行时，其他线程应该被阻止进入临界区</strong></p>
+<blockquote>
+<p>什么是同步</p>
+</blockquote>
+<p><strong>并发进程&#x2F;线程在一些关键点上可能需要互相等待与互通消息，这种相互制约的等待与互通信息称为进程&#x2F;线程同步</strong>。</p>
+<blockquote>
+<p>解决同步与互斥的办法</p>
+</blockquote>
+<ul>
+<li><em>锁</em>：加锁、解锁操作；</li>
+<li><em>信号量</em>：P、V 操作；</li>
+</ul>
+<p>这两个都可以方便地实现进程&#x2F;线程互斥，同时信号量还可以方便地实现进程&#x2F;线程同步。</p>
+<blockquote>
+<p>什么是信号量</p>
+</blockquote>
+<p>信号量是操作系统提供的一种协调共享资源访问的方法。</p>
+<p>通常<strong>信号量表示资源的数量</strong>，对应的变量是一个整型（<code>sem</code>）变量。</p>
+<p>另外，还有<strong>两个原子操作的系统调用函数来控制信号量的</strong>，分别是：</p>
+<ul>
+<li><em>P 操作</em>：将 <code>sem</code> 减 <code>1</code>，相减后，如果 <code>sem &lt; 0</code>，则进程&#x2F;线程进入阻塞等待，否则继续；</li>
+<li><em>V 操作</em>：将 <code>sem</code> 加 <code>1</code>，相加后，如果 <code>sem &lt;= 0</code>，唤醒一个等待中的进程&#x2F;线程；</li>
+</ul>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><blockquote>
+<p>什么是死锁</p>
+</blockquote>
+<p>死锁是指在多个进程或线程中，每个进程或线程都在等待其他进程或线程所持有的资源，而导致所有进程或线程都无法继续执行的一种状态。</p>
+<blockquote>
+<p>死锁产生的条件</p>
+</blockquote>
+<ul>
+<li>互斥条件,即多个线程不能同时使用同一个资源；</li>
+<li>持有并等待条件，线程 在等待其他资源 的同时并不会释放自己已经持有的资源；</li>
+<li>不可剥夺条件，线程已经持有的资源 ，在自己使用完之前不能被其他线程获取；</li>
+<li>环路等待条件，两个线程获取资源的顺序构成了环形链；</li>
+</ul>
+<blockquote>
+<p>如何避免死锁问题的发生</p>
+</blockquote>
+<p>那么避免死锁问题就只需要破环其中一个条件就可以，最常见的并且可行的就是<strong>使用资源有序分配法，来破环环路等待条件</strong>。</p>
+<blockquote>
+<p>那什么是资源有序分配法呢？</p>
+</blockquote>
+<p>线程 A 和 线程 B 获取资源的顺序要一样，当线程 A 是先尝试获取资源 A，然后尝试获取资源 B 的时候，线程 B 同样也是先尝试获取资源 A，然后尝试获取资源 B。也就是说，线程 A 和 线程 B 总是以相同的顺序申请自己想要的资源。</p>
+<h2 id="锁的分类"><a href="#锁的分类" class="headerlink" title="锁的分类"></a>锁的分类</h2><h3 id="互斥锁和自旋锁"><a href="#互斥锁和自旋锁" class="headerlink" title="互斥锁和自旋锁"></a>互斥锁和自旋锁</h3><ul>
+<li><strong>互斥锁</strong>加锁失败后，线程会<strong>释放 CPU</strong> ，给其他线程；</li>
+<li><strong>自旋锁</strong>加锁失败后，线程会<strong>忙等待</strong>，直到它拿到锁；</li>
+</ul>
+<h3 id="乐观锁和悲观锁"><a href="#乐观锁和悲观锁" class="headerlink" title="乐观锁和悲观锁"></a>乐观锁和悲观锁</h3><p>悲观锁认为<strong>多线程同时修改共享资源的概率比较高，于是很容易出现冲突，所以访问共享资源前，先要上锁</strong>。</p>
+<p>乐观锁假定冲突的概率很低，它会<strong>先修改完共享资源，再验证这段时间内有没有发生冲突，如果没有其他线程在修改资源，那么操作完成，如果发现有其他线程已经修改过这个资源，就放弃本次操作</strong>。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://username.github.io/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" data-id="cltu174t8000d48nueu71d9oi" data-title="操作系统.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1019,11 +2027,23 @@
   
 
 
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+  </nav>
+
 </section>
         
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/note/">note</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/note/juc/">juc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/jvm/">jvm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E6%A1%86%E6%9E%B6/">框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E9%A1%B9%E7%9B%AE/">项目</a></li></ul></li></ul>
+    </div>
+  </div>
+
 
   
     
@@ -1048,7 +2068,15 @@
       <ul>
         
           <li>
+            <a href="/2024/03/11/note/jvm/jvm/">jvm.md</a>
+          </li>
+        
+          <li>
             <a href="/2024/03/11/note/juc/AQS/">AQS.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/Future/">Future.md</a>
           </li>
         
           <li>
@@ -1056,15 +2084,7 @@
           </li>
         
           <li>
-            <a href="/2024/03/11/note/juc/cas/">cas.md</a>
-          </li>
-        
-          <li>
             <a href="/2024/03/11/note/juc/Executor/">Executor.md</a>
-          </li>
-        
-          <li>
-            <a href="/2024/03/11/note/juc/Future/">Future.md</a>
           </li>
         
       </ul>

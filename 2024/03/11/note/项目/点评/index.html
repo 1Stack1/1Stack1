@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>点评.md | 1Stack1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="各个模块博客模块 添加博客 &#x2F;&#x2F;TODO 推送  添加博客之后还需要查询tb_follow表来查询该用户的所有粉丝并且使用feed流给每位粉丝推送  查看部分博客  滚动分页查询  —–&gt; 返回结果中有下一次查询起始位置的id,等到下一次查询的时候带上该id。 需要关联查询来给Blog类的isLiked字段赋值 查询博客时，使用关联查询将作者信息封装到Blog对象，而不是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="点评.md">
+<meta property="og:url" content="https://username.github.io/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/index.html">
+<meta property="og:site_name" content="1Stack1">
+<meta property="og:description" content="各个模块博客模块 添加博客 &#x2F;&#x2F;TODO 推送  添加博客之后还需要查询tb_follow表来查询该用户的所有粉丝并且使用feed流给每位粉丝推送  查看部分博客  滚动分页查询  —–&gt; 返回结果中有下一次查询起始位置的id,等到下一次查询的时候带上该id。 需要关联查询来给Blog类的isLiked字段赋值 查询博客时，使用关联查询将作者信息封装到Blog对象，而不是">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/image-20240102184103627.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/20200423103755739.png">
+<meta property="article:published_time" content="2024-03-11T15:50:50.000Z">
+<meta property="article:modified_time" content="2024-03-13T16:34:08.034Z">
+<meta property="article:author" content="1Stack1">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://username.github.io/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/image-20240102184103627.png">
+  
+    <link rel="alternate" href="/atom.xml" title="1Stack1" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">1Stack1</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://username.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-note/项目/点评" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/" class="article-date">
+  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/%E9%A1%B9%E7%9B%AE/">项目</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      点评.md
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="各个模块"><a href="#各个模块" class="headerlink" title="各个模块"></a>各个模块</h1><h2 id="博客模块"><a href="#博客模块" class="headerlink" title="博客模块"></a>博客模块</h2><ul>
+<li><p>添加博客</p>
+<p>&#x2F;&#x2F;TODO 推送</p>
+<p><code> 添加博客之后还需要查询tb_follow表来查询该用户的所有粉丝并且使用feed流给每位粉丝推送</code></p>
+</li>
+<li><p>查看部分博客</p>
+<ul>
+<li>滚动分页查询  —–&gt; 返回结果中有下一次查询起始位置的id,等到下一次查询的时候带上该id。</li>
+<li>需要关联查询来给Blog类的isLiked字段赋值</li>
+<li>查询博客时，使用关联查询将作者信息封装到Blog对象，而不是两次查询使用stream流将每个用户封装到Blog对象，减少应用层和数据层交互</li>
+</ul>
+</li>
+<li><p>博客评论</p>
+<p>在博客表中博客和评论在同一张表中，根据parent_id字段区别，如果为0则为博客，为其他值则为评论的博客id</p>
+</li>
+<li><p>给博客点赞</p>
+<p><code>刚开始用户查看博客时将用户已经点赞的博客的isLike字段(tb_blog不存在该字段)赋值为true,之后前端一直存储该字段，并且根据该字段来在请求头上提示后端用户是选择点赞还是取消点赞。后端操作用户点赞功能通过修改redis的“blog：liked：”+blog_id（set类型，存储之前没有点赞过的选择点赞）添加userId存储点赞用户，以及“blog：unliked：”+blog_id（set，存储之前点赞过的，选择取消点赞）添加userId存储取消点赞用户，以给前端快速的响应时间。比如开始点赞，如果“blog：unliked：”+blog_id没有userId（说明之前没有点过赞，因为之前点过赞还使该set为空说明上一步是点赞操作，那么这一步是取消点赞操作不符合用户选择点赞操作），向“blog：liked：”+blog_id添加userId，取消点赞因为“blog：liked：”+blog_id有userId，所以移除set中的userId。后端使用定时任务每两分钟将点赞userId和取消点赞userId存储到数据库（只需插入“blog：liked：”+blog_id中的userId和blogId的记录，删除“blog：unliked：”+blog_id中的userId和blogId的记录）,并清空redis中的点赞与取消点赞信息（之后前端都是根据前端本地存储来显示用户是否已经点赞并给后端提示相应的信息，但是如果用户使用抓包软件修改就会导致某个博客每半个小时就能再点赞一次，要解决这个问题就需要前端和后端协商好将url中的数据按一定格式设置复杂）</code></p>
+</li>
+</ul>
+<h2 id="用户模块"><a href="#用户模块" class="headerlink" title="用户模块"></a>用户模块</h2><p>用户基本信息表ums_member</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#基本信息</span></span><br><span class="line"><span class="built_in">id</span> <span class="comment">#用户Id</span></span><br><span class="line">level <span class="comment">#用户等级</span></span><br><span class="line">header<span class="comment">#用户头像</span></span><br><span class="line">gender<span class="comment">#用户性别</span></span><br><span class="line">birth<span class="comment">#用户生日</span></span><br><span class="line">college<span class="comment">#用户学院</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#登录信息</span></span><br><span class="line">username <span class="comment">#用户名</span></span><br><span class="line">password <span class="comment">#密码 MD5加密</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#用于验证用户身份，目前只实现了邮箱验证</span></span><br><span class="line">mobile <span class="comment">#手机</span></span><br><span class="line">email <span class="comment">#邮箱</span></span><br></pre></td></tr></table></figure>
+
+<p>用户收货地址表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">id</span></span><br><span class="line">member_id <span class="comment">#关联用户表中的用户id</span></span><br><span class="line">name <span class="comment">#收货昵称</span></span><br><span class="line">phone <span class="comment">#收货使用手机号码</span></span><br><span class="line">detail_address <span class="comment">#详细地址</span></span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>如何实现的MD5盐加密及验证</p>
+</blockquote>
+<p>通过使用java.security中的MessageDigest.getInstance(“MD5”).digest(“字符串”);</p>
+<p>实现MD5加密，但是MD5容易破解，就需要在字符串上拼接一段难以破解的字符串，在进行MD5加密，实现MD5盐加密。</p>
+<blockquote>
+<p>如何实现的邮箱验证</p>
+</blockquote>
+<blockquote>
+<p>如何实现n台设备同时登录</p>
+</blockquote>
+<blockquote>
+<p>如何实现同一时间只能有一个设备登录</p>
+</blockquote>
+<blockquote>
+<p>登录时存在什么问题</p>
+</blockquote>
+<ul>
+<li><p>登录功能<br> <code>通过过滤器链来进行刷新在线时间以及拦截需要登陆才能访问的模块，因为刷新在线时间是只要发送请求就能刷新在线时间，那么刷新在线时间拦截器是拦截所有请求，来在拦截器中操作；而拦截需要登陆模块的拦截器拦截除了登录、注册、看博客、看商品等请求之外的所有请求；将两个过滤器谁前谁后都可以。</code></p>
+</li>
+<li><p>注册功能</p>
+</li>
+</ul>
+<p><strong>登录需要到数据库查找判断信息是否正确，这里会存在缓存穿透问题，这里使用缓存空对象的方法解决该问题</strong></p>
+<h2 id="订单模块"><a href="#订单模块" class="headerlink" title="订单模块"></a>订单模块</h2><p>订单表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#订单基本信息</span></span><br><span class="line"><span class="built_in">id</span> </span><br><span class="line">order_sn <span class="comment">#订单号</span></span><br><span class="line">member_id <span class="comment">#用户id</span></span><br><span class="line">coupon_id <span class="comment">#优惠卷id</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#订单展示信息</span></span><br><span class="line">member_username<span class="comment">#用户名</span></span><br><span class="line">receiver_name <span class="comment">#收件人姓名</span></span><br><span class="line">receiver_phone <span class="comment">#收件人手机号</span></span><br><span class="line">receiver_email <span class="comment">#收件人邮箱</span></span><br><span class="line">receiver_detail_address <span class="comment">#收件人地址</span></span><br><span class="line">status <span class="comment">#订单状态【0-&gt;待付款；1-&gt;已付款，但未发货；2-&gt;已发货；3-&gt;已完成；4-&gt;已关闭；5-&gt;已取消】</span></span><br><span class="line">create_time <span class="comment">#订单创建时间</span></span><br><span class="line">pay_time <span class="comment">#支付时间</span></span><br><span class="line">total_amount<span class="comment">#总价</span></span><br><span class="line">pay_amount<span class="comment">#实际支付价格</span></span><br></pre></td></tr></table></figure>
+
+<p>订单项目表（每创建一个订单后，该订单中包含了几种商品，就需要在订单项目表中，增加几条记录；）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">id</span></span><br><span class="line">order_sn <span class="comment">#关联的订单号</span></span><br><span class="line">spu_id <span class="comment">#spuid</span></span><br><span class="line">spu_name <span class="comment">#spuName</span></span><br><span class="line">sku_id <span class="comment">#skuId</span></span><br><span class="line">sku_name <span class="comment">#skuName</span></span><br><span class="line">sku_pic <span class="comment">#sku图片</span></span><br><span class="line">sku_price <span class="comment">#sku价格</span></span><br><span class="line">promotion_amount <span class="comment">#商品数量</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>订单号如何生成</p>
+</blockquote>
+<blockquote>
+<p>订单流程</p>
+</blockquote>
+<ul>
+<li><p>创建订单</p>
+<p>用户需要填写表单</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">receiver_name <span class="comment">#收件人姓名</span></span><br><span class="line">receiver_phone <span class="comment">#收件人手机号</span></span><br><span class="line">receiver_email <span class="comment">#收件人邮箱</span></span><br><span class="line">receiver_detail_address <span class="comment">#收件人地址</span></span><br></pre></td></tr></table></figure>
+
+<p>前端Post请求携带参数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">coupon_id <span class="comment">#优惠卷id</span></span><br><span class="line">receiver_name <span class="comment">#收件人姓名</span></span><br><span class="line">receiver_phone <span class="comment">#收件人手机号</span></span><br><span class="line">receiver_email <span class="comment">#收件人邮箱</span></span><br><span class="line">receiver_detail_address <span class="comment">#收件人地址</span></span><br><span class="line">sku_id <span class="comment">#skuId</span></span><br><span class="line">promotion_amount <span class="comment">#商品数量</span></span><br></pre></td></tr></table></figure>
+
+<p>后端操作</p>
+<p>1.拦截器从cookie获取memberId。</p>
+<p>2.CompletableFuture+线程池获取用户信息，优惠卷信息，商品信息。</p>
+<p>3.生成订单号，计算价格、时间等属性。</p>
+<p>4.给前端返回订单号。</p>
+</li>
+<li><p>订单详情</p>
+<p>前端Get请求携带参数订单号</p>
+<p>后端返回订单详情（订单类里有一个订单Item的List集合）</p>
+</li>
+<li><p>取消订单</p>
+<p>前端Post请求携带参数订单号</p>
+<p>后端修改订单状态。</p>
+</li>
+<li><p>支付订单</p>
+<p><em>见支付功能</em></p>
+</li>
+<li><p>订单列表</p>
+<p>前端Get请求携带页号</p>
+<p>后端获取用户Id，分页查询该用户所有订单，返回订单详情（订单类里有一个订单Item的List集合）</p>
+</li>
+</ul>
+<blockquote>
+<p>订单状态转变</p>
+</blockquote>
+<p>创建订单，订单变为<strong>未支付</strong>状态。</p>
+<p>启动一个定时任务，30min内用户支付后，变为<strong>已支付</strong>状态；如果30min后未支付，变为<strong>已关闭</strong>状态。</p>
+<p>商品发货后，变为<strong>已发货</strong>状态。</p>
+<p>用户取消订单，变为<strong>已取消</strong>状态。</p>
+<blockquote>
+<p>订单号如何生成？</p>
+</blockquote>
+<p>订单号生成有雪花算法、UUID、Redisson生成等方法生成订单号。</p>
+<p>这里用的是雪花算法。</p>
+<p>雪花算法是生成一个64bit的序列化，其中包括时间戳、数据中心id、机器id、序列号。</p>
+<p>序列号是用来分辨同一时间戳下不同的订单号。</p>
+<p>自定义的订单号生成工具类是将存储long类型的时间戳、数据中心id、机器id、上次调用的时间戳（用来将序列号归0）。</p>
+<p>并在同一时间戳下使用同一个AutomicInteger的序列号原子自增。</p>
+<p>最后使用各部分左移和或运算符生成序列号。</p>
+<h3 id="优惠卷功能"><a href="#优惠卷功能" class="headerlink" title="优惠卷功能"></a>优惠卷功能</h3><p>优惠卷表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">id</span></span><br><span class="line">shop_id <span class="comment">#商铺id</span></span><br><span class="line">title <span class="comment">#优惠卷标题</span></span><br><span class="line">sub_title <span class="comment">#副标题</span></span><br><span class="line">rules <span class="comment">#使用规则</span></span><br><span class="line">pay_value <span class="comment">#支付金额</span></span><br><span class="line">actual_value <span class="comment">#抵消金额</span></span><br><span class="line"><span class="built_in">type</span> <span class="comment">#类型【0,普通券；1,秒杀券】</span></span><br><span class="line">status <span class="comment"># 状态【1,上架; 2,下架; 3,过期】</span></span><br><span class="line">create_time<span class="comment"># 创建时间</span></span><br><span class="line">update_time <span class="comment"># 更新时间</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>秒杀卷表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">voucher_id <span class="comment">#关联优惠卷id</span></span><br><span class="line">stock <span class="comment">#库存</span></span><br><span class="line">begin_time<span class="comment">#开始时间</span></span><br><span class="line">end_time<span class="comment">#结束时间</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><p>添加普通优惠卷</p>
+</li>
+<li><p>添加秒杀卷</p>
+<p><code>将秒杀卷的优惠卷公用字段save到优惠卷表，将秒杀卷特有字段save到秒杀卷表。</code></p>
+</li>
+<li><p>展示指定店铺的优惠卷</p>
+<p><code>查询店铺优惠卷，使用stream流将秒杀卷字段添加到优惠卷对象</code></p>
+</li>
+<li><p>秒杀卷获取功能</p>
+<p><code> 使用lua脚本实现redis中原子的完成检查库存充足、一人一单（“voucher：belong：”+voucherId，set类型）、扣减库存；之后生成用户获取优惠卷的订单并加入阻塞队列，直接返回，而线程池使用使用其他线程异步完成订单到数据库的保存,提高系统响应速度。</code></p>
+</li>
+</ul>
+<h3 id="支付功能"><a href="#支付功能" class="headerlink" title="支付功能"></a>支付功能</h3><h4 id="支付宝支付"><a href="#支付宝支付" class="headerlink" title="支付宝支付"></a>支付宝支付</h4><p><img src="/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/image-20240102184103627.png" alt="image-20240102184103627"></p>
+<p>要实现支付宝支付需要又四把钥匙，商户私钥、商户公钥、支付宝私钥、支付宝公钥</p>
+<blockquote>
+<p>为什么需要商户公私钥，只用支付宝公私钥不行吗</p>
+</blockquote>
+<p>因为支付宝公钥都可以获取，如果只是用支付宝公私钥，别人就可以伪造一个支付请求。所以需要商户公私钥，私钥保存在服务器，公钥上传到支付宝，别人就不能伪造支付请求。</p>
+<blockquote>
+<p>向支付宝发送请求需要携带什么</p>
+</blockquote>
+<p>主要修改以下参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">APPID</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">RSA_PRIVATE_KEY</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;<span class="comment">//生成私钥，并把公钥上传给支付宝</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">notify_url</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;<span class="comment">//支付成功后，支付宝每隔一段时间就会发送通知，服务器就可以来修改订单状态等</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">return_url</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;<span class="comment">//支付成功要跳转的页面</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">ALIPAY_PUBLIC_KEY</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;<span class="comment">//配置支付宝返回的公钥</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>编写流程</p>
+</blockquote>
+<p>引入依赖alipay-sdk-java</p>
+<p>创建对应的AlipayClient和AlipayRequest</p>
+<p>返回一个html字符串，让浏览器跳转<strong>支付页面</strong>。</p>
+<p>用户支付成功后跳转到<strong>跳转页面</strong>，支付宝也会<strong>异步通知</strong>服务器，然后服务端修改订单状态。</p>
+<h2 id="客服功能"><a href="#客服功能" class="headerlink" title="客服功能"></a>客服功能</h2><p>基于websocket实现,前端发送可以转为History类型的json，后端通过一个存储用户id与用户session之间映射的map判断用户是否在线，如果用户不在线，讲history对象的state属性置为0，若在线置为1并通过ws发送给接收方。然后把history对象存储到redis的一个list集合，每3秒的所有history都会存到同一个list里面。服务端开启定时任务，定时任务会获取前三秒存储到redis的单聊history存储到数据库并删除该list。</p>
+<h3 id="前缀树敏感词脱敏"><a href="#前缀树敏感词脱敏" class="headerlink" title="前缀树敏感词脱敏"></a>前缀树敏感词脱敏</h3><p>构建前缀树是放到静态代码块中，在项目根目录下放着一个记录好的敏感词文本文件，在静态代码块中通过这个文本文件来构造前缀树。</p>
+<p>敏感词脱敏是使用三个指针，一个指向前缀树，其他两个是用于使用双指针法来查找敏感词的。具体过程为，指针1一直指向前缀树的根节点，指针2和指针3在没有找到疑似敏感词时时一起移动的。当指针2指向的文字在指针1的某个字点中,就为疑似找到敏感词，指针2就一直指向该处作为疑似敏感词的头指针，临时指针指向前缀树中被匹配的节点，指针3一直向后查找，直到确认该词为敏感词，就将指针2与指针3之间的文本全部替换为*号.</p>
+<p><img src="/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/20200423103755739.png" alt="在这里插入图片描述"></p>
+<h3 id="websocket"><a href="#websocket" class="headerlink" title="websocket"></a>websocket</h3><ul>
+<li><p>配置类</p>
+<p>WebSocketConfigurer接口：registerWebSockethandlers()方法，将路径和处理器映射。</p>
+</li>
+<li><p>自动配置类</p>
+<p>spring-boot-autoconfigure依赖下websocket目录有</p>
+<p>WebSocketMessagingAutoConfiguration</p>
+<p>WebSocketServletAutoConfiguration</p>
+<p>WebSocketReactiveAutoConfiguration</p>
+</li>
+<li><p>核心类</p>
+<p>WebSocketSession接口</p>
+<p>WebSocketHandler接口</p>
+<p>WebSocketMessage接口</p>
+</li>
+</ul>
+<h3 id="使用websocket时的问题"><a href="#使用websocket时的问题" class="headerlink" title="使用websocket时的问题"></a>使用websocket时的问题</h3><p>主要有Bean注入和无法获取principal</p>
+<blockquote>
+<p>原生websocket，使用到原生注解如@OnOpen等注解的对象使用@Autowired注解自动装配Bean时，出现null异常</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@ServerEndpoint(&quot;/&#123;userId&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChatController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ChatService chatService;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;        </span><br></pre></td></tr></table></figure>
+
+<p>WebSocket 是多实例单线程的。每当有新的 WebSocket 连接建立时，都会创建一个新的 WebSocket 实例。这些新的 WebSocket 实例需要访问 Spring 容器中的 Bean。</p>
+<p>问题就在于，如果在 WebSocket 实例中使用 <code>@Autowired</code> 注解来注入 Spring 容器中的 Bean，那么只有在整个应用程序启动时，Spring 容器才会创建一个 Bean 实例并将其注入到 WebSocket 实例中。而对于之后创建的新的 WebSocket 实例，Spring 容器不会再次创建和注入新的 Bean 实例。因此，这些新的 WebSocket 实例中的 <code>@Autowired</code> 注解的 Bean 将会是 null。</p>
+<p><strong>解决办法：</strong></p>
+<p>1.使用 <code>prototype</code> 作用域来声明需要注入到 WebSocket 中的 Bean。<code>prototype</code> 作用域的 Bean 在每次使用时都会创建一个新的实例。这样在新的 WebSocket 实例创建时，就会创建一个新的 Bean 实例并注入到 WebSocket 中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> &#123;  </span><br><span class="line">    <span class="meta">@Bean</span>  </span><br><span class="line">    <span class="meta">@Scope(&quot;prototype&quot;)</span>  </span><br><span class="line">    <span class="keyword">public</span> MyService <span class="title function_">myService</span><span class="params">()</span> &#123;  </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">MyServiceImpl</span>();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.还是使用单例Bean，但是将该对象用static修饰，在Spring容器启动时就给该静态对象赋值。—-<strong>使用的是该方法解决的</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setChatService</span><span class="params">(ChatService chat)</span> &#123;</span><br><span class="line">        ChatController.chatService = chat;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@ServerEndpoint(&quot;/&#123;userId&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChatController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> ChatService chatService;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>无法获取到principal</p>
+</blockquote>
+<p><strong>问题</strong></p>
+<p>想在WebSoketSession连接建立时获取到principal，并建立用户与WebSocketSession映射。跟踪WebSocketSession建立，知道principal是在SecurityContext得到。但是不管是在登陆后将Authentication放入SecurityContext还是debug模式下在协议升级时将Authentication放入SecurityContext都无法在WebSocketSession中得到。</p>
+<p><strong>原因</strong></p>
+<p>WebSocket协议本质上是一种无状态的通信协议，与HTTP不同，它不维护会话（Session）状态。每个WebSocket连接都是独立的，不会自动与HTTP会话相关联。</p>
+<p><strong>解决</strong></p>
+<p>用户登录后，用户信息会返回给前端，在websocket连接url上携带着用户id，然后在websocket连接建立时建立映射。</p>
+<p><strong>跟踪WebSocketSession给userPrincipal赋值</strong></p>
+<ul>
+<li><p>通过继承AbstractWebSocketHandler的handler的afterConnectionEstablished方法，知道afterConnectionEstablished方法的参数是</p>
+<p>StandardWebSocketSession类的对象</p>
+</li>
+<li><p>通过StandardWebSocketSession类的initializeNativeSession方法,跟踪到userPrincipal是由WsSession的getUserPrincipal方法赋值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">initializeNativeSession</span><span class="params">(Session session)</span> &#123;</span><br><span class="line">	</span><br><span class="line">	....</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">this</span>.user == <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="built_in">this</span>.user = session.getUserPrincipal();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过给WsSession的构造方法断点，并根据栈信息知道是由WsHttpUpgradeHandler的init方法来创建的WsSession对象，执行构造方法传递的参数是由属性handshakeRequest的getUserPrincipal方法赋值的，handshakeRequest是在preInit方法赋值的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">(WebConnection connection)</span> &#123;</span><br><span class="line">       ....</span><br><span class="line">           wsSession = <span class="keyword">new</span> <span class="title class_">WsSession</span>(wsRemoteEndpointServer,</span><br><span class="line">                   webSocketContainer, handshakeRequest.getRequestURI(),</span><br><span class="line">                   handshakeRequest.getParameterMap(),</span><br><span class="line">                   handshakeRequest.getQueryString(),</span><br><span class="line">                   handshakeRequest.getUserPrincipal(), httpSessionId,</span><br><span class="line">                   negotiatedExtensions, subProtocol, pathParameters, secure,</span><br><span class="line">                   serverEndpointConfig);</span><br><span class="line">           </span><br><span class="line">   &#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">preInit</span><span class="params">(ServerEndpointConfig serverEndpointConfig,</span></span><br><span class="line"><span class="params">           WsServerContainer wsc, WsHandshakeRequest handshakeRequest,</span></span><br><span class="line"><span class="params">           List&lt;Extension&gt; negotiatedExtensionsPhase2, String subProtocol,</span></span><br><span class="line"><span class="params">           Transformation transformation, Map&lt;String,String&gt; pathParameters,</span></span><br><span class="line"><span class="params">           <span class="type">boolean</span> secure)</span> &#123;</span><br><span class="line">       ...</span><br><span class="line">       <span class="built_in">this</span>.handshakeRequest = handshakeRequest;</span><br><span class="line">       ...</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>handshakeRequest</strong>的getUserPrincipal是由构造方法的HttpServletRequest的getUserPrincipal结果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="keyword">public</span> Principal <span class="title function_">getUserPrincipal</span><span class="params">()</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> userPrincipal;</span><br><span class="line">   &#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="title function_">WsHandshakeRequest</span><span class="params">(HttpServletRequest request, Map&lt;String,String&gt; pathParams)</span> &#123;</span><br><span class="line">	...</span><br><span class="line">       userPrincipal = request.getUserPrincipal();</span><br><span class="line">       ...</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>这里需要知道给priInit方法的handshakeRequest是哪个实现类，通过给preInit方法断点，并根据栈信息跟踪到UpgradeUtil的doUpgrade和WsServerContainer的doUpgrade方法可知传递的是具体实现类是SecurityContextHolderAwareRequestWrapper，而SecurityContextHolderAwareRequestWrapper的getUserPrincipal方法是从SpringSecurity中获取</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Authentication <span class="title function_">getAuthentication</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Authentication</span> <span class="variable">auth</span> <span class="operator">=</span> SecurityContextHolder.getContext().getAuthentication();</span><br><span class="line">    <span class="keyword">return</span> (!<span class="built_in">this</span>.trustResolver.isAnonymous(auth)) ? auth : <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：userPrincipal是通过HandShakeRequest，WsSession，StandardWebSocketSession依次传递的，而HadShakeRequest实现类获取userPrincipal是通过SecurityContext获取到的。</p>
+</li>
+</ul>
+<h1 id="简历上内容"><a href="#简历上内容" class="headerlink" title="简历上内容"></a>简历上内容</h1><ol>
+<li><p>登录模块中String的intern方法</p>
+<blockquote>
+<p>为什么要用intern方法</p>
+</blockquote>
+<p>项目让用户登录时同一时间只允许登录一次，可以使用乐观锁，如“update state &#x3D; 1 where username &#x3D; ‘xxx’ and state &#x3D; 0”，但是这样会导致如果同一时间大量请求用同一账号登录导致所有请求打到数据库，所以可以使用redis将已登录用户缓存起来。但是从redis判断用户是否登录以及更新用户登陆状态是两步操作，会有并发问题。所以需要使用悲观锁，但是如果锁住同一对象，会导致其他账号同一时间无法登录。而这里是要求保证同时间同一账号只能登录一次，所以可以以用户名作为区分度来降低锁的颗粒度，而不同请求的虽然用户名相同，但是用户名并不是同一个字符串对象，这里就需要用字符串的intern方法。</p>
+<blockquote>
+<p>介绍一下String的intern方法</p>
+</blockquote>
+<p>当我们调用intern()方法时，如果常量池中已经存在该字符串对象，则直接返回常量池中的字符串对象的引用；否则，在常量池中创建一个新的字符串对象，并返回该对象的引用。</p>
+<p><a href="%5B(20%E6%9D%A1%E6%B6%88%E6%81%AF">详细过程</a> Java–深入理解字符串的String#intern()方法奥妙之处_吾日三省贾斯汀的博客-CSDN博客](<a target="_blank" rel="noopener" href="https://blog.csdn.net/JustinQin/article/details/120606343">https://blog.csdn.net/JustinQin/article/details/120606343</a>))</p>
+<p>修正:<strong>字符串常量池中一直保存的都是字符串值</strong></p>
+</li>
+<li><p>ThreadLocal同一用户不同模块通信</p>
+<blockquote>
+<p>为什么用ThreadLocal</p>
+</blockquote>
+<p>因为SpringBoot每一个HTTP请求由一个独立线程处理，当使用到同一线程所有模块都可能用到但是每个线程又不相同的数据，就可以使用ThreadLocal来实现。</p>
+<blockquote>
+<p>为什么springboot中一个http请求由一个独立的线程处理</p>
+</blockquote>
+<p>在Spring Boot中，一个Web请求可以看作是一个线程，是因为Spring Boot使用了Servlet容器。Servlet容器在接收到一个HTTP请求时，会为该请求创建一个独立的线程来进行处理。这个线程在处理完请求之后就会被销毁，从而释放资源。</p>
+<p>这个线程会负责处理请求中的所有操作，包括解析请求参数、执行业务逻辑、生成响应等。由于每个请求都会被分配到一个独立的线程中进行处理，所以不同的请求之间不会相互干扰，从而提高了系统的并发处理能力，还可以保证系统的稳定性和安全。</p>
+<blockquote>
+<p>ThreadLocal细节</p>
+</blockquote>
+<p><a href="D:\用户\Desktop\找offer\note\JUC\ThreadLocal.md">ThreadLocal细节</a></p>
+<blockquote>
+<p>哪个模块用到了ThreadLocal进行通信</p>
+</blockquote>
+<p>所有模块可能都会用到用户信息，所以在拦截器中将用户信息保存到对应的线程（在用户登陆的时候就把信息存储到redis中，拦截器中只需根据请求携带的token就可以获取到UserDto），等到其他模块使用的时候就可以从中获取（比如关注、点赞、获取优惠卷等都需要用户Id，用户Id就是根据线程中的ThreadLocalMap获取到的）。</p>
+</li>
+</ol>
+<p>3.自编写缓存击穿，缓存穿透工具类</p>
+<blockquote>
+<p>哪些模块存在缓存穿透问题</p>
+</blockquote>
+<p>未注册用户登录、查找不存在店铺、获取不存在优惠卷、给不存在用户点赞等操作redis和数据库中都不存在的数据。</p>
+<p>解决：使用缓存空对象解决的</p>
+<blockquote>
+<p>哪些模块存在缓存击穿问题</p>
+</blockquote>
+<p>某个秒杀卷过期</p>
+<p>工具类中有互斥完成Redis数据更新，和返回过期数据。这里一般肯定会保证秒杀卷在redis不会过期，但是这里出现缓存击穿，那么有可能是由于其他模块错误操作导致数据误删除，就不能使用返回过期数据实现，这里使用的是互斥完成数据缓存。</p>
+<p>5.lua脚本完成库存，一人一单，扣减库存原子性</p>
+<p>先在静态代码块中给DefaultRedisScript对象初始化，再在具体实例方法中获取到参数执行lua脚本。</p>
+<p>查看库存——-&gt;判断是否已经获取了优惠卷——&gt; 扣减库存。</p>
+<blockquote>
+<p>为什么不使用synchronized来保证原子性</p>
+</blockquote>
+<p>用<code>synchronized</code>代码块可以在Java代码层面上确保操作的原子性，但在分布式环境中可能存在性能问题。而使用Lua脚本可以在Redis服务器端执行原子操作，避免了并发访问的问题，并且可以减少网络开销。因此，根据具体的需求和场景，可以选择适合的方式来保证操作的原子性。</p>
+<p>6.线程池异步生成订单</p>
+<p>  再用户获取到优惠卷，要完成商品减少库存、判断用户身份、生成订单、邮箱提醒、到支付宝扣去余额等操作，这种涉及到金钱需要保证原子性，且用了大部分第三方服务的原子性错做，响应时间长，为了提高提高响应速度，所以这一操作使用线程池完成异步生成订单。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://username.github.io/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/" data-id="cltu174th001q48nudn0rdo17" data-title="点评.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/03/11/note/%E9%A1%B9%E7%9B%AE/mit824/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          mit6.824.md
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/03/11/note/%E9%A1%B9%E7%9B%AE/%E8%81%8A%E5%A4%A9%E7%BD%91%E7%AB%99/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">聊天网站.md</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/note/">note</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/note/juc/">juc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/jvm/">jvm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E6%A1%86%E6%9E%B6/">框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E9%A1%B9%E7%9B%AE/">项目</a></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/03/11/note/jvm/jvm/">jvm.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/AQS/">AQS.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/Future/">Future.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/ConcurrentHashMap/">ConcurrentHashMap.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/Executor/">Executor.md</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 1Stack1<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

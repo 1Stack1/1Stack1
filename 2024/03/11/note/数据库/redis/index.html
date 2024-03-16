@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>reids.md | 1Stack1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="数据结构数据结构与数据类型的关系 简单动态字符串Redis自己构建了一种名为简单动态字符串(simple dynamic string, SDS)的抽象类型，并将其作为默认字符串使用 SDS定义123456789101112131415struct sdshdr&#123;        &#x2F;&#x2F;记录buf数组中已经使用的字节的数量    &#x2F;&#x2F;等于SDS所保存的字符串的长度    int len;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="reids.md">
+<meta property="og:url" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/index.html">
+<meta property="og:site_name" content="1Stack1">
+<meta property="og:description" content="数据结构数据结构与数据类型的关系 简单动态字符串Redis自己构建了一种名为简单动态字符串(simple dynamic string, SDS)的抽象类型，并将其作为默认字符串使用 SDS定义123456789101112131415struct sdshdr&#123;        &#x2F;&#x2F;记录buf数组中已经使用的字节的数量    &#x2F;&#x2F;等于SDS所保存的字符串的长度    int len;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230420132049924.png">
+<meta property="og:image" content="https://atts.w3cschool.cn/attachments/image/cimg/2015-09-13_55f512c5e9256.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419190927089.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/3%E5%B1%82%E8%B7%B3%E8%A1%A8-%E8%B7%A8%E5%BA%A6.drawio.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/2802786ab4f52c1e248904e5cef33a74.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/cdc14698f629c74bf5a239cc8a611aeb.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/5dbdfa7cfbdd1d12a4d9458c6c90d472.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/e2e3e19fc934e70563fbdfde2af39a2b.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/e84b052381e240eeb8cc97d6b729968b.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419190945603.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419190959490.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230420155226789.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/462c6a65531667f2bcf420953b0aded9.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/d1a6deff4672580609c99a5b06bf3429.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/1f0e5ae7ab749078cadda5ba0ed98eac.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5.jpg">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/lru%E5%AD%97%E6%AE%B5.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5.jpg">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/6f0ab40396b7fc2c15e6f4487d3a0ad7.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/0e2d081af084c41802c7b5de8aa41bd4.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/28afd536c57a46447ddab0a2062abe84.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/4eeef4dd1bedd2ffe0b84d4eaa0dbdea.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/98987d9417b2bab43087f45fc959d32a.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM0ODI3Njc0,size_16,color_FFFFFF,t_70-20230309231944807.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/c34a9d1f58d602ff1fe8601f7270baa7.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/ebd620db8a1af66fbeb8f4d4ef6adc68.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191032659.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191043435.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191052559.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191059855.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191109279.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191117675.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191127291.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191138789.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191146159.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191154715.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191201586.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/f67379b60d151262753fec3b817b8617.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/b3419db09e654dee9d8fd5a8ae584b27.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/3319fc471b5744ea99e98754e3ef85d4.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/86b0046c2622b2c4bda697f9bc0f5b28.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/953193076aed493aa7ea1745e0180124.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/6912879d6a3a4cd9b4e0e64109940d32.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/f781855728ff481f9053d863181b539d.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/777500b8e1d34568956615d251354388.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/6a1b0f5a264c4d76b470c1ed3966eff0.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/8febac10b14bed16cb96d1d944cd08da.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/454a8228a6549176ad7e0484fba3c92b.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/cc208c2931b4e889d1a58cb655537767.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/1cc7401143e79383ead96582ac11b615.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/2a2ea2854bbc3ae8ae86d7da45fa32ee.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/a4440f0d572612e0832b903e4a62bd2b.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/2ee2280e9f59b6b4879ebdec6eb0cf52.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/d1e3ad29fdc74ab6a956a74ecb57ee0c.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/d214d541100740878a8af150a09fc9f3.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20240115164836637.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20240115164913174.png">
+<meta property="og:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20240115164952299.png">
+<meta property="article:published_time" content="2024-03-11T15:50:50.000Z">
+<meta property="article:modified_time" content="2024-03-13T16:33:07.421Z">
+<meta property="article:author" content="1Stack1">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230420132049924.png">
+  
+    <link rel="alternate" href="/atom.xml" title="1Stack1" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">1Stack1</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://username.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-note/数据库/redis" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/" class="article-date">
+  <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      reids.md
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="数据结构与数据类型的关系"><a href="#数据结构与数据类型的关系" class="headerlink" title="数据结构与数据类型的关系"></a>数据结构与数据类型的关系</h2><p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230420132049924.png" alt="image-20230420132049924"></p>
+<h2 id="简单动态字符串"><a href="#简单动态字符串" class="headerlink" title="简单动态字符串"></a>简单动态字符串</h2><p><code>Redis自己构建了一种名为简单动态字符串(simple dynamic string, SDS)的抽象类型，并将其作为默认字符串使用</code></p>
+<h3 id="SDS定义"><a href="#SDS定义" class="headerlink" title="SDS定义"></a>SDS定义</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span>&#123;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//记录buf数组中已经使用的字节的数量</span></span><br><span class="line">    <span class="comment">//等于SDS所保存的字符串的长度</span></span><br><span class="line">    <span class="type">int</span> len;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//记录为sds分配的长度</span></span><br><span class="line">    <span class="type">int</span> alloc;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//用来表示不同类型的 SDS。一共设计了 5 种类型，分别是 sdshdr5、sdshdr8、sdshdr16、sdshdr32 和 sdshdr64</span></span><br><span class="line">    <span class="type">int</span> flags;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//字节数组,用于保存字符串</span></span><br><span class="line">    <span class="type">char</span> buf[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SDS与C字符转区别"><a href="#SDS与C字符转区别" class="headerlink" title="SDS与C字符转区别"></a>SDS与C字符转区别</h3><ul>
+<li><p>常数复杂度获取字符串长度</p>
+</li>
+<li><p>杜绝缓冲区溢出</p>
+</li>
+<li><p>减少修改字符串时带来的内存重分配次数</p>
+<p><code>通过未使用空间来减少内存重分配次数</code></p>
+<p>主要有两种优化策略</p>
+<ul>
+<li><p>空间预分配</p>
+<p><code>当SDS的API对一个SDS进行修改并且需要对SDS进行空间扩展的时候，程序不仅会为SDS分配修改所必须要的空间，还会为SDS分配额外的未使用空间</code></p>
+</li>
+<li><p>惰性空间释放</p>
+<p><code>当SDS的API需要缩短SDS保存的字符串时，程序并不立即使用内存重分配来回收缩短后多出来的字节，而是使用free属性将这些字节的数量记录起来，并等待将来使用</code></p>
+</li>
+</ul>
+</li>
+<li><p>二进制安全</p>
+<p><code>SDS虽然使用&#39;\0&#39;结尾但是由于有len属性，并不会造成二进制安全问题；而C字符串就不能保存像图片、音频、视频这样的二进制数据</code></p>
+</li>
+<li><p>兼容部分C字符串函数</p>
+<p><code>SDS和C字符串一样以&#39;\0&#39;结尾</code></p>
+</li>
+</ul>
+<h3 id="SDS扩容规则"><a href="#SDS扩容规则" class="headerlink" title="SDS扩容规则"></a>SDS扩容规则</h3><ul>
+<li>如果所需的 sds 长度<strong>小于 1 MB</strong>，那么最后的扩容是按照<strong>翻倍扩容</strong>来执行的，即 2 倍的newlen</li>
+<li>如果所需的 sds 长度<strong>超过 1 MB</strong>，那么最后的扩容长度应该是 newlen <strong>+ 1MB</strong>。</li>
+</ul>
+<h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><p>链表在 Redis 中的应用非常广泛， 比如列表键的底层实现之一就是链表： 当一个列表键包含了数量比较多的元素， 又或者列表中包含的元素都是比较长的字符串时， Redis 就会使用链表作为列表键的底层实现，除了链表键之外， 发布与订阅、慢查询、监视器等功能也用到了链表。</p>
+<h3 id="链表的实现"><a href="#链表的实现" class="headerlink" title="链表的实现"></a>链表的实现</h3><p>节点</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 前置节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">prev</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 后置节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 节点的值</span></span><br><span class="line">    <span class="type">void</span> *value;</span><br><span class="line"></span><br><span class="line">&#125; listNode;</span><br></pre></td></tr></table></figure>
+
+<p>链表</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">list</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 表头节点</span></span><br><span class="line">    listNode *head;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 表尾节点</span></span><br><span class="line">    listNode *tail;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 链表所包含的节点数量</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> len;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 节点值复制函数</span></span><br><span class="line">    <span class="type">void</span> *(*dup)(<span class="type">void</span> *ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 节点值释放函数</span></span><br><span class="line">    <span class="type">void</span> (*<span class="built_in">free</span>)(<span class="type">void</span> *ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 节点值对比函数</span></span><br><span class="line">    <span class="type">int</span> (*match)(<span class="type">void</span> *ptr, <span class="type">void</span> *key);</span><br><span class="line"></span><br><span class="line">&#125; <span class="built_in">list</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>Redis链表是使用双端链表实现的</code></p>
+<h3 id="重点回顾"><a href="#重点回顾" class="headerlink" title="重点回顾"></a>重点回顾</h3><ul>
+<li>链表被广泛用于实现 Redis 的各种功能， 比如列表键， 发布与订阅， 慢查询， 监视器， 等等。</li>
+<li>每个链表节点由一个 <code>listNode</code> 结构来表示， 每个节点都有一个指向前置节点和后置节点的指针， 所以 Redis 的链表实现是双端链表。</li>
+<li>每个链表使用一个 <code>list</code> 结构来表示， 这个结构带有表头节点指针、表尾节点指针、以及链表长度等信息。</li>
+<li>因为链表表头节点的前置节点和表尾节点的后置节点都指向 <code>NULL</code> ， 所以 Redis 的链表实现是无环链表。</li>
+<li>通过为链表设置不同的类型特定函数， Redis 的链表可以用于保存各种不同类型的值。</li>
+</ul>
+<h2 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h2><h3 id="字典的实现"><a href="#字典的实现" class="headerlink" title="字典的实现"></a>字典的实现</h3><p>哈希表</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表数组</span></span><br><span class="line">    dictEntry **table;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></span><br><span class="line">    <span class="comment">// 总是等于 size - 1</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> sizemask;<span class="comment">//(size为2^n,计算下标%size可以写为&amp;size-1)</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 该哈希表已有节点的数量</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> used;</span><br><span class="line"></span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure>
+
+<p>哈希表节点</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 键</span></span><br><span class="line">    <span class="type">void</span> *key;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 值</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">        <span class="type">void</span> *val;</span><br><span class="line">        <span class="type">uint64_t</span> u64;</span><br><span class="line">        <span class="type">int64_t</span> s64;</span><br><span class="line">    &#125; v;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    dictEntry 结构里键值对中的值是一个「联合体 v」定义的，因此，键值对中的值可以是一个指向实际值的指针，或者是一个无符号的 64 位整数或有符号的 64 位整数或double 类的值。这么做的好处是可以节省内存空间，因为当「值」是整数或浮点数时，就可以将值的数据内嵌在 dictEntry 结构里，无需再用一个指针指向实际的值，从而节省了内存空间。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指向下个哈希表节点，形成链表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">&#125; dictEntry;</span><br></pre></td></tr></table></figure>
+
+<p>字典</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 类型特定函数</span></span><br><span class="line">    dictType *type;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 私有数据</span></span><br><span class="line">    <span class="type">void</span> *privdata;<span class="comment">//保存了需要传递给那些类型特定函数的可选参数</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//type和privdata属性是针对不同类型的键值对，为创建多态字典而设置的</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表</span></span><br><span class="line">    dictht ht[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// rehash 索引</span></span><br><span class="line">    <span class="comment">// 当 rehash 不在进行时，值为 -1</span></span><br><span class="line">    <span class="type">int</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></span><br><span class="line"></span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure>
+
+<h3 id="哈希算法"><a href="#哈希算法" class="headerlink" title="哈希算法"></a>哈希算法</h3><p>Redis使用的哈希算法</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用字典设置的哈希函数，计算键 key 的哈希值</span></span><br><span class="line">hash = dict-&gt;type-&gt;hashFunction(key);</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用哈希表的 sizemask 属性和哈希值，计算出索引值</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">根据情况不同， ht[x] 可以是 ht[0] 或者 ht[1]</span></span><br><span class="line">index = hash &amp; dict-&gt;ht[x].sizemask;</span><br></pre></td></tr></table></figure>
+
+<h3 id="哈希冲突"><a href="#哈希冲突" class="headerlink" title="哈希冲突"></a>哈希冲突</h3><p>Redis 的哈希表使用链地址法（separate chaining）来解决键冲突，因为 <code>dictEntry</code> 节点组成的链表没有指向链表表尾的指针， 所以为了速度考虑， 程序总是将新节点添加到链表的表头位置（复杂度为 <img src="https://atts.w3cschool.cn/attachments/image/cimg/2015-09-13_55f512c5e9256.png" alt="O(1)">）， 排在其他已有节点的前面。</p>
+<h3 id="rehash"><a href="#rehash" class="headerlink" title="rehash"></a>rehash</h3><p>随着操作的不断执行， 哈希表保存的键值对会逐渐地增多或者减少， 为了让哈希表的负载因子（load factor）维持在一个合理的范围之内， 当哈希表保存的键值对数量太多或者太少时， 程序需要对哈希表的大小进行相应的扩展或者收缩。</p>
+<p>扩展和收缩哈希表的工作可以通过执行 rehash （重新散列）操作来完成， Redis 对字典的哈希表执行 rehash 的步骤如下：</p>
+<ol>
+<li>为字典的 ht[1] 哈希表分配空间， 这个哈希表的空间大小取决于要执行的操作， 以及 ht[0]当前包含的键值对数量 （也即是ht[0].used属性的值）：<ul>
+<li>如果执行的是扩展操作， 那么 <code>ht[1]</code> 的大小为第一个大于等于 <code>ht[0].used * 2</code> 的2^n（<code>2</code> 的 <code>n</code> 次方幂）；</li>
+<li>如果执行的是收缩操作， 那么 <code>ht[1]</code> 的大小为第一个大于等于 <code>ht[0].used</code> 的 2^n</li>
+</ul>
+</li>
+<li>将保存在ht[0]中的所有键值对 rehash 到ht[1] 上面： rehash 指的是重新计算键的哈希值和索引值， 然后将键值对放置到 ht[1] 哈希表的指定位置上。</li>
+<li>当ht[0] 包含的所有键值对都迁移到了ht[1] 之后 （ht[0] 变为空表）， 释放 ht[0] ， 将 ht[1] 设置为 ht[0] ， 并在ht[1] 新创建一个空白哈希表， 为下一次 rehash 做准备。</li>
+</ol>
+<p><code>复制到新表之后由于hashtable的size改变，sizemask改变，hash值可能改变，索引值可能改变</code></p>
+<h3 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h3><p>rehash 动作并不是一次性、集中式地完成的， 而是分多次、渐进式地完成的，为了避免 rehash 对服务器性能造成影响， 服务器不是一次性将 <code>ht[0]</code> 里面的所有键值对全部 rehash 到 <code>ht[1]</code> ， 而是分多次、渐进式地将 <code>ht[0]</code> 里面的键值对慢慢地 rehash 到 <code>ht[1]</code> 。</p>
+<p>以下是哈希表渐进式 rehash 的详细步骤：</p>
+<ol>
+<li>为 <code>ht[1]</code> 分配空间， 让字典同时持有 <code>ht[0]</code> 和 <code>ht[1]</code> 两个哈希表。</li>
+<li>在字典中维持一个索引计数器变量 <code>rehashidx</code> ， 并将它的值设置为 <code>0</code> ， 表示 rehash 工作正式开始。</li>
+<li>在 rehash 进行期间， 每次对字典执行添加、删除、查找或者更新操作时， 程序除了执行指定的操作以外， 还会顺带将 <code>ht[0]</code> 哈希表在 <code>rehashidx</code> 索引上的所有键值对 rehash 到 <code>ht[1]</code> ， 当 rehash 工作完成之后， 程序将 <code>rehashidx</code> 属性的值增一。</li>
+<li>随着字典操作的不断执行， 最终在某个时间点上， <code>ht[0]</code> 的所有键值对都会被 rehash 至 <code>ht[1]</code> ， 这时程序将 <code>rehashidx</code> 属性的值设为 <code>-1</code> ， 表示 rehash 操作已完成。</li>
+</ol>
+<p><code>执行渐进式 rehash 的过程中， 字典会同时使用ht[0]和ht[1]两个哈希表， 所以在渐进式 rehash 进行期间， 字典的删除（delete）、查找（find）、更新（update）等操作会在两个哈希表上进行： 比如说， 要在字典里面查找一个键的话， 程序会先在 ht[0] 里面进行查找， 如果没找到的话， 就会继续到 ht[1] 里面进行查找， 诸如此类。另外， 在渐进式 rehash 执行期间， 新添加到字典的键值对一律会被保存到 ht[1]里面， 而ht[0]则不再进行任何添加操作： 这一措施保证了ht[0]包含的键值对数量会只减不增， 并随着 rehash 操作的执行而最终变成空表。</code></p>
+<h3 id="rehash触发条件"><a href="#rehash触发条件" class="headerlink" title="rehash触发条件"></a>rehash触发条件</h3><p>rehash 的触发条件跟<strong>负载因子（load factor）</strong>有关系。</p>
+<p>负载因子可以通过下面这个公式计算：</p>
+<p>​			<code>负载因子 = 哈希表已保存节点数量 / 哈希表大小</code></p>
+<p>触发 rehash 操作的条件，主要有两个：</p>
+<ul>
+<li><strong>当负载因子大于等于 1 ，并且 Redis 没有在执行 bgsave 命令或者 bgrewiteaof 命令，也就是没有执行 RDB 快照或没有进行 AOF 重写的时候，就会进行 rehash 操作。</strong></li>
+<li><strong>当负载因子大于等于 5 时，此时说明哈希冲突非常严重了，不管有没有有在执行 RDB 快照或 AOF 重写，都会强制进行 rehash 操作。</strong></li>
+</ul>
+<h3 id="重点回顾-1"><a href="#重点回顾-1" class="headerlink" title="重点回顾"></a>重点回顾</h3><ul>
+<li>字典被广泛用于实现 Redis 的各种功能， 其中包括数据库和哈希键。</li>
+<li>Redis 中的字典使用哈希表作为底层实现， 每个字典带有两个哈希表， 一个用于平时使用， 另一个仅在进行 rehash 时使用。</li>
+<li>当字典被用作数据库的底层实现， 或者哈希键的底层实现时， Redis 使用 MurmurHash2 算法来计算键的哈希值。</li>
+<li>哈希表使用链地址法来解决键冲突， 被分配到同一个索引上的多个键值对会连接成一个单向链表。</li>
+<li>在对哈希表进行扩展或者收缩操作时， 程序需要将现有哈希表包含的所有键值对 rehash 到新哈希表里面， 并且这个 rehash 过程并不是一次性地完成的， 而是渐进式地完成的。</li>
+</ul>
+<h2 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h2><p>Redis 只有 Zset 对象的底层实现用到了跳表，跳表的优势是能支持平均 O(logN) 复杂度的节点查找。</p>
+<p>zset 结构体里有两个数据结构：一个是跳表，一个是哈希表。这样的好处是既能进行高效的范围查询，也能进行高效单点查询。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zset</span> &#123;</span></span><br><span class="line">    dict *dict;</span><br><span class="line">    zskiplist *zsl;</span><br><span class="line">&#125; zset;</span><br></pre></td></tr></table></figure>
+
+<p>Zset 对象在执行数据插入或是数据更新的过程中，会依次在跳表和哈希表中插入或更新相应的数据，从而保证了跳表和哈希表中记录的信息一致。</p>
+<p>Zset 对象能支持范围查询（如 ZRANGEBYSCORE 操作），这是因为它的数据结构设计采用了跳表，而又能以常数复杂度获取元素权重（如 ZSCORE 操作），这是因为它同时采用了哈希表进行索引。</p>
+<h3 id="跳跃表的实现"><a href="#跳跃表的实现" class="headerlink" title="跳跃表的实现"></a>跳跃表的实现</h3><p>跳跃表节点</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 后退指针</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">backward</span>;</span><span class="comment">//节点的后退指针 ( backward 属性 ) 用于从表尾向表头方向访问节点：跟可以一次跳过多个节点的前进指针不同，因为每个节点只有一个后退指针，所以每次只能后退至前一个节点。</span></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分值</span></span><br><span class="line">    <span class="type">double</span> score;<span class="comment">//节点的分值(score属性)是一个double类型的浮点数，跳跃表中的所有节点都按分值从小到大来排序。</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 成员对象</span></span><br><span class="line">    sds ele;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*在同一个跳跃表中，各个节点保存的成员对象必须是唯一的，但是多个节点保存的分值却可以是相同的：</span></span><br><span class="line"><span class="comment">    分值相同的节点将按照成员对象在字典中的大小来进行排序，成员对象较小的节点会排在前面(靠近表头的方向)，</span></span><br><span class="line"><span class="comment">    而成员对象较大的节点则会排在后面(靠近表尾的方向)。*/</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 层</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistLevel</span> &#123;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 前进指针</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">forward</span>;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 跨度</span></span><br><span class="line">        <span class="type">unsigned</span> <span class="type">int</span> span;<span class="comment">//跨度实际上是为了计算这个节点在跳表中的排位。具体怎么做的呢？因为跳表中的节点都是按序排列的，那么计算某个节点排位的时候，从头节点点到该结点的查询路径上，将沿途访问过的所有层的跨度累加起来，得到的结果就是目标节点在跳表中的排位。</span></span><br><span class="line"></span><br><span class="line">    &#125; level[];<span class="comment">//每个跳跃表节点的层高都是1到32之间的随机数</span></span><br><span class="line"></span><br><span class="line">&#125; zskiplistNode;</span><br></pre></td></tr></table></figure>
+
+<p>跳跃表</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplist</span> &#123;</span></span><br><span class="line">    <span class="comment">//表头节点和表尾节点</span></span><br><span class="line">    <span class="keyword">typedef</span> zskiplistNode *header, *tail;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//表中节点数量</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> length;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//表中层数最大的节点的层数</span></span><br><span class="line">    <span class="type">int</span> level;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419190927089.png" alt="image-20230419190927089"></p>
+<h3 id="跳跃表的查询过程"><a href="#跳跃表的查询过程" class="headerlink" title="跳跃表的查询过程"></a>跳跃表的查询过程</h3><p>查找一个跳表节点的过程时，跳表会从头节点的最高层开始，逐一遍历每一层。在遍历某一层的跳表节点时，会用跳表节点中的 SDS 类型的元素和元素的权重来进行判断，共有两个判断条件：</p>
+<ul>
+<li>如果当前节点的权重「小于」要查找的权重时，跳表就会访问该层上的下一个节点。</li>
+<li>如果当前节点的权重「等于」要查找的权重时，并且当前节点的 SDS 类型数据「小于」要查找的数据时，跳表就会访问该层上的下一个节点。</li>
+</ul>
+<p>如果上面两个条件都不满足，或者下一个节点为空时，跳表就会使用目前遍历到的节点的 level 数组里的下一层指针，然后沿着下一层指针继续查找，这就相当于跳到了下一层接着查找。</p>
+<p>举个例子，下图有个 3 层级的跳表。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/3%E5%B1%82%E8%B7%B3%E8%A1%A8-%E8%B7%A8%E5%BA%A6.drawio.png" alt="img"></p>
+<p>如果要查找「元素：abcd，权重：4」的节点，查找的过程是这样的：</p>
+<ul>
+<li>先从头节点的最高层开始，L2 指向了「元素：abc，权重：3」节点，这个节点的权重比要查找节点的小，所以要访问该层上的下一个节点；</li>
+<li>但是该层的下一个节点是空节点（ leve[2]指向的是空节点），于是就会跳到「元素：abc，权重：3」节点的下一层去找，也就是 leve[1];</li>
+<li>「元素：abc，权重：3」节点的 leve[1] 的下一个指针指向了「元素：abcde，权重：4」的节点，然后将其和要查找的节点比较。虽然「元素：abcde，权重：4」的节点的权重和要查找的权重相同，但是当前节点的 SDS 类型数据「大于」要查找的数据，所以会继续跳到「元素：abc，权重：3」节点的下一层去找，也就是 leve[0]；</li>
+<li>「元素：abc，权重：3」节点的 leve[0] 的下一个指针指向了「元素：abcd，权重：4」的节点，该节点正是要查找的节点，查询结束。</li>
+</ul>
+<h3 id="跳表节点层数的设置"><a href="#跳表节点层数的设置" class="headerlink" title="跳表节点层数的设置"></a>跳表节点层数的设置</h3><h3 id="跳表节点层数设置"><a href="#跳表节点层数设置" class="headerlink" title="跳表节点层数设置"></a>跳表节点层数设置</h3><p>跳表的相邻两层的节点数量的比例会影响跳表的查询性能。</p>
+<p>举个例子，下图的跳表，第二层的节点数量只有 1 个，而第一层的节点数量有 6 个。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/2802786ab4f52c1e248904e5cef33a74.png" alt="img"></p>
+<p>这时，如果想要查询节点 6，那基本就跟链表的查询复杂度一样，就需要在第一层的节点中依次顺序查找，复杂度就是 O(N) 了。所以，为了降低查询复杂度，我们就需要维持相邻层结点数间的关系。</p>
+<p>**跳表的相邻两层的节点数量最理想的比例是 2:1，查找复杂度可以降低到 O(logN)**。</p>
+<p>下图的跳表就是，相邻两层的节点数量的比例是 2 : 1。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/cdc14698f629c74bf5a239cc8a611aeb.png" alt="img"></p>
+<blockquote>
+<p>那怎样才能维持相邻两层的节点数量的比例为 2 : 1 呢？</p>
+</blockquote>
+<p>如果采用新增节点或者删除节点时，来调整跳表节点以维持比例的方法的话，会带来额外的开销。</p>
+<p>Redis 则采用一种巧妙的方法是，<strong>跳表在创建节点的时候，随机生成每个节点的层数</strong>，并没有严格维持相邻两层的节点数量比例为 2 : 1 的情况。</p>
+<p>具体的做法是，<strong>跳表在创建节点时候，会生成范围为[0-1]的一个随机数，如果这个随机数小于 0.25（相当于概率 25%），那么层数就增加 1 层，然后继续生成下一个随机数，直到随机数的结果大于 0.25 结束，最终确定该节点的层数</strong>。</p>
+<p>参数p设置的小,层数变高的可能性越大，内存占用越大；设置的大，层数变矮的可能性越大，查找效率越低。</p>
+<p>这样的做法，相当于每增加一层的概率不超过 25%，层数越高，概率越低，层高最大限制是 64。</p>
+<h3 id="为什么不使用平衡树"><a href="#为什么不使用平衡树" class="headerlink" title="为什么不使用平衡树"></a>为什么不使用平衡树</h3><ul>
+<li><strong>从内存占用上来比较，跳表比平衡树更灵活一些</strong>。平衡树每个节点包含 2 个指针（分别指向左右子树），而跳表每个节点包含的指针数目平均为 1&#x2F;(1-p)，具体取决于参数 p 的大小。如果像 Redis里的实现一样，取 p&#x3D;1&#x2F;4，那么平均每个节点包含 1.33 个指针，比平衡树更有优势。</li>
+<li><strong>在做范围查找的时候，跳表比平衡树操作要简单</strong>。在平衡树上，我们找到指定范围的小值之后，还需要以中序遍历的顺序继续寻找其它不超过大值的节点。如果不对平衡树进行一定的改造，这里的中序遍历并不容易实现。而在跳表上进行范围查找就非常简单，只需要在找到小值之后，对第 1 层链表进行若干步的遍历就可以实现。</li>
+<li><strong>从算法实现难度上来比较，跳表比平衡树要简单得多</strong>。平衡树的插入和删除操作可能引发子树的调整，逻辑复杂，而跳表的插入和删除只需要修改相邻节点的指针，操作简单又快速。</li>
+</ul>
+<h3 id="重点回顾-2"><a href="#重点回顾-2" class="headerlink" title="重点回顾"></a>重点回顾</h3><ul>
+<li>跳跃表是有序集合的底层实现之一， 除此之外它在 Redis 中没有其他应用。</li>
+<li>Redis 的跳跃表实现由 <code>zskiplist</code> 和 <code>zskiplistNode</code> 两个结构组成， 其中 <code>zskiplist</code> 用于保存跳跃表信息（比如表头节点、表尾节点、长度）， 而 <code>zskiplistNode</code> 则用于表示跳跃表节点。</li>
+<li>每个跳跃表节点的层高都是 <code>1</code> 至 <code>32</code> 之间的随机数。</li>
+<li>在同一个跳跃表中， 多个节点可以包含相同的分值， 但每个节点的成员对象必须是唯一的。</li>
+<li>跳跃表中的节点按照分值大小进行排序， 当分值相同时， 节点按照成员对象的大小进行排序。</li>
+</ul>
+<h2 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h2><p>整数集合是 Set 对象的底层实现之一。当一个 Set 对象只包含整数值元素，并且元素数量不大时，就会使用整数集这个数据结构作为底层实现。</p>
+<h3 id="整数集合的实现"><a href="#整数集合的实现" class="headerlink" title="整数集合的实现"></a>整数集合的实现</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">intset</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 编码方式</span></span><br><span class="line">    <span class="type">uint32_t</span> encoding;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 集合包含的元素数量</span></span><br><span class="line">    <span class="type">uint32_t</span> length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 保存元素的数组</span></span><br><span class="line">    <span class="type">int8_t</span> contents[];</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    可以看到，保存元素的容器是一个 contents 数组，虽然 contents 被声明为 int8_t 类型的数组，但是实际上 contents 数组并不保存任何 int8_t 类型的元素，contents 数组的真正类型取决于 intset 结构体里的 encoding 属性的值。比如：</span></span><br><span class="line"><span class="comment">	如果 encoding 属性值为 INTSET_ENC_INT16，那么 contents 就是一个 int16_t 类型的数组，数组中每一个元素的类型都是 int16_t；</span></span><br><span class="line"><span class="comment">	如果 encoding 属性值为 INTSET_ENC_INT32，那么 contents 就是一个 int32_t 类型的数组，数组中每一个元素的类型都是 int32_t；</span></span><br><span class="line"><span class="comment">	如果 encoding 属性值为 INTSET_ENC_INT64，那么 contents 就是一个 int64_t 类型的数组，数组中每一个元素的类型都是 int64_t；</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line">&#125; intset;</span><br></pre></td></tr></table></figure>
+
+<p><code>contents</code> 数组是整数集合的底层实现： 整数集合的每个元素都是 <code>contents</code> 数组的一个数组项（item）， 各个项在数组中按值的大小从小到大有序地排列， 并且数组中不包含任何重复项。</p>
+<h3 id="升级"><a href="#升级" class="headerlink" title="升级"></a>升级</h3><p>每当我们要将一个新元素添加到整数集合里面， 并且新元素的类型比整数集合现有所有元素的类型都要长时， 整数集合需要先进行升级（upgrade）， 然后才能将新元素添加到整数集合里面。</p>
+<p><strong>升级之后新元素的摆放位置</strong></p>
+<p>因为引发升级的新元素的长度总是比整数集合现有所有元素的长度都大， 所以这个新元素的值要么就大于所有现有元素， 要么就小于所有现有元素：</p>
+<ul>
+<li>在新元素小于所有现有元素的情况下， 新元素会被放置在底层数组的最开头（索引 <code>0</code> ）；</li>
+<li>在新元素大于所有现有元素的情况下， 新元素会被放置在底层数组的最末尾（索引 <code>length-1</code> ）。</li>
+</ul>
+<p><strong>升级示例</strong></p>
+<p>举个例子，假设有一个整数集合里有 3 个类型为 int16_t 的元素。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/5dbdfa7cfbdd1d12a4d9458c6c90d472.png" alt="img"></p>
+<p>现在，往这个整数集合中加入一个新元素 65535，这个新元素需要用 int32_t 类型来保存，所以整数集合要进行升级操作，首先需要为 contents 数组扩容，<strong>在原本空间的大小之上再扩容多 80 位（4x32-3x16&#x3D;80），这样就能保存下 4 个类型为 int32_t 的元素</strong>。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/e2e3e19fc934e70563fbdfde2af39a2b.png" alt="img"></p>
+<p>扩容完 contents 数组空间大小后，需要将之前的三个元素转换为 int32_t 类型，并将转换后的元素放置到正确的位上面，并且需要维持底层数组的有序性不变，整个转换过程如下：</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/e84b052381e240eeb8cc97d6b729968b.png" alt="img"></p>
+<p><strong>升级的好处</strong></p>
+<ul>
+<li><p>提升灵活性</p>
+<p>因为 C 语言是静态类型语言， 为了避免类型错误， 我们通常不会将两种不同类型的值放在同一个数据结构里面。</p>
+<p>比如说， 我们一般只使用 <code>int16_t</code> 类型的数组来保存 <code>int16_t</code> 类型的值， 只使用 <code>int32_t</code> 类型的数组来保存 <code>int32_t</code> 类型的值， 诸如此类。</p>
+<p>但是， 因为整数集合可以通过自动升级底层数组来适应新元素， 所以我们可以随意地将 <code>int16_t</code> 、 <code>int32_t</code> 或者 <code>int64_t</code> 类型的整数添加到集合中， 而不必担心出现类型错误， 这种做法非常灵活。</p>
+</li>
+<li><p>节约内存</p>
+<p>当然， 要让一个数组可以同时保存 <code>int16_t</code> 、 <code>int32_t</code> 、 <code>int64_t</code> 三种类型的值， 最简单的做法就是直接使用 <code>int64_t</code> 类型的数组作为整数集合的底层实现。 不过这样一来， 即使添加到整数集合里面的都是 <code>int16_t</code> 类型或者 <code>int32_t</code> 类型的值， 数组都需要使用 <code>int64_t</code> 类型的空间去保存它们， 从而出现浪费内存的情况。</p>
+<p>而整数集合现在的做法既可以让集合能同时保存三种不同类型的值， 又可以确保升级操作只会在有需要的时候进行， 这可以尽量节省内存。</p>
+<p>比如说， 如果我们一直只向整数集合添加 <code>int16_t</code> 类型的值， 那么整数集合的底层实现就会一直是 <code>int16_t</code> 类型的数组， 只有在我们要将<code>int32_t</code> 类型或者 <code>int64_t</code> 类型的值添加到集合时， 程序才会对数组进行升级。</p>
+</li>
+</ul>
+<p><strong>整数集合不支持降级操作， 一旦对数组进行了升级， 编码就会一直保持升级后的状态。</strong></p>
+<h3 id="重点回顾-3"><a href="#重点回顾-3" class="headerlink" title="重点回顾"></a>重点回顾</h3><ul>
+<li>整数集合是集合键的底层实现之一。</li>
+<li>整数集合的底层实现为数组， 这个数组以有序、无重复的方式保存集合元素， 在有需要时， 程序会根据新添加元素的类型， 改变这个数组的类型。</li>
+<li>升级操作为整数集合带来了操作上的灵活性， 并且尽可能地节约了内存。</li>
+<li>整数集合只支持升级操作， 不支持降级操作。</li>
+</ul>
+<h2 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h2><p>压缩列表（ziplist）是列表键和哈希键的底层实现之一。</p>
+<p>当一个列表键只包含少量列表项， 并且每个列表项要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做列表键的底层实现。</p>
+<p>当一个哈希键只包含少量键值对， 并且每个键值对的键和值要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做哈希键的底层实现。</p>
+<p>压缩列表是 Redis 为了节约内存而开发的， 由一系列特殊编码的<strong>连续内存块</strong>组成的顺序型（sequential）数据结构。</p>
+<h3 id="压缩列表的构成"><a href="#压缩列表的构成" class="headerlink" title="压缩列表的构成"></a>压缩列表的构成</h3><p>一个压缩列表可以包含任意多个节点（entry）， 每个节点可以保存一个字节数组或者一个整数值。</p>
+<p>图 7-1 展示了压缩列表的各个组成部分， 表 7-1 则记录了各个组成部分的类型、长度、以及用途。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419190945603.png" alt="image-20230419190945603"></p>
+<hr>
+<p>表 7-1 压缩列表各个组成部分的详细说明</p>
+<table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">类型</th>
+<th align="left">长度</th>
+<th align="left">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>zlbytes</code></td>
+<td align="left"><code>uint32_t</code></td>
+<td align="left"><code>4</code> 字节</td>
+<td align="left">记录整个压缩列表占用的内存字节数：在对压缩列表进行内存重分配， 或者计算 <code>zlend</code> 的位置时使用。</td>
+</tr>
+<tr>
+<td align="left"><code>zltail</code></td>
+<td align="left"><code>uint32_t</code></td>
+<td align="left"><code>4</code> 字节</td>
+<td align="left">记录压缩列表表尾节点距离压缩列表的起始地址有多少字节： 通过这个偏移量，程序无须遍历整个压缩列表就可以确定表尾节点的地址。</td>
+</tr>
+<tr>
+<td align="left"><code>zllen</code></td>
+<td align="left"><code>uint16_t</code></td>
+<td align="left"><code>2</code> 字节</td>
+<td align="left">记录了压缩列表包含的节点数量： 当这个属性的值小于 <code>UINT16_MAX</code> （<code>65535</code>）时， 这个属性的值就是压缩列表包含节点的数量； 当这个值等于 <code>UINT16_MAX</code> 时， 节点的真实数量需要遍历整个压缩列表才能计算得出。</td>
+</tr>
+<tr>
+<td align="left"><code>entryX</code></td>
+<td align="left">列表节点</td>
+<td align="left">不定</td>
+<td align="left">压缩列表包含的各个节点，节点的长度由节点保存的内容决定。</td>
+</tr>
+<tr>
+<td align="left"><code>zlend</code></td>
+<td align="left"><code>uint8_t</code></td>
+<td align="left"><code>1</code> 字节</td>
+<td align="left">特殊值 <code>0xFF</code> （十进制 <code>255</code> ），用于标记压缩列表的末端。</td>
+</tr>
+</tbody></table>
+<h3 id="压缩列表节点的构成"><a href="#压缩列表节点的构成" class="headerlink" title="压缩列表节点的构成"></a>压缩列表节点的构成</h3><p>每个压缩列表节点都由 <code>previous_entry_length</code> 、 <code>encoding</code> 、 <code>content</code> 三个部分组成， 如图 7-4 所示。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419190959490.png" alt="image-20230419190959490"></p>
+<ul>
+<li><code>previous_entry_length</code> 属性以字节为单位， 记录了压缩列表中前一个节点的长度：主要是为了实现从后向前遍历。</li>
+</ul>
+<ul>
+<li><p>如果前一节点的长度小于 <code>254</code> 字节， 那么 <code>previous_entry_length</code> 属性的长度为 <code>1</code> 字节： 前一节点的长度就保存在这一个字节里面。</p>
+</li>
+<li><p>如果前一节点的长度大于等于 <code>254</code> 字节， 那么 <code>previous_entry_length</code> 属性的长度为 <code>5</code> 字节：</p>
+</li>
+</ul>
+<ul>
+<li><code>encoding</code> 属性记录了节点的 <code>content</code> 属性所保存数据的类型以及长度</li>
+<li><code>content</code> 属性负责保存节点的值， 节点值可以是一个字节数组或者整数， 值的类型和长度由节点的 <code>encoding</code> 属性决定</li>
+</ul>
+<p>当我们往压缩列表中插入数据时，压缩列表就会根据数据类型是字符串还是整数，以及数据的大小，会使用不同空间大小的 prevlen 和 encoding 这两个元素里保存的信息，<strong>这种根据数据大小和类型进行不同的空间大小分配的设计思想，正是 Redis 为了节省内存而采用的</strong>。</p>
+<p>encoding 属性的空间大小跟数据是字符串还是整数，以及字符串的长度有关，如下图（下图中的 content 表示的是实际数据，即本文的 data 字段）：</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230420155226789.png" alt="image-20230420155226789"></p>
+<ul>
+<li>如果<strong>当前节点的数据是整数</strong>，则 encoding 会使用 <strong>1 字节的空间</strong>进行编码，也就是 encoding 长度为 1 字节。通过 encoding 确认了整数类型，就可以确认整数数据的实际大小了，比如如果 encoding 编码确认了数据是 int16 整数，那么 data 的长度就是 int16 的大小。</li>
+<li>如果<strong>当前节点的数据是字符串，根据字符串的长度大小</strong>，encoding 会使用 <strong>1 字节&#x2F;2字节&#x2F;5字节的空间</strong>进行编码，encoding 编码的前两个 bit 表示数据的类型，后续的其他 bit 标识字符串数据的实际长度，即 data 的长度。</li>
+</ul>
+<h3 id="压缩列表的连锁更新"><a href="#压缩列表的连锁更新" class="headerlink" title="压缩列表的连锁更新"></a>压缩列表的连锁更新</h3><h3 id="连锁更新"><a href="#连锁更新" class="headerlink" title="连锁更新"></a>连锁更新</h3><p>压缩列表除了查找复杂度高的问题，还有一个问题。</p>
+<p><strong>压缩列表新增某个元素或修改某个元素时，如果空间不不够，压缩列表占用的内存空间就需要重新分配。而当新插入的元素较大时，可能会导致后续元素的 prevlen 占用空间都发生变化，从而引起「连锁更新」问题，导致每个元素的空间都要重新分配，造成访问压缩列表性能的下降</strong>。</p>
+<p>前面提到，压缩列表节点的 prevlen 属性会根据前一个节点的长度进行不同的空间大小分配：</p>
+<ul>
+<li>如果前一个<strong>节点的长度小于 254 字节</strong>，那么 prevlen 属性需要用 <strong>1 字节的空间</strong>来保存这个长度值；</li>
+<li>如果前一个<strong>节点的长度大于等于 254 字节</strong>，那么 prevlen 属性需要用 <strong>5 字节的空间</strong>来保存这个长度值；</li>
+</ul>
+<p>现在假设一个压缩列表中有多个连续的、长度在 250～253 之间的节点，如下图：</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/462c6a65531667f2bcf420953b0aded9.png" alt="img"></p>
+<p>因为这些节点长度值小于 254 字节，所以 prevlen 属性需要用 1 字节的空间来保存这个长度值。</p>
+<p>这时，如果将一个长度大于等于 254 字节的新节点加入到压缩列表的表头节点，即新节点将成为 e1 的前置节点，如下图：</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/d1a6deff4672580609c99a5b06bf3429.png" alt="img"></p>
+<p>因为 e1 节点的 prevlen 属性只有 1 个字节大小，无法保存新节点的长度，此时就需要对压缩列表的空间重分配操作，并将 e1 节点的 prevlen 属性从原来的 1 字节大小扩展为 5 字节大小。</p>
+<p>多米诺牌的效应就此开始。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/1f0e5ae7ab749078cadda5ba0ed98eac.png" alt="img"></p>
+<p>e1 原本的长度在 250～253 之间，因为刚才的扩展空间，此时 e1 的长度就大于等于 254 了，因此原本 e2 保存 e1 的 prevlen 属性也必须从 1 字节扩展至 5 字节大小。</p>
+<p>正如扩展 e1 引发了对 e2 扩展一样，扩展 e2 也会引发对 e3 的扩展，而扩展 e3 又会引发对 e4 的扩展…. 一直持续到结尾。</p>
+<p><strong>这种在特殊情况下产生的连续多次空间扩展操作就叫做「连锁更新」</strong>，就像多米诺牌的效应一样，第一张牌倒下了，推动了第二张牌倒下；第二张牌倒下，又推动了第三张牌倒下….，</p>
+<h3 id="重点回顾-4"><a href="#重点回顾-4" class="headerlink" title="重点回顾"></a>重点回顾</h3><ul>
+<li>压缩列表是一种为节约内存而开发的顺序型数据结构。</li>
+<li>压缩列表被用作列表键和哈希键的底层实现之一。</li>
+<li>压缩列表可以包含多个节点，每个节点可以保存一个字节数组或者整数值。</li>
+<li>添加新节点到压缩列表， 或者从压缩列表中删除节点， 可能会引发连锁更新操作， 但这种操作出现的几率并不高。</li>
+</ul>
+<h1 id="过期删除策略"><a href="#过期删除策略" class="headerlink" title="过期删除策略"></a>过期删除策略</h1><h3 id="设置键的过期时间"><a href="#设置键的过期时间" class="headerlink" title="设置键的过期时间"></a>设置键的过期时间</h3><p>实际上expire,pexpire,expireat三个命令都是使用PEXPIREAT命令实现的</p>
+<h3 id="保存过期时间"><a href="#保存过期时间" class="headerlink" title="保存过期时间"></a>保存过期时间</h3><p>redisDb结构的expires字典保存了数据库中所有键的过期时间，称之为过期字典：</p>
+<ul>
+<li>过期字典的键是一个指针，这个指针指向键空间中的某个键对象</li>
+<li>过期字典的值只是一个long long 类型的整数，这个整数保存了键所指向的数据库键的过期时间，是一个毫秒精度的UNIX时间戳</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisDb</span>&#123;</span></span><br><span class="line">    <span class="comment">//..</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//过期字典</span></span><br><span class="line">    dict *expires;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//..</span></span><br><span class="line">&#125;redisDb;</span><br></pre></td></tr></table></figure>
+
+<p>实际上过期字典的键空间的键和数据库键空间的键都指向同一个对象。</p>
+<h3 id="过期键的判定"><a href="#过期键的判定" class="headerlink" title="过期键的判定"></a>过期键的判定</h3><p>通过过期字典，程序可以通过以下步骤检查一个给定的键是否过期：</p>
+<pre><code>* 检查给定键是否存在于过期字典：如果存在，那么取得键的过期时间
+* 检查当前UNIX时间戳是否大于键的过期时间，如果是的话，那么键已经过期，否则，未过期。
+</code></pre>
+<h3 id="过期键删除策略"><a href="#过期键删除策略" class="headerlink" title="过期键删除策略"></a>过期键删除策略</h3><ul>
+<li><p>定时删除：设置键的过期时间的同时创建一个定时器，让定时器在键的过期时间来临时，立即执行对键的删除操作</p>
+<p><code>定时删除对内存最友好</code></p>
+<p><code>但是在过期键比较多的情况下，删除过期键会占用相当一部分CPU时间</code></p>
+</li>
+<li><p>惰性删除：每次从键空间获取键时，都检查取得的键是否过期，如果过期就删除该键，没有过期，返回改键</p>
+<p><code>对CPU时间最友好</code></p>
+<p><code>如果一个键已经过期，而这个键仍然保留在数据库中，对内存不友好</code></p>
+</li>
+<li><p>定期删除：每隔一段时间，程序就对数据库进行一次检查，删除里面的过期键。</p>
+<p>从上面对定时删除和惰性删除的讨论来看，这两种删除方式在单一使用时都有明显的缺陷:</p>
+<ul>
+<li>定时删除占用太多CPU 时间，影响服务器的响应时间和吞吐量。</li>
+<li>惰性删除浪费太多内存，有内存泄漏的危险。</li>
+</ul>
+<p>定期删除策略是前两种策略的一种整合和折中:</p>
+<ul>
+<li>定期删除策略每隔一段时间执行一次删除过期键操作，并通过限制删除操作执行的<br>时长和频率来减少删除操作对CPU时间的影响。</li>
+<li>除此之外，通过定期删除过期键，定期删除策略有效地减少了因为过期键而带来的<br>内存浪费。</li>
+</ul>
+<p>定期删除策略的难点是确定删除操作执行的时长和频率:</p>
+<ul>
+<li>如果删除操作执行得太频繁，或者执行的时间太长，定期删除策略就会退化成定时<br>删除策略，以至于将CPU时间过多地消耗在删除过期键上面。</li>
+<li>如果删除操作执行得太少，或者执行的时间太短，定期删除策略又会和惰性删除策<br>略一样，出现浪费内存的情况。</li>
+</ul>
+<p>因此，如果采用定期删除策略的话，服务器必须根据情况，合理地设置删除操作的执行时长和执行频率。</p>
+</li>
+</ul>
+<h3 id="redis选择的过期删除策"><a href="#redis选择的过期删除策" class="headerlink" title="redis选择的过期删除策"></a>redis选择的过期删除策</h3><p><strong>Redis 选择「惰性删除+定期删除」这两种策略配和使用</strong>，以求在合理使用 CPU 时间和避免内存浪费之间取得平衡。</p>
+<blockquote>
+<p>Redis 是怎么实现惰性删除的？</p>
+</blockquote>
+<p>Redis 的惰性删除策略由 db.c 文件中的 <code>expireIfNeeded</code> 函数实现，代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key)</span> &#123;</span><br><span class="line">    <span class="comment">// 判断 key 是否过期</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    ....</span><br><span class="line">    <span class="comment">/* 删除过期键 */</span></span><br><span class="line">    ....</span><br><span class="line">    <span class="comment">// 如果 server.lazyfree_lazy_expire 为 1 表示异步删除，反之同步删除；</span></span><br><span class="line">    <span class="keyword">return</span> server.lazyfree_lazy_expire ? dbAsyncDelete(db,key) :</span><br><span class="line">                                         dbSyncDelete(db,key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Redis 在访问或者修改 key 之前，都会调用 expireIfNeeded 函数对其进行检查，检查 key 是否过期：</p>
+<ul>
+<li>如果过期，则删除该 key，至于选择异步删除，还是选择同步删除，根据 <code>lazyfree_lazy_expire</code> 参数配置决定（Redis 4.0版本开始提供参数），然后返回 null 客户端；</li>
+<li>如果没有过期，不做任何处理，然后返回正常的键值对给客户端；</li>
+</ul>
+<blockquote>
+<p>Redis 是怎么实现定期删除的？</p>
+</blockquote>
+<p>定期删除策略的做法：<strong>每隔一段时间「随机」从数据库中取出一定数量的 key 进行检查，并删除其中的过期key。</strong></p>
+<p><em>1、这个间隔检查的时间是多长呢？</em></p>
+<p>在 Redis 中，默认每秒进行 10 次过期检查一次数据库，此配置可通过 Redis 的配置文件 redis.conf 进行配置，配置键为 hz 它的默认值是 hz 10。</p>
+<p>特别强调下，每次检查数据库并不是遍历过期字典中的所有 key，而是从数据库中随机抽取一定数量的 key 进行过期检查。</p>
+<p><em>2、随机抽查的数量是多少呢？</em></p>
+<p><code>activeExpireCycle</code> 函数中，其中随机抽查的数量是写死在代码中的，数值是 20。</p>
+<p>也就是说，数据库每轮抽查时，会随机选择 20 个 key 判断是否过期。</p>
+<p>接下来，详细说说 Redis 的定期删除的流程：</p>
+<ol>
+<li>从过期字典中随机抽取 20 个 key；</li>
+<li>检查这 20 个 key 是否过期，并删除已过期的 key；</li>
+<li>如果本轮检查的已过期 key 的数量，超过 5 个（20&#x2F;4），也就是「已过期 key 的数量」占比「随机抽取 key 的数量」大于 25%，则继续重复步骤 1；如果已过期的 key 比例小于 25%，则停止继续删除过期 key，然后等待下一轮再检查。</li>
+</ol>
+<p>可以看到，定期删除是一个循环的流程。</p>
+<p>那 Redis 为了保证定期删除不会出现循环过度，导致线程卡死现象，为此增加了定期删除循环流程的时间上限，默认不会超过 25ms。</p>
+<blockquote>
+<p>定期删除策略简易代码</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    <span class="comment">//已过期的数量</span></span><br><span class="line">    expired = <span class="number">0</span>；</span><br><span class="line">    <span class="comment">//随机抽取的数量</span></span><br><span class="line">    num = <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">while</span> (num--) &#123;</span><br><span class="line">        <span class="comment">//1. 从过期字典中随机抽取 1 个 key</span></span><br><span class="line">        <span class="comment">//2. 判断该 key 是否过期，如果已过期则进行删除，同时对 expired++</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 超过时间限制则退出</span></span><br><span class="line">    <span class="keyword">if</span> (timelimit_exit) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* 如果本轮检查的已过期 key 的数量，超过 25%，则继续随机抽查，否则退出本轮检查 */</span></span><br><span class="line">&#125; <span class="keyword">while</span> (expired &gt; <span class="number">20</span>/<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>定期删除策略伪代码</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#默认每次检查的数据库数量</span></span><br><span class="line">DEFAULT_DB_NUMBERS = <span class="number">16</span></span><br><span class="line"><span class="comment">#默认每个数据库检查的键数量</span></span><br><span class="line">DEFAULT_KEY_NUMBERS = <span class="number">20</span></span><br><span class="line"><span class="comment">#全局变量，记录检查进度</span></span><br><span class="line">current_db = <span class="number">0</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">activeExpireCycle</span>():</span><br><span class="line">    <span class="comment">#初始化要检查的数据库数量</span></span><br><span class="line">    <span class="comment">#如果服务器的数据库数量比 DEFAULT_DB_NUMBERS要小</span></span><br><span class="line">    <span class="comment">#那么以服务器的数据库数量为准</span></span><br><span class="line">    <span class="keyword">if</span> server.dbnum ＜ DEFAULT_DB_NUMBERS:</span><br><span class="line">        db_numbers = server.dbnum</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        db_numbers = DEFAULT_DB_NUMBERS</span><br><span class="line">    <span class="comment">#遍历各个数据库</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(db_numbers):</span><br><span class="line">        <span class="comment">#如果current_db的值等于服务器的数据库数量</span></span><br><span class="line">        <span class="comment">#这表示检查程序已经遍历了服务器的所有数据库一次</span></span><br><span class="line">        <span class="comment">#将current_db重置为0，开始新的一轮遍历</span></span><br><span class="line">        <span class="keyword">if</span> current_db == server.dbnum:</span><br><span class="line">            current_db = <span class="number">0</span></span><br><span class="line">        <span class="comment">#获取当前要处理的数据库</span></span><br><span class="line">        redisDb = server.db[current_db]</span><br><span class="line">        <span class="comment">#将数据库索引增1，指向下一个要处理的数据库</span></span><br><span class="line">        current_db += <span class="number">1</span></span><br><span class="line">        <span class="comment">#检查数据库键</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(DEFAULT_KEY_NUMBERS):</span><br><span class="line">            <span class="comment">#如果数据库中没有一个键带有过期时间，那么跳过这个数据库</span></span><br><span class="line">            <span class="keyword">if</span> redisDb.expires.size() == <span class="number">0</span>: </span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="comment">#随机获取一个带有过期时间的键</span></span><br><span class="line">            key_with_ttl = redisDb.expires.get_random_key()</span><br><span class="line">            <span class="comment">#检查键是否过期，如果过期就删除它</span></span><br><span class="line">            <span class="keyword">if</span> is_expired(key_with_ttl):</span><br><span class="line">                delete_key(key_with_ttl)</span><br><span class="line">            <span class="comment">#已达到时间上限，停止处理</span></span><br><span class="line">            <span class="keyword">if</span> reach_time_limit(): </span><br><span class="line">                <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5.jpg" alt="img"></p>
+<h1 id="内存淘汰策略"><a href="#内存淘汰策略" class="headerlink" title="内存淘汰策略"></a>内存淘汰策略</h1><p>当 Redis 的运行内存已经超过 Redis 设置的最大内存之后，则会使用内存淘汰策略删除符合条件的 key，以此来保障 Redis 高效的运行。</p>
+<h2 id="如何设置-Redis-最大运行内存？"><a href="#如何设置-Redis-最大运行内存？" class="headerlink" title="如何设置 Redis 最大运行内存？"></a>如何设置 Redis 最大运行内存？</h2><p>在配置文件 redis.conf 中，可以通过参数 <code>maxmemory &lt;bytes&gt;</code> 来设定最大运行内存，只有在 Redis 的运行内存达到了我们设置的最大运行内存，才会触发内存淘汰策略。 不同位数的操作系统，maxmemory 的默认值是不同的：</p>
+<ul>
+<li>在 64 位操作系统中，maxmemory 的默认值是 0，表示没有内存大小限制，那么不管用户存放多少数据到 Redis 中，Redis 也不会对可用内存进行检查，直到 Redis 实例因内存不足而崩溃也无作为。</li>
+<li>在 32 位操作系统中，maxmemory 的默认值是 3G，因为 32 位的机器最大只支持 4GB 的内存，而系统本身就需要一定的内存资源来支持运行，所以 32 位操作系统限制最大 3 GB 的可用内存是非常合理的，这样可以避免因为内存不足而导致 Redis 实例崩溃。</li>
+</ul>
+<h2 id="Redis-内存淘汰策略有哪些？"><a href="#Redis-内存淘汰策略有哪些？" class="headerlink" title="Redis 内存淘汰策略有哪些？"></a>Redis 内存淘汰策略有哪些？</h2><p>Redis 内存淘汰策略共有八种，这八种策略大体分为「不进行数据淘汰」和「进行数据淘汰」两类策略。</p>
+<p><em>1、不进行数据淘汰的策略</em></p>
+<p><strong>noeviction</strong>（Redis3.0之后，默认的内存淘汰策略） ：它表示当运行内存超过最大设置内存时，不淘汰任何数据，这时如果有新的数据写入，则会触发 OOM，但是如果没用数据写入的话，只是单纯的查询或者删除操作的话，还是可以正常工作。</p>
+<p><em>2、进行数据淘汰的策略</em></p>
+<p>针对「进行数据淘汰」这一类策略，又可以细分为「在设置了过期时间的数据中进行淘汰」和「在所有数据范围内进行淘汰」这两类策略。</p>
+<p>在设置了过期时间的数据中进行淘汰：</p>
+<ul>
+<li><strong>volatile-random</strong>：随机淘汰设置了过期时间的任意键值；</li>
+<li><strong>volatile-ttl</strong>：优先淘汰更早过期的键值。</li>
+<li><strong>volatile-lru</strong>（Redis3.0 之前，默认的内存淘汰策略）：淘汰所有设置了过期时间的键值中，最久未使用的键值；</li>
+<li><strong>volatile-lfu</strong>（Redis 4.0 后新增的内存淘汰策略）：淘汰所有设置了过期时间的键值中，最少使用的键值；</li>
+</ul>
+<p>在所有数据范围内进行淘汰：</p>
+<ul>
+<li><strong>allkeys-random</strong>：随机淘汰任意键值;</li>
+<li><strong>allkeys-lru</strong>：淘汰整个键值中最久未使用的键值；</li>
+<li><strong>allkeys-lfu</strong>（Redis 4.0 后新增的内存淘汰策略）：淘汰整个键值中最少使用的键值。</li>
+</ul>
+<blockquote>
+<p>如何查看当前 Redis 使用的内存淘汰策略？</p>
+</blockquote>
+<p>可以使用 <code>config get maxmemory-policy</code> 命令，来查看当前 Redis 的内存淘汰策略，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; config get maxmemory-policy</span><br><span class="line">1) <span class="string">&quot;maxmemory-policy&quot;</span></span><br><span class="line">2) <span class="string">&quot;noeviction&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看出，当前 Redis 使用的是 <code>noeviction</code> 类型的内存淘汰策略，它是 Redis 3.0 之后默认使用的内存淘汰策略，表示当运行内存超过最大设置内存时，不淘汰任何数据，但新增操作会报错。</p>
+<blockquote>
+<p>如何修改 Redis 内存淘汰策略？</p>
+</blockquote>
+<p>设置内存淘汰策略有两种方法：</p>
+<ul>
+<li>方式一：通过“<code>config set maxmemory-policy &lt;策略&gt;</code>”命令设置。它的优点是设置之后立即生效，不需要重启 Redis 服务，缺点是重启 Redis 之后，设置就会失效。</li>
+<li>方式二：通过修改 Redis 配置文件修改，设置“<code>maxmemory-policy &lt;策略&gt;</code>”，它的优点是重启 Redis 服务后配置不会丢失，缺点是必须重启 Redis 服务，设置才能生效。</li>
+</ul>
+<h2 id="LRU-算法和-LFU-算法有什么区别？"><a href="#LRU-算法和-LFU-算法有什么区别？" class="headerlink" title="LRU 算法和 LFU 算法有什么区别？"></a>LRU 算法和 LFU 算法有什么区别？</h2><blockquote>
+<p>什么是 LRU 算法？</p>
+</blockquote>
+<p><strong>LRU</strong> 全称是 Least Recently Used 翻译为<strong>最近最少使用</strong>，会选择淘汰最近最少使用的数据。</p>
+<p>传统 LRU 算法的实现是基于「链表」结构，链表中的元素按照操作顺序从前往后排列，最新操作的键会被移动到表头，当需要内存淘汰时，只需要删除链表尾部的元素即可，因为链表尾部的元素就代表最久未被使用的元素。</p>
+<p>Redis 并没有使用这样的方式实现 LRU 算法，因为传统的 LRU 算法存在两个问题：</p>
+<ul>
+<li>需要用链表管理所有的缓存数据，这会带来额外的空间开销；</li>
+<li>当有数据被访问时，需要在链表上把该数据移动到头端，如果有大量数据被访问，就会带来很多链表移动操作，会很耗时，进而会降低 Redis 缓存性能。</li>
+</ul>
+<blockquote>
+<p>Redis 是如何实现 LRU 算法的？</p>
+</blockquote>
+<p>Redis 实现的是一种<strong>近似 LRU 算法</strong>，目的是为了更好的节约内存，它的<strong>实现方式是在 Redis 的对象结构体中添加一个额外的字段，用于记录此数据的最后一次访问时间</strong>。</p>
+<p>当 Redis 进行内存淘汰时，会使用<strong>随机采样的方式来淘汰数据</strong>，它是随机取 5 个值（此值可配置），然后<strong>淘汰最久没有使用的那个</strong>。</p>
+<p>Redis 实现的 LRU 算法的优点：</p>
+<ul>
+<li>不用为所有的数据维护一个大链表，节省了空间占用；</li>
+<li>不用在每次数据访问时都移动链表项，提升了缓存的性能；</li>
+</ul>
+<p>但是 LRU 算法有一个问题，<strong>无法解决缓存污染问题</strong>，比如应用频繁更新缓存里的元素时，依据LRU算法淘汰的元素不一定是访问最不频繁的元素，反而可能淘汰了较新的元素，出现缓存污染的情况。</p>
+<blockquote>
+<p>什么是 LFU 算法？</p>
+</blockquote>
+<p>LFU 全称是 Least Frequently Used 翻译为<strong>最近最不常用</strong>，LFU 算法是根据数据访问次数来淘汰数据的，它的核心思想是“如果数据过去被访问多次，那么将来被访问的频率也更高”。</p>
+<p>所以， LFU 算法会记录每个数据的访问次数。当一个数据被再次访问时，就会增加该数据的访问次数。这样就解决了偶尔被访问一次之后，数据留存在缓存中很长一段时间的问题，相比于 LRU 算法也更合理一些。</p>
+<blockquote>
+<p>Redis 是如何实现 LFU 算法的？</p>
+</blockquote>
+<p>LFU 算法相比于 LRU 算法的实现，多记录了「数据的访问频次」的信息。Redis 对象的结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisObject</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">      </span><br><span class="line">    <span class="comment">// 24 bits，用于记录对象的访问信息</span></span><br><span class="line">    <span class="type">unsigned</span> lru:<span class="number">24</span>;  </span><br><span class="line">    ...</span><br><span class="line">&#125; robj;</span><br></pre></td></tr></table></figure>
+
+<p>redis 对象头中的 lru 字段，在 LRU 算法下和 LFU 算法下使用方式并不相同。</p>
+<p><strong>在 LRU 算法中</strong>，Redis 对象头的 24 bits 的 lru 字段是用来记录 key 的访问时间戳，因此在 LRU 模式下，Redis可以根据对象头中的 lru 字段记录的值，来比较最后一次 key 的访问时间长，从而淘汰最久未被使用的 key。</p>
+<p><strong>在 LFU 算法中</strong>，Redis对象头的 24 bits 的 lru 字段被分成两段来存储，高 16bit 存储 ldt(Last Decrement Time)，低 8bit 存储 logc(Logistic Counter)。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/lru%E5%AD%97%E6%AE%B5.png" alt="img"></p>
+<ul>
+<li>ldt 是用来记录 key 的访问时间戳；</li>
+<li>logc 是用来记录 key 的访问频次，它的值越小表示使用频率越低，越容易淘汰，每个新加入的 key 的logc 初始值为 5。</li>
+</ul>
+<p>注意，logc 并不是单纯的访问次数，而是访问频次（访问频率），因为 <strong>logc 会随时间推移而衰减的</strong>。</p>
+<p>在每次 key 被访问时，会先对 logc 做一个衰减操作，衰减的值跟前后访问时间的差距有关系，如果上一次访问的时间与这一次访问的时间差距很大，那么衰减的值就越大，这样实现的 LFU 算法是根据<strong>访问频率</strong>来淘汰数据的，而不只是访问次数。访问频率需要考虑 key 的访问是多长时间段内发生的。key 的先前访问距离当前时间越长，那么这个 key 的访问频率相应地也就会降低，这样被淘汰的概率也会更大。</p>
+<p>对 logc 做完衰减操作后，就开始对 logc 进行增加操作，增加操作并不是单纯的 + 1，而是根据概率增加，如果 logc 越大的 key，它的 logc 就越难再增加。</p>
+<p>所以，Redis 在访问 key 时，对于 logc 是这样变化的：</p>
+<ol>
+<li>先按照上次访问距离当前的时长，来对 logc 进行衰减；</li>
+<li>然后，再按照一定概率增加 logc 的值</li>
+</ol>
+<p>redis.conf 提供了两个配置项，用于调整 LFU 算法从而控制 logc 的增长和衰减：</p>
+<ul>
+<li><p><code>lfu-decay-time</code> 用于调整 logc 的衰减速度，它是一个以分钟为单位的数值，默认值为1，lfu-decay-time 值越大，衰减越慢；</p>
+</li>
+<li><p><code>lfu-log-factor</code> 用于调整 logc 的增长速度，lfu-log-factor 值越大，logc 增长越慢。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5.jpg" alt="img"></p>
+</li>
+</ul>
+<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="AOF持久化"><a href="#AOF持久化" class="headerlink" title="AOF持久化"></a>AOF持久化</h2><h3 id="AOF日志"><a href="#AOF日志" class="headerlink" title="AOF日志"></a>AOF日志</h3><p>Redis 每执行一条写操作命令，就把该命令以追加的方式写入到一个文件里，然后重启 Redis 的时候，先去读取这个文件里的命令，并且执行它，不就相当于恢复了缓存数据。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/6f0ab40396b7fc2c15e6f4487d3a0ad7.png" alt="img"></p>
+<p>这种保存写操作命令到日志的持久化方式，就是 Redis 里的 <strong>AOF(Append Only File)</strong> 持久化功能，<strong>注意只会记录写操作命令，读操作命令是不会被记录的</strong>，因为没意义。</p>
+<p>在 Redis 中 AOF 持久化功能默认是不开启的，需要我们修改 <code>redis.conf</code> 配置文件中的以下参数：</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/0e2d081af084c41802c7b5de8aa41bd4.png" alt="img"></p>
+<blockquote>
+<p>Redis 是先执行写操作命令后，才将该命令记录到 AOF 日志里的，这么做其实有两个好处。</p>
+</blockquote>
+<p>第一个好处，<strong>避免额外的检查开销。</strong></p>
+<p>因为如果先将写操作命令记录到 AOF 日志里，再执行该命令的话，如果当前的命令语法有问题，那么如果不进行命令语法检查，该错误的命令记录到 AOF 日志里后，Redis 在使用日志恢复数据时，就可能会出错。</p>
+<p>而如果先执行写操作命令再记录日志的话，只有在该命令执行成功后，才将命令记录到 AOF 日志里，这样就不用额外的检查开销，保证记录在 AOF 日志里的命令都是可执行并且正确的。</p>
+<p>第二个好处，<strong>不会阻塞当前写操作命令的执行</strong>，因为当写操作命令执行成功后，才会将命令记录到 AOF 日志。</p>
+<blockquote>
+<p>AOF 持久化功能有两个风险。</p>
+</blockquote>
+<p>第一个风险，执行写操作命令和记录日志是两个过程，那当 Redis 在还没来得及将命令写入到硬盘时，服务器发生宕机了，这个数据就会有<strong>丢失的风险</strong>。</p>
+<p>第二个风险，前面说道，由于写操作命令执行成功后才记录到 AOF 日志，所以不会阻塞当前写操作命令的执行，但是<strong>可能会给「下一个」命令带来阻塞风险</strong>。</p>
+<p>因为将命令写入到日志的这个操作也是在主进程完成的（执行命令也是在主进程），也就是说这两个操作是同步的。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/28afd536c57a46447ddab0a2062abe84.png" alt="img"></p>
+<p>如果在将日志内容写入到硬盘时，服务器的硬盘的 I&#x2F;O 压力太大，就会导致写硬盘的速度很慢，进而阻塞住了，也就会导致后续的命令无法执行。</p>
+<p>认真分析一下，其实这两个风险都有一个共性，都跟「 AOF 日志写回硬盘的时机」有关。</p>
+<h3 id="三种写回策略"><a href="#三种写回策略" class="headerlink" title="三种写回策略"></a>三种写回策略</h3><p>Redis 写入 AOF 日志的过程，如下图：</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/4eeef4dd1bedd2ffe0b84d4eaa0dbdea.png" alt="img"></p>
+<ol>
+<li>Redis 执行完写操作命令后，会将命令追加到 <code>server.aof_buf</code> 缓冲区；</li>
+<li>然后通过 write() 系统调用，将 aof_buf 缓冲区的数据写入到 AOF 文件，此时数据并没有写入到硬盘，而是拷贝到了内核缓冲区 page cache，等待内核将数据写入硬盘；</li>
+<li>具体内核缓冲区的数据什么时候写入到硬盘，由内核决定。</li>
+</ol>
+<p>Redis 提供了 3 种写回硬盘的策略，控制的就是上面说的第三步的过程。</p>
+<p>在 <code>redis.conf</code> 配置文件中的 <code>appendfsync</code> 配置项可以有以下 3 种参数可填：</p>
+<ul>
+<li><strong>Always</strong>，这个单词的意思是「总是」，所以它的意思是每次写操作命令执行完后，同步将 AOF 日志数据写回硬盘；</li>
+<li><strong>Everysec</strong>，这个单词的意思是「每秒」，所以它的意思是每次写操作命令执行完后，先将命令写入到 AOF 文件的内核缓冲区，然后每隔一秒将缓冲区里的内容写回到硬盘；</li>
+<li><strong>No</strong>，意味着不由 Redis 控制写回硬盘的时机，转交给操作系统控制写回的时机，也就是每次写操作命令执行完后，先将命令写入到 AOF 文件的内核缓冲区，再由操作系统决定何时将缓冲区内容写回硬盘。</li>
+</ul>
+<p>这 3 种写回策略都无法能完美解决「主进程阻塞」和「减少数据丢失」的问题，因为两个问题是对立的，偏向于一边的话，就会要牺牲另外一边，原因如下：</p>
+<ul>
+<li>Always 策略的话，可以最大程度保证数据不丢失，但是由于它每执行一条写操作命令就同步将 AOF 内容写回硬盘，所以是不可避免会影响主进程的性能；</li>
+<li>No 策略的话，是交由操作系统来决定何时将 AOF 日志内容写回硬盘，相比于 Always 策略性能较好，但是操作系统写回硬盘的时机是不可预知的，如果 AOF 日志内容没有写回硬盘，一旦服务器宕机，就会丢失不定数量的数据。</li>
+<li>Everysec 策略的话，是折中的一种方式，避免了 Always 策略的性能开销，也比 No 策略更能避免数据丢失，当然如果上一秒的写操作命令日志没有写回到硬盘，发生了宕机，这一秒内的数据自然也会丢失。</li>
+</ul>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/98987d9417b2bab43087f45fc959d32a.png" alt="img"></p>
+<h3 id="AOF重写机制"><a href="#AOF重写机制" class="headerlink" title="AOF重写机制"></a>AOF重写机制</h3><p>AOF 日志是一个文件，随着执行的写操作命令越来越多，文件的大小会越来越大。</p>
+<p>如果当 AOF 日志文件过大就会带来性能问题，比如重启 Redis 后，需要读 AOF 文件的内容以恢复数据，如果文件过大，整个恢复的过程就会很慢。</p>
+<p>所以，Redis 为了避免 AOF 文件越写越大，提供了 <strong>AOF 重写机制</strong>，当 AOF 文件的大小超过所设定的阈值后，Redis 就会启用 AOF 重写机制，来压缩 AOF 文件。</p>
+<p>AOF 重写机制是在重写时，读取当前数据库中的所有键值对，然后将每一个键值对用一条命令记录到「新的 AOF 文件」，等到全部记录完后，就将新的 AOF 文件替换掉现有的 AOF 文件。</p>
+<p>举个例子，在没有使用重写机制前，假设前后执行了「set name cehan」和「set name 1Stack1」这两个命令的话，就会将这两个命令记录到 AOF 文件。</p>
+<p>但是<strong>在使用重写机制后，就会读取 name 最新的 value（键值对） ，然后用一条 「set name 1Stack1」命令记录到新的 AOF 文件</strong>，之前的第一个命令就没有必要记录了，因为它属于「历史」命令，没有作用了。这样一来，一个键值对在重写日志中只用一条命令就行了。</p>
+<p>重写工作完成后，就会将新的 AOF 文件覆盖现有的 AOF 文件，这就相当于压缩了 AOF 文件，使得 AOF 文件体积变小了。</p>
+<p>然后，在通过 AOF 日志恢复数据时，只用执行这条命令，就可以直接完成这个键值对的写入了。</p>
+<p>所以，重写机制的妙处在于，尽管某个键值对被多条写命令反复修改，<strong>最终也只需要根据这个「键值对」当前的最新状态，然后用一条命令去记录键值对</strong>，代替之前记录这个键值对的多条命令，这样就减少了 AOF 文件中的命令数量。最后在重写工作完成后，将新的 AOF 文件覆盖现有的 AOF 文件。</p>
+<blockquote>
+<p> 为什么重写 AOF 的时候，不直接复用现有的 AOF 文件，而是先写到新的 AOF 文件再覆盖过去？</p>
+</blockquote>
+<p>因为<strong>如果 AOF 重写过程中失败了，现有的 AOF 文件就会造成污染</strong>，可能无法用于恢复使用。</p>
+<p>所以 AOF 重写过程，先重写到新的 AOF 文件，重写失败的话，就直接删除这个文件就好，不会对现有的 AOF 文件造成影响。</p>
+<h3 id="AOF后台重写"><a href="#AOF后台重写" class="headerlink" title="AOF后台重写"></a>AOF后台重写</h3><p>写入 AOF 日志的操作虽然是在主进程完成的，因为它写入的内容不多，所以一般不太影响命令的操作。</p>
+<p>但是在触发 AOF 重写时，比如当 AOF 文件大于 64M 时，就会对 AOF 文件进行重写，这时是需要读取所有缓存的键值对数据，并为每个键值对生成一条命令，然后将其写入到新的 AOF 文件，重写完后，就把现在的 AOF 文件替换掉。</p>
+<p>这个过程其实是很耗时的，所以重写的操作不能放在主进程里。</p>
+<p>所以，Redis 的<strong>重写 AOF 过程是由后台子进程 bgrewriteaof来完成的</strong>，这么做可以达到两个好处：</p>
+<ul>
+<li>子进程进行 AOF 重写期间，主进程可以继续处理命令请求，从而避免阻塞主进程；</li>
+<li>子进程带有主进程的数据副本，这里使用子进程而不是线程，因为如果是使用线程，多线程之间会共享内存，那么在修改共享内存数据的时候，需要通过加锁来保证数据的安全，而这样就会降低性能。而使用子进程，创建子进程时，父子进程是共享内存数据的，不过这个共享的内存只能以只读的方式，而当父子进程任意一方修改了该共享内存，就会发生「写时复制」，于是父子进程就有了独立的数据副本，就不用加锁来保证数据安全。</li>
+</ul>
+<p>不过，如果父进程的内存数据非常大，那自然页表也会很大，这时父进程在通过 fork 创建子进程的时候，阻塞的时间也越久。</p>
+<p>所以，有两个阶段会导致阻塞父进程：</p>
+<ul>
+<li>创建子进程的途中，由于要复制父进程的页表等数据结构，阻塞的时间跟页表的大小有关，页表越大，阻塞的时间也越长；</li>
+<li>创建完子进程后，如果子进程或者父进程修改了共享数据，就会发生写时复制，这期间会拷贝物理内存，如果内存越大，自然阻塞的时间也越长；</li>
+</ul>
+<p>触发重写机制后，主进程就会创建重写 AOF 的子进程，此时父子进程共享物理内存，重写子进程只会对这个内存进行只读，重写 AOF 子进程会读取数据库里的所有数据，并逐一把内存数据的键值对转换成一条命令，再将命令记录到重写日志（新的 AOF 文件）。</p>
+<p>但是子进程重写过程中，主进程依然可以正常处理命令。</p>
+<p>如果此时<strong>主进程修改了已经存在 key-value，就会发生写时复制，注意这里只会复制主进程修改的物理内存数据，没修改的物理内存还是与子进程共享的</strong>。</p>
+<p>所以如果这个阶段修改的是一个 bigkey，也就是数据量比较大的 key-value 的时候，这时复制的物理内存数据的过程就会比较耗时，有阻塞主进程的风险。</p>
+<blockquote>
+<p>重写 AOF 日志过程中，如果主进程修改了已经存在 key-value，此时这个 key-value 数据在子进程的内存数据就跟主进程的内存数据不一致了，这时要怎么办呢？</p>
+</blockquote>
+<p>为了解决这种数据不一致问题，Redis 设置了一个 <strong>AOF 重写缓冲区</strong>，这个缓冲区在创建 bgrewriteaof 子进程之后开始使用。</p>
+<p>在重写 AOF 期间，当 Redis 执行完一个写命令之后，它会<strong>同时将这个写命令写入到 「AOF 缓冲区」和 「AOF 重写缓冲区」</strong>。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM0ODI3Njc0,size_16,color_FFFFFF,t_70-20230309231944807.png" alt="在这里插入图片描述"></p>
+<p>也就是说，在 bgrewriteaof 子进程执行 AOF 重写期间，主进程需要执行以下三个工作:</p>
+<ul>
+<li>执行客户端发来的命令；</li>
+<li>将执行后的写命令追加到 「AOF 缓冲区」；</li>
+<li>将执行后的写命令追加到 「AOF 重写缓冲区」；</li>
+</ul>
+<p>当子进程完成 AOF 重写工作（<em>扫描数据库中所有数据，逐一把内存数据的键值对转换成一条命令，再将命令记录到重写日志</em>）后，会向主进程发送一条信号，信号是进程间通讯的一种方式，且是异步的。</p>
+<p>主进程收到该信号后，会调用一个信号处理函数，该函数主要做以下工作：</p>
+<ul>
+<li>将 AOF 重写缓冲区中的所有内容追加到新的 AOF 的文件中，使得新旧两个 AOF 文件所保存的数据库状态一致；</li>
+<li>新的 AOF 的文件进行改名，覆盖现有的 AOF 文件。</li>
+</ul>
+<p>信号函数执行完后，主进程就可以继续像往常一样处理命令了。</p>
+<p>在整个 AOF 后台重写过程中，除了发生写时复制会对主进程造成阻塞，还有信号处理函数执行时也会对主进程造成阻塞，在其他时候，AOF 后台重写都不会阻塞主进程。</p>
+<h2 id="RDB持久化"><a href="#RDB持久化" class="headerlink" title="RDB持久化"></a>RDB持久化</h2><p>因为Redis是内存数据库，它将自己的数据库状态储存在内存里面，所以如果不想办法将储存在内存中的数据库状态保存到磁盘里面，那么一旦服务器进程退出，服务器中的数据库状态也会消失不见。</p>
+<p>为了解决这个问题，Redis提供了RDB持久化功能，这个功能可以将Redis在内存中的数据库状态保存到磁盘里面，避免数据意外丢失。</p>
+<p>RDB持久化既可以手动执行，也可以根据服务器配置选项定期执行，该功能可以将某个时间点上的数据库状态保存到一个RDB文件中</p>
+<h3 id="RDB文件的创建与载入"><a href="#RDB文件的创建与载入" class="headerlink" title="RDB文件的创建与载入"></a>RDB文件的创建与载入</h3><p>有两个Redis命令可以用于生成RDB文件，一个是SAVE，另一个是BGSAVE。</p>
+<ul>
+<li>执行了 save 命令，就会在主线程生成 RDB 文件，由于和执行操作命令在同一个线程，所以如果写入 RDB 文件的时间太长，<strong>会阻塞主线程</strong>；</li>
+<li>执行了 bgsave 命令，会创建一个子进程来生成 RDB 文件，这样可以<strong>避免主线程的阻塞</strong>；</li>
+</ul>
+<p>Redis 还可以通过配置文件的选项来实现每隔一段时间自动执行一次 bgsave 命令，默认会提供以下配置：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1</span><br><span class="line">save 300 10</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure>
+
+<p>别看选项名叫 save，实际上执行的是 bgsave 命令，也就是会创建子进程来生成 RDB 快照文件。</p>
+<p>只要满足上面条件的任意一个，就会执行 bgsave，它们的意思分别是：</p>
+<ul>
+<li>900 秒之内，对数据库进行了至少 1 次修改；</li>
+<li>300 秒之内，对数据库进行了至少 10 次修改；</li>
+<li>60 秒之内，对数据库进行了至少 10000 次修改。</li>
+</ul>
+<p>RDB文件的<strong>载入</strong>工作是在服务器启动时自动执行的，所以Redis并没有专门用于载入RDB文件的命令，只要Redis服务器在启动时检测到RDB文件存在.它就会自动载人RDB文件。</p>
+<p>Redis 的快照是<strong>全量快照</strong>，也就是说每次执行快照，都是把内存中的「所有数据」都记录到磁盘中。</p>
+<p>所以可以认为，执行快照是一个比较重的操作，如果频率太频繁，可能会对 Redis 性能产生影响。如果频率太低，服务器故障时，丢失的数据会更多。</p>
+<p>通常可能设置至少 5 分钟才保存一次快照，这时如果 Redis 出现宕机等情况，则意味着最多可能丢失 5 分钟数据。</p>
+<p>这就是 RDB 快照的缺点，在服务器发生故障时，丢失的数据会比 AOF 持久化的方式更多，因为 RDB 快照是全量快照的方式，因此执行的频率不能太频繁，否则会影响 Redis 性能，而 AOF 日志可以以秒级的方式记录操作命令，所以丢失的数据就相对更少。</p>
+<p>因为AOF文件的更新频率通常比RDB文件的更新频率高，所以:</p>
+<ul>
+<li>如果服务器开启了AOF持久化功能，那么服务器会优先使用AOF文件来还原数据库状态。</li>
+<li>只有在AOF持久化功能处于关闭状态时，服务器才会使用RDB文件来还原数据库状态。</li>
+</ul>
+<p>服务器在载人RDB文件期间，会一直处于阻塞状态，直到载入工作完成为止。</p>
+<h3 id="执行快照时修改数据"><a href="#执行快照时修改数据" class="headerlink" title="执行快照时修改数据"></a>执行快照时修改数据</h3><p>执行 bgsave 过程中，由于是交给子进程来构建 RDB 文件，主线程还是可以继续工作的，此时主线程可以修改数据使用技术时<strong>写时复制技术（Copy-On-Write, COW）。</strong></p>
+<p>执行 bgsave 命令的时候，会通过 <code>fork()</code> 创建子进程，此时子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/c34a9d1f58d602ff1fe8601f7270baa7.png" alt="图片"></p>
+<p>只有在发生修改内存数据的情况时，物理内存才会被复制一份。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/ebd620db8a1af66fbeb8f4d4ef6adc68.png" alt="图片"></p>
+<p>这样的目的是为了减少创建子进程时的性能损耗，从而加快创建子进程的速度，毕竟创建子进程的过程中，是会阻塞主线程的。</p>
+<p>所以，创建 bgsave 子进程后，由于共享父进程的所有内存数据，于是就可以直接读取主线程（父进程）里的内存数据，并将数据写入到 RDB 文件。</p>
+<p>当主线程（父进程）对这些共享的内存数据也都是只读操作，那么，主线程（父进程）和 bgsave 子进程相互不影响。</p>
+<p>但是，如果主线程（父进程）要<strong>修改共享数据里的某一块数据</strong>（比如键值对 <code>A</code>）时，就会发生写时复制，于是这块数据的<strong>物理内存就会被复制一份（键值对 <code>A&#39;</code>）</strong>，然后<strong>主线程在这个数据副本（键值对 <code>A&#39;</code>）进行修改操作</strong>。与此同时，<strong>bgsave 子进程可以继续把原来的数据（键值对 <code>A</code>）写入到 RDB 文件</strong>。</p>
+<p>就是这样，Redis 使用 bgsave 对当前内存中的所有数据做快照，这个操作是由 bgsave 子进程在后台完成的，执行时不会阻塞主线程，这就使得主线程同时可以修改数据。</p>
+<p>bgsave 快照过程中，如果主线程修改了共享数据，<strong>发生了写时复制后，RDB 快照保存的是原本的内存数据</strong>，而主线程刚修改的数据，是没办法在这一时间写入 RDB 文件的，只能交由下一次的 bgsave 快照。</p>
+<p>所以 Redis 在使用 bgsave 快照过程中，如果主线程修改了内存数据，不管是否是共享的内存数据，RDB 快照都无法写入主线程刚修改的数据，因为此时主线程（父进程）的内存数据和子进程的内存数据已经分离了，子进程写入到 RDB 文件的内存数据只能是原本的内存数据。</p>
+<p>如果系统恰好在 RDB 快照文件创建完毕后崩溃了，那么 Redis 将会丢失主线程在快照期间修改的数据。</p>
+<p>另外，写时复制的时候会出现这么个极端的情况。</p>
+<p>在 Redis 执行 RDB 持久化期间，刚 fork 时，主进程和子进程共享同一物理内存，但是途中主进程处理了写操作，修改了共享内存，于是当前被修改的数据的物理内存就会被复制一份。</p>
+<p>那么极端情况下，<strong>如果所有的共享内存都被修改，则此时的内存占用是原先的 2 倍。</strong></p>
+<p>所以，针对写操作多的场景，我们要留意下快照过程中内存的变化，防止内存被占满了。</p>
+<h3 id="RDB文件结构"><a href="#RDB文件结构" class="headerlink" title="RDB文件结构"></a>RDB文件结构</h3><p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191032659.png" alt="image-20230419191032659"></p>
+<p> <code>REDIS</code> 部分， 这个部分的长度为 <code>5</code> 字节， 保存着 <code>&quot;REDIS&quot;</code> 五个字符。 通过这五个字符， 程序可以在载入文件时， 快速检查所载入的文件是否 RDB 文件。</p>
+<p><code>db_version</code> 长度为 <code>4</code> 字节， 它的值是一个字符串表示的整数， 这个整数记录了 RDB 文件的版本号， 比如 <code>&quot;0006&quot;</code> 就代表 RDB 文件的版本为第六版。</p>
+<p><code>databases</code> 部分包含着零个或任意多个数据库， 以及各个数据库中的键值对数据：</p>
+<ul>
+<li>如果服务器的数据库状态为空（所有数据库都是空的）， 那么这个部分也为空， 长度为 <code>0</code> 字节。</li>
+<li>如果服务器的数据库状态为非空（有至少一个数据库非空）， 那么这个部分也为非空， 根据数据库所保存键值对的数量、类型和内容不同， 这个部分的长度也会有所不同。</li>
+</ul>
+<p><code>EOF</code> 常量的长度为 <code>1</code> 字节， 这个常量标志着 RDB 文件正文内容的结束， 当读入程序遇到这个值的时候， 它知道所有数据库的所有键值对都已经载入完毕了</p>
+<p><code>check_sum</code> 是一个 <code>8</code> 字节长的无符号整数， 保存着一个校验和， 这个校验和是程序通过对 <code>REDIS</code> 、 <code>db_version</code> 、 <code>databases</code> 、 <code>EOF</code> 四个部分的内容进行计算得出的。 服务器在载入 RDB 文件时， 会将载入数据所计算出的校验和与 <code>check_sum</code> 所记录的校验和进行对比， 以此来检查 RDB 文件是否有出错或者损坏的情况出现。</p>
+<h4 id="databases部分"><a href="#databases部分" class="headerlink" title="databases部分"></a>databases部分</h4><p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191043435.png" alt="image-20230419191043435"></p>
+<p>每个非空数据库在 RDB 文件中都可以保存为 <code>SELECTDB</code> 、 <code>db_number</code> 、 <code>key_value_pairs</code> 三个部分， 如图 IMAGE_DATABASE_STRUCT_OF_RDB 所示</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191052559.png" alt="image-20230419191052559"></p>
+<p><code>SELECTDB</code> 常量的长度为 <code>1</code> 字节， 当读入程序遇到这个值的时候， 它知道接下来要读入的将是一个数据库号码。</p>
+<p><code>db_number</code> 保存着一个数据库号码， 根据号码的大小不同， 这个部分的长度可以是 <code>1</code> 字节、 <code>2</code> 字节或者 <code>5</code> 字节。 当程序读入 <code>db_number</code> 部分之后， 服务器会调用 SELECT 命令， 根据读入的数据库号码进行数据库切换， 使得之后读入的键值对可以载入到正确的数据库中。</p>
+<p><code>key_value_pairs</code> 部分保存了数据库中的所有键值对数据， 如果键值对带有过期时间， 那么过期时间也会和键值对保存在一起。 根据键值对的数量、类型、内容、以及是否有过期时间等条件的不同， <code>key_value_pairs</code> 部分的长度也会有所不同。</p>
+<h5 id="key-value-pairs部分"><a href="#key-value-pairs部分" class="headerlink" title="key_value_pairs部分"></a>key_value_pairs部分</h5><p>不带过期时间的键值对在 RDB 文件中对由 <code>TYPE</code> 、 <code>key</code> 、 <code>value</code> 三部分组成， 如图 IMAGE_KEY_WITHOUT_EXPIRE_TIME 所示。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191059855.png" alt="image-20230419191059855"></p>
+<p><code>TYPE</code> 记录了 <code>value</code> 的类型， 长度为 <code>1</code> 字节，当服务器读入 RDB 文件中的键值对数据时， 程序会根据 <code>TYPE</code> 的值来决定如何读入和解释 <code>value</code> 的数据。</p>
+<p><code>key</code> 和 <code>value</code> 分别保存了键值对的键对象和值对象：</p>
+<ul>
+<li>其中 <code>key</code> 总是一个字符串对象， 它的编码方式和 <code>REDIS_RDB_TYPE_STRING</code> 类型的 <code>value</code> 一样。 根据内容长度的不同， <code>key</code> 的长度也会有所不同。</li>
+<li>根据 <code>TYPE</code> 类型的不同， 以及保存内容长度的不同， 保存 <code>value</code> 的结构和长度也会有所不同</li>
+</ul>
+<p>带有过期时间的键值对在 RDB 文件中的结构如图 <code>IMAGE_KEY_WITH_EXPIRE_TIME</code> 所示。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191109279.png" alt="image-20230419191109279"></p>
+<ul>
+<li><code>EXPIRETIME_MS</code> 常量的长度为 <code>1</code> 字节， 它告知读入程序， 接下来要读入的将是一个以毫秒为单位的过期时间。</li>
+<li><code>ms</code> 是一个 <code>8</code> 字节长的带符号整数， 记录着一个以毫秒为单位的 UNIX 时间戳， 这个时间戳就是键值对的过期时间。</li>
+</ul>
+<p>value的编码</p>
+<ul>
+<li><p>字符串对象</p>
+<p>字符串对象的编码可以是 <code>REDIS_ENCODING_INT</code> 或者<code>REDIS_ENCODING_RAW</code> 。</p>
+<p>如果字符串对象的编码为 <code>REDIS_ENCODING_INT</code> ， 那么说明对象中保存的是长度不超过 <code>32</code> 位的整数。</p>
+<p>如果字符串对象的编码为 <code>REDIS_ENCODING_RAW</code> ， 那么说明对象所保存的是一个字符串值， 根据字符串长度的不同， 有压缩和不压缩两种方法来保存这个字符串：</p>
+<ul>
+<li>如果字符串的长度小于等于 <code>20</code> 字节， 那么这个字符串会直接被原样保存。</li>
+<li>如果字符串的长度大于 <code>20</code> 字节， 那么这个字符串会被压缩之后再保存。</li>
+</ul>
+<p>对于没有被压缩的字符串， RDB 程序会以图 IMAGE_NON_COMPRESS_STRING 所示的结构来保存该字符串。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191117675.png" alt="image-20230419191117675"></p>
+<p>其中， <code>string</code> 部分保存了字符串值本身，而 <code>len</code> 保存了字符串值的长度。</p>
+<p>对于压缩后的字符串， RDB 程序会以图 IMAGE_COMPRESSED_STRING 所示的结构来保存该字符串。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191127291.png" alt="image-20230419191127291"></p>
+<p>其中， <code>REDIS_RDB_ENC_LZF</code> 常量标志着字符串已经被 LZF 算法压缩过了， 读入程序在碰到这个常量时， 会根据之后的 <code>compressed_len</code> 、 <code>origin_len</code> 和 <code>compressed_string</code> 三部分， 对字符串进行解压缩： 其中 <code>compressed_len</code> 记录的是字符串被压缩之后的长度， 而 <code>origin_len</code> 记录的是字符串原来的长度， <code>compressed_string</code> 记录的则是被压缩之后的字符串。</p>
+</li>
+<li><p>列表对象</p>
+<p>如果 <code>TYPE</code> 的值为 <code>REDIS_RDB_TYPE_LIST</code> ， 那么 <code>value</code> 保存的就是一个 <code>REDIS_ENCODING_LINKEDLIST</code> 编码的列表对象， RDB 文件保存这种对象的结构如图 IMAGE_LINKEDLIST_ENCODING_LIST 所示。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191138789.png" alt="image-20230419191138789"></p>
+</li>
+<li><p>集合对象</p>
+<p>如果 <code>TYPE</code> 的值为 <code>REDIS_RDB_TYPE_SET</code> ， 那么 <code>value</code> 保存的就是一个 <code>REDIS_ENCODING_HT</code> 编码的集合对象， RDB 文件保存这种对象的结构如图 IMAGE_HT_ENCODING_SET 所示。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191146159.png" alt="image-20230419191146159"></p>
+</li>
+<li><p>哈希表对象</p>
+<p>如果 <code>TYPE</code> 的值为 <code>REDIS_RDB_TYPE_HASH</code> ， 那么 <code>value</code> 保存的就是一个 <code>REDIS_ENCODING_HT</code> 编码的集合对象， RDB 文件保存这种对象的结构如图 IMAGE_HT_HASH 所示：</p>
+<ul>
+<li><code>hash_size</code> 记录了哈希表的大小， 也即是这个哈希表保存了多少键值对， 读入程序可以通过这个大小知道自己应该读入多少个键值对。</li>
+<li>以 <code>key_value_pair</code> 开头的部分代表哈希表中的键值对， 键值对的键和值都是字符串对象， 所以程序会以处理字符串对象的方式来保存和读入键值对。</li>
+</ul>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191154715.png" alt="image-20230419191154715"></p>
+</li>
+<li><p>有序集合对象</p>
+<p>如果 <code>TYPE</code> 的值为 <code>REDIS_RDB_TYPE_ZSET</code> ， 那么 <code>value</code> 保存的就是一个 <code>REDIS_ENCODING_SKIPLIST</code> 编码的有序集合对象， RDB 文件保存这种对象的结构如图 IMAGE_SKIPLIST_ZSET 所示。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20230419191201586.png" alt="image-20230419191201586"></p>
+</li>
+<li><p>INTSET 编码的集合</p>
+<p>如果 <code>TYPE</code> 的值为 <code>REDIS_RDB_TYPE_SET_INTSET</code> ， 那么 <code>value</code> 保存的就是一个整数集合对象， RDB 文件保存这种对象的方法是， 先将整数集合转换为字符串对象， 然后将这个字符串对象保存到 RDB 文件里面。</p>
+<p>如果程序在读入 RDB 文件的过程中， 碰到由整数集合对象转换成的字符串对象， 那么程序会根据 <code>TYPE</code> 值的指示， 先读入字符串对象， 再将这个字符串对象转换成原来的整数集合对象。</p>
+</li>
+<li><p>ZIPLIST 编码的列表、哈希表或者有序集合</p>
+<p>如果 <code>TYPE</code> 的值为 <code>REDIS_RDB_TYPE_LIST_ZIPLIST</code> 、 <code>REDIS_RDB_TYPE_HASH_ZIPLIST</code> 或者 <code>REDIS_RDB_TYPE_ZSET_ZIPLIST</code> ， 那么 <code>value</code> 保存的就是一个压缩列表对象， RDB 文件保存这种对象的方法是：</p>
+<p>​	 1.将压缩列表转换成一个字符串对象。</p>
+<p>​	 2.将转换所得的字符串对象保存到 RDB 文件。</p>
+<p>如果程序在读入 RDB 文件的过程中， 碰到由压缩列表对象转换成的字符串对象， 那么程序会根据 <code>TYPE</code> 值的指示， 执行以下操作：</p>
+</li>
+</ul>
+<p>​             1.  读入字符串对象，并将它转换成原来的压缩列表对象。</p>
+<p>​			2.根据 <code>TYPE</code> 的值，设置压缩列表对象的类型： 如果 <code>TYPE</code> 的值为 <code>REDIS_RDB_TYPE_LIST_ZIPLIST</code> ， 那么压缩列表对象的类型为列表； 如果<code>TYPE</code> 的值   </p>
+<p>​             为 <code>REDIS_RDB_TYPE_HASH_ZIPLIST</code> ， 那么压缩列表对象的类型为哈希表； 如果 <code>TYPE</code> 的值为 <code>REDIS_RDB_TYPE_ZSET_ZIPLIST</code> ， 那么压缩列表对象			的类型为有序集合。</p>
+<h3 id="RDB-和-AOF-合体"><a href="#RDB-和-AOF-合体" class="headerlink" title="RDB 和 AOF 合体"></a>RDB 和 AOF 合体</h3><p>尽管 RDB 比 AOF 的数据恢复速度快，但是快照的频率不好把握：</p>
+<ul>
+<li>如果频率太低，两次快照间一旦服务器发生宕机，就可能会比较多的数据丢失；</li>
+<li>如果频率太高，频繁写入磁盘和创建子进程会带来额外的性能开销。</li>
+</ul>
+<blockquote>
+<p>那有没有什么方法不仅有 RDB 恢复速度快的优点和，又有 AOF 丢失数据少的优点呢？</p>
+</blockquote>
+<p>在 Redis 4.0 提出的RDB 和 AOF 合体使用，该方法叫<strong>混合使用 AOF 日志和内存快照</strong>，也叫混合持久化。</p>
+<p>如果想要开启混合持久化功能，可以在 Redis 配置文件将下面这个配置项设置成 yes：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aof-use-rdb-preamble yes</span><br></pre></td></tr></table></figure>
+
+<p>混合持久化工作在 <strong>AOF 日志重写过程</strong>。</p>
+<p>当开启了混合持久化时，在 AOF 重写日志时，<code>fork</code> 出来的重写子进程会先将与主线程共享的内存数据以 RDB 方式写入到 AOF 文件，然后主线程处理的操作命令会被记录在重写缓冲区里，重写缓冲区里的增量命令会以 AOF 方式写入到 AOF 文件，写入完成后通知主进程将新的含有 RDB 格式和 AOF 格式的 AOF 文件替换旧的的 AOF 文件。</p>
+<p>也就是说，使用了混合持久化，AOF 文件的<strong>前半部分是 RDB 格式的全量数据，后半部分是 AOF 格式的增量数据</strong>。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/f67379b60d151262753fec3b817b8617.png" alt="图片"></p>
+<p>这样的好处在于，重启 Redis 加载数据的时候，由于前半部分是 RDB 内容，这样<strong>加载的时候速度会很快</strong>。</p>
+<p>加载完 RDB 的内容后，才会加载后半部分的 AOF 内容，这里的内容是 Redis 后台子进程重写 AOF 期间，主线程处理的操作命令，可以使得<strong>数据更少的丢失</strong>。</p>
+<h1 id="redis生产问题"><a href="#redis生产问题" class="headerlink" title="redis生产问题"></a>redis生产问题</h1><h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><pre><code>缓存穿透是指客户端请求的数据在缓存中和数据库中都不存在，这样缓永远不会生效，这些请求都会打到数据库
+</code></pre>
+<p>缓存穿透的发生一般有这两种情况：</p>
+<ul>
+<li>业务误操作，缓存中的数据和数据库中的数据都被误删除了，所以导致缓存和数据库中都没有数据；</li>
+<li>黑客恶意攻击，故意大量访问某些读取不存在数据的业务；</li>
+</ul>
+<p>解决办法：</p>
+<ul>
+<li><p>缓存空对象<br><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/b3419db09e654dee9d8fd5a8ae584b27.png" alt="在这里插入图片描述"></p>
+<pre><code>  优点：实现简单,维护方便
+  缺点：额外的内存消耗
+       可能造成短期不一致
+</code></pre>
+</li>
+<li><p>布隆过滤<br>  <img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/3319fc471b5744ea99e98754e3ef85d4.png" alt="在这里插入图片描述"></p>
+</li>
+<li><p>非法请求的限制</p>
+<p>当有大量恶意请求访问不存在的数据的时候，也会发生缓存穿透，因此在 API 入口处我们要判断求请求参数是否合理，请求参数是否含有非法值、请求字段是否存在，如果判断出是恶意请求就直接返回错误，避免进一步访问缓存和数据库。</p>
+</li>
+</ul>
+<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>布隆过滤器由「初始值都为 0 的位图数组」和「 N 个哈希函数」两部分组成。当我们在写入数据库数据时，在布隆过滤器里做个标记，这样下次查询数据是否在数据库时，只需要查询布隆过滤器，如果查询到数据没有被标记，说明不在数据库中。</p>
+<p>布隆过滤器会通过 3 个操作完成标记：</p>
+<ul>
+<li>第一步，使用 N 个哈希函数分别对数据做哈希计算，得到 N 个哈希值；</li>
+<li>第二步，将第一步得到的 N 个哈希值对位图数组的长度取模，得到每个哈希值在位图数组的对应位置。</li>
+<li>第三步，将每个哈希值在位图数组的对应位置的值设置为 1；</li>
+</ul>
+<p>举个例子，假设有一个位图数组长度为 8，哈希函数 3 个的布隆过滤器。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/86b0046c2622b2c4bda697f9bc0f5b28.png" alt="图片"></p>
+<p>在数据库写入数据 x 后，把数据 x 标记在布隆过滤器时，数据 x 会被 3 个哈希函数分别计算出 3 个哈希值，然后在对这 3 个哈希值对 8 取模，假设取模的结果为 1、4、6，然后把位图数组的第 1、4、6 位置的值设置为 1。<strong>当应用要查询数据 x 是否在数据库时，通过布隆过滤器只要查到位图数组的第 1、4、6 位置的值是否全为 1，只要有一个为 0，就认为数据 x 不在数据库中</strong>。</p>
+<p>布隆过滤器由于是基于哈希函数实现查找的，高效查找的同时<strong>存在哈希冲突的可能性</strong>，比如数据 x 和数据 y 可能都落在第 1、4、6 位置，而事实上，可能数据库中并不存在数据 y，存在误判的情况。</p>
+<p>所以，<strong>查询布隆过滤器说数据存在，并不一定证明数据库中存在这个数据，但是查询到数据不存在，数据库中一定就不存在这个数据</strong>。</p>
+<h2 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h2><pre><code>缓存雪崩是指在同一时间段大量的缓存key同时失效或者redis服务宕机,导致大量请求到达数据库,带来巨大压力
+</code></pre>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/953193076aed493aa7ea1745e0180124.png" alt="在这里插入图片描述"></p>
+<p>解决方案：</p>
+<blockquote>
+<p>怎样解决大量数据同时过期</p>
+</blockquote>
+<p><em>1. 确保数据过期时间不在同一时刻</em></p>
+<p>如果要给缓存数据设置过期时间，应该避免将大量的数据设置成同一个过期时间。我们可以在对缓存数据设置过期时间时，<strong>给这些数据的过期时间加上一个随机数</strong>，这样就保证数据不会在同一时间过期。</p>
+<p><em>2. 互斥锁</em></p>
+<p>当业务线程在处理用户请求时，<strong>如果发现访问的数据不在 Redis 里，就加个互斥锁，保证同一时间内只有一个请求来构建缓存</strong>（从数据库读取数据，再将数据更新到 Redis 里），当缓存构建完成后，再释放锁。未能获取互斥锁的请求，要么等待锁释放后重新读取缓存，要么就返回空值或者默认值。</p>
+<p>实现互斥锁的时候，最好设置<strong>超时时间</strong>，不然第一个请求拿到了锁，然后这个请求发生了某种意外而一直阻塞，一直不释放锁，这时其他请求也一直拿不到锁，整个系统就会出现无响应的现象。</p>
+<p><em>3. 双 key 策略</em></p>
+<p>我们对缓存数据可以使用两个 key，一个是<strong>主 key，会设置过期时间</strong>，一个是<strong>备 key，不会设置过期</strong>，它们只是 key 不一样，但是 value 值是一样的，相当于给缓存数据做了个副本。</p>
+<p>当业务线程访问不到「主 key 」的缓存数据时，就直接返回「备 key 」的缓存数据，然后在更新缓存的时候，<strong>同时更新「主 key 」和「备 key 」的数据。</strong></p>
+<p>双 key 策略的好处是，当主 key 过期了，有大量请求获取缓存数据的时候，直接返回备 key 的数据，这样可以快速响应请求。而不用因为 key 失效而导致大量请求被锁阻塞住（采用了互斥锁，仅一个请求来构建缓存），后续再通知后台线程，重新构建主 key 的数据。</p>
+<p><em>4. 后台更新缓存</em></p>
+<p>业务线程不再负责更新缓存，缓存也不设置有效期，而是<strong>让缓存“永久有效”，并将更新缓存的工作交由后台线程定时更新</strong>。</p>
+<p>事实上，缓存数据不设置有效期，并不是意味着数据一直能在内存里，因为<strong>当系统内存紧张的时候，有些缓存数据会被“淘汰”</strong>，而在缓存被“淘汰”到下一次后台定时更新缓存的这段时间内，业务线程读取缓存失败就返回空值，业务的视角就以为是数据丢失了。</p>
+<p>解决上面的问题的方式有两种。</p>
+<p>第一种方式，后台线程不仅负责定时更新缓存，而且也负责<strong>频繁地检测缓存是否有效</strong>，检测到缓存失效了，原因可能是系统紧张而被淘汰的，于是就要马上从数据库读取数据，并更新到缓存。</p>
+<p>这种方式的检测时间间隔不能太长，太长也导致用户获取的数据是一个空值而不是真正的数据，所以检测的间隔最好是毫秒级的，但是总归是有个间隔时间，用户体验一般。</p>
+<p>第二种方式，在业务线程发现缓存数据失效后（缓存数据被淘汰），<strong>通过消息队列发送一条消息通知后台线程更新缓存</strong>，后台线程收到消息后，在更新缓存前可以判断缓存是否存在，存在就不执行更新缓存操作；不存在就读取数据库数据，并将数据加载到缓存。这种方式相比第一种方式缓存的更新会更及时，用户体验也比较好。</p>
+<p>在业务刚上线的时候，我们最好提前把数据缓起来，而不是等待用户访问才来触发缓存构建，这就是所谓的<strong>缓存预热</strong>，后台更新缓存的机制刚好也适合干这个事情。</p>
+<blockquote>
+<p>Redis宕机解决</p>
+</blockquote>
+<p><em>1. 服务熔断或请求限流机制</em></p>
+<p>因为 Redis 故障宕机而导致缓存雪崩问题时，我们可以启动<strong>服务熔断</strong>机制，<strong>暂停业务应用对缓存服务的访问，直接返回错误</strong>，不用再继续访问数据库，从而降低对数据库的访问压力，保证数据库系统的正常运行，然后等到 Redis 恢复正常后，再允许业务应用访问缓存服务。</p>
+<p>服务熔断机制是保护数据库的正常允许，但是暂停了业务应用访问缓存服系统，全部业务都无法正常工作</p>
+<p>为了减少对业务的影响，我们可以启用<strong>请求限流</strong>机制，<strong>只将少部分请求发送到数据库进行处理，再多的请求就在入口直接拒绝服务</strong>，等到 Redis 恢复正常并把缓存预热完后，再解除请求限流的机制。</p>
+<p><em>2. 构建 Redis 缓存高可靠集群</em></p>
+<p>服务熔断或请求限流机制是缓存雪崩发生后的应对方案，我们最好通过<strong>主从节点的方式构建 Redis 缓存高可靠集群</strong>。</p>
+<p>如果 Redis 缓存的主节点故障宕机，从节点可以切换成为主节点，继续提供缓存服务，避免了由于 Redis 故障宕机而导致的缓存雪崩问题。</p>
+<h2 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h2><pre><code>缓存击穿问题也叫热点key问题,就是一个被高并发访问并且缓存重建业务复杂的key突然失效,
+无数的请求访问会在瞬间给数据库带来巨大的冲击
+</code></pre>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/6912879d6a3a4cd9b4e0e64109940d32.png" alt="在这里插入图片描述"><br>解决方案：</p>
+<ul>
+<li>互斥锁<br><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/f781855728ff481f9053d863181b539d.png" alt="在这里插入图片描述"></li>
+<li>逻辑过期<br><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/777500b8e1d34568956615d251354388.png" alt="在这里插入图片描述"><br><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/6a1b0f5a264c4d76b470c1ed3966eff0.png" alt="在这里插入图片描述"></li>
+</ul>
+<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><h2 id="数据一致性问题原因"><a href="#数据一致性问题原因" class="headerlink" title="数据一致性问题原因"></a>数据一致性问题原因</h2><p>在数据更新时，不仅要更新数据库，而且要更新缓存，这两个更新操作存在前后的问题</p>
+<p><strong>出现了数据库和缓存的数据不一致的问题</strong>，是因为<strong>并发问题</strong>！</p>
+<ul>
+<li><p>先更新数据库，再更新缓存</p>
+<p>举个例子，比如「请求 A 」和「请求 B 」两个请求，同时更新「同一条」数据，则可能出现这样的顺序：</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/8febac10b14bed16cb96d1d944cd08da.png" alt="图片"></p>
+<p>A 请求先将数据库的数据更新为 1，然后在更新缓存前，请求 B 将数据库的数据更新为 2，紧接着也把缓存更新为 2，然后 A 请求更新缓存为 1。</p>
+<p>此时，数据库中的数据是 2，而缓存中的数据却是 1，<strong>出现了缓存和数据库中的数据不一致的现象</strong>。</p>
+</li>
+<li><p>先更新缓存，再更新数据库</p>
+<p>假设「请求 A 」和「请求 B 」两个请求，同时更新「同一条」数据，则可能出现这样的顺序：</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/454a8228a6549176ad7e0484fba3c92b.png" alt="图片"></p>
+<p>A 请求先将缓存的数据更新为 1，然后在更新数据库前，B 请求来了， 将缓存的数据更新为 2，紧接着把数据库更新为 2，然后 A 请求将数据库的数据更新为 1。</p>
+<p>此时，数据库中的数据是 1，而缓存中的数据却是 2，<strong>出现了缓存和数据库中的数据不一致的现象</strong>。</p>
+</li>
+</ul>
+<p>所以，<strong>无论是「先更新数据库，再更新缓存」，还是「先更新缓存，再更新数据库」，这两个方案都存在并发问题，当两个请求并发更新同一条数据的时候，可能会出现缓存和数据库中的数据不一致的现象</strong>。</p>
+<h2 id="缓存读写策略"><a href="#缓存读写策略" class="headerlink" title="缓存读写策略"></a>缓存读写策略</h2><blockquote>
+<p>操作缓存和数据库时有三个问题要考虑：</p>
+</blockquote>
+<p>1.删除缓存还是更新缓存</p>
+<ul>
+<li>更新缓存：每次更新数据库都更新缓存，无效写操作过多(即应用一直都执行写操作而不执行读操作)</li>
+<li>删除缓存：更新数据库时让缓存失效，查询时再更新缓存(推荐使用)</li>
+</ul>
+<p>2.如何保证缓存与数据库操作的同时成功或失败</p>
+<ul>
+<li>单体系统：将缓存与数据库操作放在一个事务</li>
+<li>分布式系统：利用TCC等分布式事务方案</li>
+</ul>
+<p>3.先操作缓存还是先操作数据库</p>
+<h3 id="Cache-Aside-Pattern（旁路缓存模式）"><a href="#Cache-Aside-Pattern（旁路缓存模式）" class="headerlink" title="Cache Aside Pattern（旁路缓存模式）"></a>Cache Aside Pattern（旁路缓存模式）</h3><p>该策略又可以细分为「读策略」和「写策略」。</p>
+<p><strong>写策略的步骤：</strong></p>
+<ul>
+<li>更新数据库中的数据；</li>
+<li>删除缓存中的数据。</li>
+</ul>
+<p><strong>读策略的步骤：</strong></p>
+<ul>
+<li>如果读取的数据命中了缓存，则直接返回数据；</li>
+<li>如果读取的数据没有命中缓存，则从数据库中读取数据，然后将数据写入到缓存，并且返回给用户。</li>
+</ul>
+<blockquote>
+<p>写策略时先更新数据库，还是先删除缓存？</p>
+</blockquote>
+<ul>
+<li><p>先删除缓存，再更新数据库</p>
+<p>假设某个用户的年龄是 20，请求 A 要更新用户年龄为 21，所以它会删除缓存中的内容。这时，另一个请求 B 要读取这个用户的年龄，它查询缓存发现未命中后，会从数据库中读取到年龄为 20，并且写入到缓存中，然后请求 A 继续更改数据库，将用户的年龄更新为 21。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/cc208c2931b4e889d1a58cb655537767.png" alt="图片"></p>
+<p>最终，该用户年龄在缓存中是 20（旧值），在数据库中是 21（新值），缓存和数据库的数据不一致。</p>
+<p>可以看到，<strong>先删除缓存，再更新数据库，在「读 + 写」并发的时候，还是会出现缓存和数据库的数据不一致的问题</strong>。</p>
+</li>
+<li><p>先更新数据库，再删除缓存</p>
+<p>假如某个用户数据在缓存中不存在，请求 A 读取数据时从数据库中查询到年龄为 20，在未写入缓存中时另一个请求 B 更新数据。它更新数据库中的年龄为 21，并且清空缓存。这时请求 A 把从数据库中读到的年龄为 20 的数据写入到缓存中。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/1cc7401143e79383ead96582ac11b615.png" alt="图片"></p>
+<p>最终，该用户年龄在缓存中是 20（旧值），在数据库中是 21（新值），缓存和数据库数据不一致。</p>
+</li>
+</ul>
+<p>从上面的理论上分析，先更新数据库，再删除缓存也是会出现数据不一致性的问题，<strong>但是在实际中，这个问题出现的概率并不高</strong>。</p>
+<p><strong>因为缓存的写入通常要远远快于数据库的写入</strong>，所以在实际中很难出现请求 B 已经更新了数据库并且删除了缓存，请求 A 才更新完缓存的情况。</p>
+<p>而一旦请求 A 早于请求 B 删除缓存之前更新了缓存，那么接下来的请求就会因为缓存不命中而从数据库中重新读取数据，所以不会出现这种不一致的情况。</p>
+<p>所以，<strong>「先更新数据库 + 再删除缓存」的方案，是可以保证数据一致性的</strong>。</p>
+<p>为了确保万无一失，还可以给缓存数据加上了「<strong>过期时间</strong>」，就算在这期间存在缓存数据不一致，有过期时间来兜底，这样也能达到最终一致。</p>
+<blockquote>
+<p>这种操作的问题</p>
+</blockquote>
+<p>「先更新数据库， 再删除缓存」其实是两个操作，比如<strong>在删除缓存的时候失败了，导致缓存中的数据是旧值</strong>。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/2a2ea2854bbc3ae8ae86d7da45fa32ee.png" alt="图片"></p>
+<p>解决方案：</p>
+<ul>
+<li><p>重试机制。</p>
+<p>可以引入<strong>消息队列</strong>，将第二个操作（删除缓存）要操作的数据加入到消息队列，由消费者来操作数据。</p>
+<ul>
+<li>如果应用删除缓存失败，可以从消息队列中重新读取数据，然后再次删除缓存，这个就是<strong>重试机制</strong>。当然，如果重试超过的一定次数，还是没有成功，我们就需要向业务层发送报错信息了。</li>
+<li>如果<strong>删除缓存成功</strong>，就要把数据从消息队列中移除，避免重复操作，否则就继续重试。</li>
+</ul>
+<p>举个例子，来说明重试机制的过程。</p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/a4440f0d572612e0832b903e4a62bd2b.png" alt="图片"></p>
+</li>
+<li><p>订阅 MySQL binlog，再操作缓存。</p>
+<p>「<strong>先更新数据库，再删缓存</strong>」的策略的第一步是更新数据库，那么更新数据库成功，就会产生一条变更日志，记录在 binlog 里。</p>
+<p>于是我们就可以通过订阅 binlog 日志，拿到具体要操作的数据，然后再执行缓存删除，阿里巴巴开源的 Canal 中间件就是基于这个实现的。</p>
+<p>Canal 模拟 MySQL 主从复制的交互协议，把自己伪装成一个 MySQL 的从节点，向 MySQL 主节点发送 dump 请求，MySQL 收到请求后，就会开始推送 Binlog 给 Canal，Canal 解析 Binlog 字节流之后，转换为便于读取的结构化数据，供下游程序订阅使用。</p>
+<p>下图是 Canal 的工作原理：</p>
+</li>
+</ul>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/2ee2280e9f59b6b4879ebdec6eb0cf52.png" alt="图片"></p>
+<p>所以，如果要想保证「先更新数据库，再删缓存」策略第二个操作能执行成功，我们可以使用「消息队列来重试缓存的删  	除」，或者「订阅 MySQL binlog 再操作缓存」，这两种方法有一个共同的特点，都是采用异步操作缓存。</p>
+<h3 id="Read-Write-Through-Pattern-读写穿透"><a href="#Read-Write-Through-Pattern-读写穿透" class="headerlink" title="Read&#x2F;Write Through Pattern(读写穿透)"></a>Read&#x2F;Write Through Pattern(读写穿透)</h3><p>该模式下服务端把缓存作为主要数据存储,从中读写数据,而由缓存将此数据读取和写入数据库，因此减轻了应用程序的维护和编写，但是我们经常使用的分布式缓存并没有提供这种功能</p>
+<p>写操作：<br><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/d1e3ad29fdc74ab6a956a74ecb57ee0c.png" alt="在这里插入图片描述"><br>读操作：<br><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/d214d541100740878a8af150a09fc9f3.png" alt="在这里插入图片描述"></p>
+<h3 id="Write-Behind-Pattern-异步缓存写入"><a href="#Write-Behind-Pattern-异步缓存写入" class="headerlink" title="Write Behind Pattern(异步缓存写入)"></a>Write Behind Pattern(异步缓存写入)</h3><p>Write Behind Pattern 和 Read&#x2F;Write Through Pattern 很相似，两者都是由 cache 服务来负责 cache 和 db 的读写。但是，两个又有很大的不同：Read&#x2F;Write Through 是同步更新 cache 和 db，而 Write Behind 则是只更新缓存，不直接更新 db，而是改为异步批量的方式来更新 db。</p>
+<h1 id="Redisson"><a href="#Redisson" class="headerlink" title="Redisson"></a>Redisson</h1><p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20240115164836637.png" alt="image-20240115164836637"></p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20240115164913174.png" alt="image-20240115164913174"></p>
+<p><img src="/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/image-20240115164952299.png" alt="image-20240115164952299"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://username.github.io/2024/03/11/note/%E6%95%B0%E6%8D%AE%E5%BA%93/redis/" data-id="cltu174t9000h48nu7f9x2qmq" data-title="reids.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/03/11/note/%E6%A1%86%E6%9E%B6/SpringMvc/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          SpringMvc.md
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/03/11/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">计算机网络.md</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/note/">note</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/note/juc/">juc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/jvm/">jvm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E6%A1%86%E6%9E%B6/">框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E9%A1%B9%E7%9B%AE/">项目</a></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/03/11/note/jvm/jvm/">jvm.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/AQS/">AQS.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/Future/">Future.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/ConcurrentHashMap/">ConcurrentHashMap.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/Executor/">Executor.md</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 1Stack1<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

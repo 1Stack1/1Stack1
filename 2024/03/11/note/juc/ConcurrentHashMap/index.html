@@ -9,12 +9,12 @@
   <meta name="description" content="JDK1.8重要属性和内部类1234567891011121314151617181920&#x2F;&#x2F;该变量主要是用来控制数组的初始化和扩容的，默认值为0，可以概括一下4种状态：&#x2F;&#x2F;sizeCtr&#x3D;0：默认值；&#x2F;&#x2F;sizeCtr&#x3D;-1：表示Map正在初始化中；&#x2F;&#x2F;sizeCtr&#x3D;-N：表示正在有N-1个线程进行扩容操作；&#x2F;&#x2F;sizeCtr&gt;0: 未初始化则表示初始化Map的大小，已初始化则表示下次进">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ConcurrentHashMap.md">
-<meta property="og:url" content="https://1stack1.github.io/2024/03/11/note/juc/ConcurrentHashMap/index.html">
+<meta property="og:url" content="https://username.github.io/2024/03/11/note/juc/ConcurrentHashMap/index.html">
 <meta property="og:site_name" content="1Stack1">
 <meta property="og:description" content="JDK1.8重要属性和内部类1234567891011121314151617181920&#x2F;&#x2F;该变量主要是用来控制数组的初始化和扩容的，默认值为0，可以概括一下4种状态：&#x2F;&#x2F;sizeCtr&#x3D;0：默认值；&#x2F;&#x2F;sizeCtr&#x3D;-1：表示Map正在初始化中；&#x2F;&#x2F;sizeCtr&#x3D;-N：表示正在有N-1个线程进行扩容操作；&#x2F;&#x2F;sizeCtr&gt;0: 未初始化则表示初始化Map的大小，已初始化则表示下次进">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-03-11T15:50:50.000Z">
-<meta property="article:modified_time" content="2024-03-11T16:11:33.151Z">
+<meta property="article:modified_time" content="2024-03-13T16:19:29.416Z">
 <meta property="article:author" content="1Stack1">
 <meta name="twitter:card" content="summary">
   
@@ -64,7 +64,7 @@
         <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://1Stack1.github.io"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://username.github.io"></form>
       </div>
     </div>
   </div>
@@ -77,6 +77,10 @@
   <time class="dt-published" datetime="2024-03-11T15:50:50.000Z" itemprop="datePublished">2024-03-11</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/note/">note</a>►<a class="article-category-link" href="/categories/note/juc/">juc</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -125,7 +129,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://1stack1.github.io/2024/03/11/note/juc/ConcurrentHashMap/" data-id="cltn57su40000tcnu8gyu9u48" data-title="ConcurrentHashMap.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://username.github.io/2024/03/11/note/juc/ConcurrentHashMap/" data-id="cltu174t3000448nu2r6f536d" data-title="ConcurrentHashMap.md" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -135,19 +139,19 @@
     
 <nav id="article-nav">
   
-    <a href="/2024/03/11/note/juc/AQS/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2024/03/11/note/juc/Future/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          AQS.md
+          Future.md
         
       </div>
     </a>
   
   
-    <a href="/2024/03/11/note/juc/cas/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2024/03/11/note/juc/Executor/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">cas.md</div>
+      <div class="article-nav-title">Executor.md</div>
     </a>
   
 </nav>
@@ -161,6 +165,13 @@
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/note/">note</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/note/juc/">juc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/jvm/">jvm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E6%A1%86%E6%9E%B6/">框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/%E9%A1%B9%E7%9B%AE/">项目</a></li></ul></li></ul>
+    </div>
+  </div>
+
 
   
     
@@ -185,7 +196,15 @@
       <ul>
         
           <li>
+            <a href="/2024/03/11/note/jvm/jvm/">jvm.md</a>
+          </li>
+        
+          <li>
             <a href="/2024/03/11/note/juc/AQS/">AQS.md</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/11/note/juc/Future/">Future.md</a>
           </li>
         
           <li>
@@ -193,15 +212,7 @@
           </li>
         
           <li>
-            <a href="/2024/03/11/note/juc/cas/">cas.md</a>
-          </li>
-        
-          <li>
             <a href="/2024/03/11/note/juc/Executor/">Executor.md</a>
-          </li>
-        
-          <li>
-            <a href="/2024/03/11/note/juc/Future/">Future.md</a>
           </li>
         
       </ul>
