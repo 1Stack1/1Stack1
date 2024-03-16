@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		
+<title>聊天网站.md - 1Stack1</title>
+<meta charset="utf-8" />
+<meta name="keywords" content="" />
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=5"
+/>
+<meta name="generator" content="Hexo 7.1.1">
+<link rel="stylesheet" href="/css/style.css?v=1710592518628">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap"
+    media="all"
+/>
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/highlight.js@9.15.8/styles/solarized-light.css"
+/>
+<script src="/js/core.js?v=1710592518628"></script>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js" async></script>
+<!--<script src="" async></script>--> 
+	</head>
+
+	<body>
+        <div class="header  ">
+    <div class="container">
+        <a class="logo" href="/" title="1Stack1">1Stack1</a>
+        <ul class="nav">
+            
+                <li class="nav-item"><a href="/archives">Archives</a></li>
+            
+                <li class="nav-item"><a href="/about.html">About</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="content">
+	<div class="banner">
+		<div class="container">
+			<h1>聊天网站.md</h1>
+			<div class="info"><span class="date">2024年3月11日</span>•1Stack1 
+			
+					《<a class="nexmoefont icon-appstore-fill -link" href="/categories/note/">note</a><a class="nexmoefont icon-appstore-fill -link" href="/categories/note/%E9%A1%B9%E7%9B%AE/">项目</a>》
+				
+				
+					<a href="https://github.com/nexmoe/books/tree/master/source/_posts/项目/聊天网站.md" target="_blank" rel="external nofollow noreferrer noopener">编辑</a>
+				
+			</div>
+			
+		</div>
+	</div>
+	<div class="container">
+		<article class="post">
+			<h1 id="仿网页版QQ"><a href="#仿网页版QQ" class="headerlink" title="仿网页版QQ"></a>仿网页版QQ</h1><h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><h3 id="单聊"><a href="#单聊" class="headerlink" title="单聊"></a>单聊</h3><p>基于websocket实现,前端发送可以转为History类型的json，后端通过一个存储用户id与用户session之间映射的map判断用户是否在线，如果用户不在线，讲history对象的state属性置为0，若在线置为1并通过ws发送给接收方。然后把history对象存储到redis的一个list集合，每3秒的所有history都会存到同一个list里面。服务端开启定时任务，定时任务会获取前三秒存储到redis的单聊history存储到数据库并删除该list。</p>
+<h3 id="群聊"><a href="#群聊" class="headerlink" title="群聊"></a>群聊</h3><p>基于websocket实现,前端发送可以转为History类型的json，后端从数据库中查找history对象toId对应群里所有用户id，再通过一个存储用户id与用户session之间映射的map查找到群里在线的用户id。将其存储redis的map类型，key为表示是哪个时间段的消息，hkey为history，hval为查找到的用户id集合(StrUtil.join()方法转为一定格式的字符串)。然后对每个在线用户通过ws发送消息。服务端开启定时任务，定时任务会获取前三秒存储到redis的群聊history存储到数据库，并解析出那些些用户在每个群聊获取到的history的id最大值，并去修改数据库存储用户和群关系表的rec_id字段（存储用户最后接收到该群聊的消息的id），最后删除redis键值对。</p>
+<p>【当用户量少的时候可以在history表中插入数据，因为historyId主键是自增的，根据数据库索引优化插入数据效率很高；当然这里让user_group_relation关系表的userId和groupId形成聚合索引，虽然增加了索引表，但是相对于只存到一个history的大量记录来说还是减少了存储】</p>
+<h3 id="朋友圈"><a href="#朋友圈" class="headerlink" title="朋友圈"></a>朋友圈</h3><p>参考点评项目的博客功能。</p>
+<h3 id="消息漫游"><a href="#消息漫游" class="headerlink" title="消息漫游"></a>消息漫游</h3><p>就是获取用户离线状态下未接收到的消息。对于单聊模块，通过历史记录的toId和state可以查询到，<code>细节上是通过history表自连接查询到根据fromId分组的最后的历史记录和count，返回给前端，如果用户像详细看哪个消息，通过前端点击后就查询所有fromId和userId之间的history，并存储到redis再通过定时任务将那些记录的state都改为1</code>。对于群聊模块，通过用户与群关系表的rec_id字段和对应群聊最后的history的id字段判断是否有漫游的消息，然后细节方面和单聊一样通过前端点击获取所有历史记录</p>
+<h3 id="获取好友列表"><a href="#获取好友列表" class="headerlink" title="获取好友列表"></a>获取好友列表</h3><p>前端通过树形控件懒加载先获取所有的分组，然后再获取分组下的用户</p>
+<h2 id="数据库设计"><a href="#数据库设计" class="headerlink" title="数据库设计"></a>数据库设计</h2><blockquote>
+<p>sys_user用户表</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">`id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT 				#唯一id</span><br><span class="line">`username` <span class="type">varchar</span>(<span class="number">15</span>)  <span class="keyword">NOT</span> <span class="keyword">NULL</span>					#用户名唯一且不为空</span><br><span class="line">`password` <span class="type">varchar</span>(<span class="number">255</span>) <span class="keyword">not</span> <span class="keyword">NULL</span>                    #密码不为空</span><br><span class="line">`realname` <span class="type">varchar</span>(<span class="number">15</span>)  <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>           #真实姓名用于找回或忘记密码作为密保</span><br><span class="line">`college` <span class="type">varchar</span>(<span class="number">15</span>)  <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>            #学校用于找回或忘记密码作为密保</span><br><span class="line">`status` tinyint(<span class="number">1</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>			 #用户状态<span class="number">1</span>为在线，<span class="number">0</span>为离线</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>tb_group分组表</p>
+</blockquote>
+<hr>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">`id` <span class="type">bigint</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;分组id&#x27;</span>,</span><br><span class="line">`group_name` <span class="type">varchar</span>(<span class="number">25</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_0900_ai_ci <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;分组名称&#x27;</span>,</span><br><span class="line">`max_num` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">200</span> COMMENT <span class="string">&#x27;分组最多可以有多少用户&#x27;</span>,</span><br><span class="line">`now_num` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;分组当前用户数量&#x27;</span>,</span><br><span class="line">`own_id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;该分组属于哪个用户&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>tb_friend好友表</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">`id` <span class="type">bigint</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">`friend_note` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_0900_ai_ci <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;好友备注&#x27;</span>,</span><br><span class="line">`group_id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;处于哪个分组&#x27;</span>,</span><br><span class="line">`friend_id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;好友id&#x27;</span>,</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>tb_history历史记录表</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">`id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">`fromId` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;消息发送方的id&#x27;</span>,</span><br><span class="line">`toId` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;消息接收方的id(用户或群聊)&#x27;</span>,</span><br><span class="line">`content` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_0900_ai_ci <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;消息内容&#x27;</span>,</span><br><span class="line">`state` tinyint(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;消息是否被接收到,0:未接受到,1:接收到,2:群聊消息&#x27;</span>,</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>tb_organization群组表</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">`id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line"> `org_name` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_0900_ai_ci <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;群名&#x27;</span>,</span><br><span class="line"> `max_num` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">200</span> COMMENT <span class="string">&#x27;群最多有多少人&#x27;</span>,</span><br><span class="line"> `now_num` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;群现在人数&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>tb_user_org用户与群组关系表</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">`id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `user_id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;用户id&#x27;</span>,</span><br><span class="line">  `org_id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;群id&#x27;</span>,</span><br><span class="line">  `rec_id` <span class="type">int</span>(<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;当前用户读到该群最后一条历史记录的id&#x27;</span>,</span><br></pre></td></tr></table></figure>
+
+<h2 id="前缀树敏感词脱敏"><a href="#前缀树敏感词脱敏" class="headerlink" title="前缀树敏感词脱敏"></a>前缀树敏感词脱敏</h2><p>构建前缀树是放到静态代码块中，在项目根目录下放着一个记录好的敏感词文本文件，在静态代码块中通过这个文本文件来构造前缀树。</p>
+<p>敏感词脱敏是使用三个指针，一个指向前缀树，其他两个是用于使用双指针法来查找敏感词的。具体过程为，指针1一直指向前缀树的根节点，指针2和指针3在没有找到疑似敏感词时时一起移动的。当指针2指向的文字在指针1的某个字点中,就为疑似找到敏感词，指针2就一直指向该处作为疑似敏感词的头指针，临时指针指向前缀树中被匹配的节点，指针3一直向后查找，直到确认该词为敏感词，就将指针2与指针3之间的文本全部替换为*号.</p>
+<p><img src="/2024/03/11/%E9%A1%B9%E7%9B%AE/%E8%81%8A%E5%A4%A9%E7%BD%91%E7%AB%99/20200423103755739.png" alt="在这里插入图片描述"></p>
+<h2 id="websocket"><a href="#websocket" class="headerlink" title="websocket"></a>websocket</h2><ul>
+<li><p>配置类</p>
+<p>WebSocketConfigurer接口：registerWebSockethandlers()方法，将路径和处理器映射。</p>
+</li>
+<li><p>自动配置类</p>
+<p>spring-boot-autoconfigure依赖下websocket目录有</p>
+<p>WebSocketMessagingAutoConfiguration</p>
+<p>WebSocketServletAutoConfiguration</p>
+<p>WebSocketReactiveAutoConfiguration</p>
+</li>
+<li><p>核心类</p>
+<p>WebSocketSession接口</p>
+<p>WebSocketHandler接口</p>
+<p>WebSocketMessage接口</p>
+</li>
+</ul>
+<h1 id="使用websocket时的问题"><a href="#使用websocket时的问题" class="headerlink" title="使用websocket时的问题"></a>使用websocket时的问题</h1><p>主要有Bean注入和无法获取principal</p>
+<blockquote>
+<p>原生websocket，使用到原生注解如@OnOpen等注解的对象使用@Autowired注解自动装配Bean时，出现null异常</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@ServerEndpoint(&quot;/&#123;userId&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChatController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ChatService chatService;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;        </span><br></pre></td></tr></table></figure>
+
+<p>WebSocket 是多实例单线程的。每当有新的 WebSocket 连接建立时，都会创建一个新的 WebSocket 实例。这些新的 WebSocket 实例需要访问 Spring 容器中的 Bean。</p>
+<p>问题就在于，如果在 WebSocket 实例中使用 <code>@Autowired</code> 注解来注入 Spring 容器中的 Bean，那么只有在整个应用程序启动时，Spring 容器才会创建一个 Bean 实例并将其注入到 WebSocket 实例中。而对于之后创建的新的 WebSocket 实例，Spring 容器不会再次创建和注入新的 Bean 实例。因此，这些新的 WebSocket 实例中的 <code>@Autowired</code> 注解的 Bean 将会是 null。</p>
+<p><strong>解决办法：</strong></p>
+<p>1.使用 <code>prototype</code> 作用域来声明需要注入到 WebSocket 中的 Bean。<code>prototype</code> 作用域的 Bean 在每次使用时都会创建一个新的实例。这样在新的 WebSocket 实例创建时，就会创建一个新的 Bean 实例并注入到 WebSocket 中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> &#123;  </span><br><span class="line">    <span class="meta">@Bean</span>  </span><br><span class="line">    <span class="meta">@Scope(&quot;prototype&quot;)</span>  </span><br><span class="line">    <span class="keyword">public</span> MyService <span class="title function_">myService</span><span class="params">()</span> &#123;  </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">MyServiceImpl</span>();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.还是使用单例Bean，但是将该对象用static修饰，在Spring容器启动时就给该静态对象赋值。—-<strong>使用的是该方法解决的</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setChatService</span><span class="params">(ChatService chat)</span> &#123;</span><br><span class="line">        ChatController.chatService = chat;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@ServerEndpoint(&quot;/&#123;userId&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChatController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> ChatService chatService;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>无法获取到principal</p>
+</blockquote>
+<p><strong>问题</strong></p>
+<p>想在WebSoketSession连接建立时获取到principal，并建立用户与WebSocketSession映射。跟踪WebSocketSession建立，知道principal是在SecurityContext得到。但是不管是在登陆后将Authentication放入SecurityContext还是debug模式下在协议升级时将Authentication放入SecurityContext都无法在WebSocketSession中得到。</p>
+<p><strong>原因</strong></p>
+<p>WebSocket协议本质上是一种无状态的通信协议，与HTTP不同，它不维护会话（Session）状态。每个WebSocket连接都是独立的，不会自动与HTTP会话相关联。</p>
+<p><strong>解决</strong></p>
+<p>用户登录后，用户信息会返回给前端，在websocket连接url上携带着用户id，然后在websocket连接建立时建立映射。</p>
+<p><strong>跟踪WebSocketSession给userPrincipal赋值</strong></p>
+<ul>
+<li><p>通过继承AbstractWebSocketHandler的handler的afterConnectionEstablished方法，知道afterConnectionEstablished方法的参数是</p>
+<p>StandardWebSocketSession类的对象</p>
+</li>
+<li><p>通过StandardWebSocketSession类的initializeNativeSession方法,跟踪到userPrincipal是由WsSession的getUserPrincipal方法赋值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">initializeNativeSession</span><span class="params">(Session session)</span> &#123;</span><br><span class="line">	</span><br><span class="line">	....</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">this</span>.user == <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="built_in">this</span>.user = session.getUserPrincipal();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过给WsSession的构造方法断点，并根据栈信息知道是由WsHttpUpgradeHandler的init方法来创建的WsSession对象，执行构造方法传递的参数是由属性handshakeRequest的getUserPrincipal方法赋值的，handshakeRequest是在preInit方法赋值的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">(WebConnection connection)</span> &#123;</span><br><span class="line">       ....</span><br><span class="line">           wsSession = <span class="keyword">new</span> <span class="title class_">WsSession</span>(wsRemoteEndpointServer,</span><br><span class="line">                   webSocketContainer, handshakeRequest.getRequestURI(),</span><br><span class="line">                   handshakeRequest.getParameterMap(),</span><br><span class="line">                   handshakeRequest.getQueryString(),</span><br><span class="line">                   handshakeRequest.getUserPrincipal(), httpSessionId,</span><br><span class="line">                   negotiatedExtensions, subProtocol, pathParameters, secure,</span><br><span class="line">                   serverEndpointConfig);</span><br><span class="line">           </span><br><span class="line">   &#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">preInit</span><span class="params">(ServerEndpointConfig serverEndpointConfig,</span></span><br><span class="line"><span class="params">           WsServerContainer wsc, WsHandshakeRequest handshakeRequest,</span></span><br><span class="line"><span class="params">           List&lt;Extension&gt; negotiatedExtensionsPhase2, String subProtocol,</span></span><br><span class="line"><span class="params">           Transformation transformation, Map&lt;String,String&gt; pathParameters,</span></span><br><span class="line"><span class="params">           <span class="type">boolean</span> secure)</span> &#123;</span><br><span class="line">       ...</span><br><span class="line">       <span class="built_in">this</span>.handshakeRequest = handshakeRequest;</span><br><span class="line">       ...</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>handshakeRequest</strong>的getUserPrincipal是由构造方法的HttpServletRequest的getUserPrincipal结果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="keyword">public</span> Principal <span class="title function_">getUserPrincipal</span><span class="params">()</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> userPrincipal;</span><br><span class="line">   &#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="title function_">WsHandshakeRequest</span><span class="params">(HttpServletRequest request, Map&lt;String,String&gt; pathParams)</span> &#123;</span><br><span class="line">	...</span><br><span class="line">       userPrincipal = request.getUserPrincipal();</span><br><span class="line">       ...</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>这里需要知道给priInit方法的handshakeRequest是哪个实现类，通过给preInit方法断点，并根据栈信息跟踪到UpgradeUtil的doUpgrade和WsServerContainer的doUpgrade方法可知传递的是具体实现类是SecurityContextHolderAwareRequestWrapper，而SecurityContextHolderAwareRequestWrapper的getUserPrincipal方法是从SpringSecurity中获取</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Authentication <span class="title function_">getAuthentication</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Authentication</span> <span class="variable">auth</span> <span class="operator">=</span> SecurityContextHolder.getContext().getAuthentication();</span><br><span class="line">    <span class="keyword">return</span> (!<span class="built_in">this</span>.trustResolver.isAnonymous(auth)) ? auth : <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：userPrincipal是通过HandShakeRequest，WsSession，StandardWebSocketSession依次传递的，而HadShakeRequest实现类获取userPrincipal是通过SecurityContext获取到的。</p>
+</li>
+</ul>
+
+			<br>
+			
+		</article>
+	</div>
+	<div class="other">
+		<div class="container">
+			<nav class="post-nav">
+
+    
+         <!-- 先找到与当前文字相同的目录 -->
+            
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                 <!-- 在找到当前文章所在的 index -->
+                    
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                         <!-- 下一篇文章 --> 
+                            <div class="new">
+                                <span>下一章</span>
+                                <a href="/2024/03/11/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/"> 点评.md</a>
+                            </div>
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                
+            
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+         <!-- 先找到与当前文字相同的目录 -->
+            
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                 <!-- 在找到当前文章所在的 index -->
+                    
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                         <!-- 下一篇文章 --> 
+                            <div class="new">
+                                <span>下一章</span>
+                                <a href="/2024/03/11/%E9%A1%B9%E7%9B%AE/%E7%82%B9%E8%AF%84/"> 点评.md</a>
+                            </div>
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                
+            
+        
+    
+
+</nav> 
+		</div>
+	</div>
+	<div class="container comment">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+	</div>
+</div>
+		<div class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-left">1Stack1</div>
+            <div class="footer-right"> 
+                <div class="footer-links">
+                    
+                        <a target="_blank" rel="noopener" href="https://nexmoe.com/">折影轻梦</a>
+                    
+                        <a target="_blank" rel="noopener" href="https://github.com/Yet-The-Books/hexo-theme-yet-the-books">还有书籍</a>
+                    
+                </div>
+                <div calss="footer-copyright">&copy; 2024 1Stack1
+                    Using <a rel="noreferrer" href="http://hexo.io/" target="_blank">Hexo</a> 
+                    &amp; <a rel="noreferrer" href="https://github.com/Yet-The-Books/hexo-theme-yet-the-books" target="_blank">Yet The Books</a>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+	</body>
+</html>

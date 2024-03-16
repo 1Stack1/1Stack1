@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		
+<title>cas.md - 1Stack1</title>
+<meta charset="utf-8" />
+<meta name="keywords" content="" />
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=5"
+/>
+<meta name="generator" content="Hexo 7.1.1">
+<link rel="stylesheet" href="/css/style.css?v=1710592518619">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap"
+    media="all"
+/>
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/highlight.js@9.15.8/styles/solarized-light.css"
+/>
+<script src="/js/core.js?v=1710592518619"></script>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js" async></script>
+<!--<script src="" async></script>--> 
+	</head>
+
+	<body>
+        <div class="header  ">
+    <div class="container">
+        <a class="logo" href="/" title="1Stack1">1Stack1</a>
+        <ul class="nav">
+            
+                <li class="nav-item"><a href="/archives">Archives</a></li>
+            
+                <li class="nav-item"><a href="/about.html">About</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="content">
+	<div class="banner">
+		<div class="container">
+			<h1>cas.md</h1>
+			<div class="info"><span class="date">2024年3月11日</span>•1Stack1 
+			
+					《<a class="nexmoefont icon-appstore-fill -link" href="/categories/note/">note</a><a class="nexmoefont icon-appstore-fill -link" href="/categories/note/juc/">juc</a>》
+				
+				
+					<a href="https://github.com/nexmoe/books/tree/master/source/_posts/juc/cas.md" target="_blank" rel="external nofollow noreferrer noopener">编辑</a>
+				
+			</div>
+			
+		</div>
+	</div>
+	<div class="container">
+		<article class="post">
+			<p>如下源代码释义所示，这部分主要为CAS相关操作的方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	*  CAS</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> o         包含要修改field的对象</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> offset    对象中某field的偏移量</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> expected  期望值</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> update    更新值</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span>          true | false</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapObject</span><span class="params">(Object o, <span class="type">long</span> offset,  Object expected, Object update)</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapInt</span><span class="params">(Object o, <span class="type">long</span> offset, <span class="type">int</span> expected,<span class="type">int</span> update)</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">compareAndSwapLong</span><span class="params">(Object o, <span class="type">long</span> offset, <span class="type">long</span> expected, <span class="type">long</span> update)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>什么是CAS? 即比较并替换，实现并发算法时常用到的一种技术。CAS操作包含三个操作数——内存位置、预期原值及新值。执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。我们都知道，CAS是一条CPU的原子指令（cmpxchg指令），不会造成所谓的数据不一致问题，Unsafe提供的CAS方法（如compareAndSwapXXX）底层实现即为CPU指令cmpxchg。</p>
+<h4 id="典型应用"><a href="#典型应用" class="headerlink" title="典型应用"></a>典型应用</h4><p>CAS在java.util.concurrent.atomic相关类、Java AQS、CurrentHashMap等实现上有非常广泛的应用。如下图所示，AtomicInteger的实现中，静态字段valueOffset即为字段value的内存偏移地址，valueOffset的值在AtomicInteger初始化时，在静态代码块中通过Unsafe的objectFieldOffset方法获取。在AtomicInteger中提供的线程安全方法中，通过字段valueOffset的值可以定位到AtomicInteger对象中value的内存地址，从而可以根据CAS实现对value字段的原子操作。</p>
+<p><img src="/2024/03/11/juc/cas/3bacb938ca6e63d6c79c2bb48d3f608f189412.png" alt="img"></p>
+<p>下图为某个AtomicInteger对象自增操作前后的内存示意图，对象的基地址baseAddress&#x3D;“0x110000”，通过baseAddress+valueOffset得到value的内存地址valueAddress&#x3D;“0x11000c”；然后通过CAS进行原子性的更新操作，成功则返回，否则继续重试，直到更新成功为止。</p>
+<p><img src="/2024/03/11/juc/cas/6e8b1fe5d5993d17a4c5b69bb72ac51d89826.png" alt="img"></p>
+
+			<br>
+			
+		</article>
+	</div>
+	<div class="other">
+		<div class="container">
+			<nav class="post-nav">
+
+    
+         <!-- 先找到与当前文字相同的目录 -->
+            
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                 <!-- 在找到当前文章所在的 index -->
+                    
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                         <!-- 下一篇文章 --> 
+                            <div class="new">
+                                <span>下一章</span>
+                                <a href="/2024/03/11/juc/ThreadLocal/"> ThreadLocal.md</a>
+                            </div>
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                          <!-- 上一篇文章 --> 
+                            <div class="old">
+                                <span>上一章</span>
+                                <a href="/2024/03/11/juc/synchronized/"> synchronized.md</a>
+                            </div>
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+        
+    
+        
+    
+
+    
+        
+    
+         <!-- 先找到与当前文字相同的目录 -->
+            
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                
+            
+                 
+                 <!-- 在找到当前文章所在的 index -->
+                    
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                         <!-- 下一篇文章 --> 
+                            <div class="new">
+                                <span>下一章</span>
+                                <a href="/2024/03/11/juc/ThreadLocal/"> ThreadLocal.md</a>
+                            </div>
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                         
+
+                          <!-- 上一篇文章 --> 
+                            <div class="old">
+                                <span>上一章</span>
+                                <a href="/2024/03/11/juc/synchronized/"> synchronized.md</a>
+                            </div>
+                        
+
+                        
+
+                    
+                         
+
+                        
+
+                        
+
+                    
+                
+            
+                 
+                
+            
+                 
+                
+            
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+    
+        
+    
+        
+    
+
+</nav> 
+		</div>
+	</div>
+	<div class="container comment">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+	</div>
+</div>
+		<div class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-left">1Stack1</div>
+            <div class="footer-right"> 
+                <div class="footer-links">
+                    
+                        <a target="_blank" rel="noopener" href="https://nexmoe.com/">折影轻梦</a>
+                    
+                        <a target="_blank" rel="noopener" href="https://github.com/Yet-The-Books/hexo-theme-yet-the-books">还有书籍</a>
+                    
+                </div>
+                <div calss="footer-copyright">&copy; 2024 1Stack1
+                    Using <a rel="noreferrer" href="http://hexo.io/" target="_blank">Hexo</a> 
+                    &amp; <a rel="noreferrer" href="https://github.com/Yet-The-Books/hexo-theme-yet-the-books" target="_blank">Yet The Books</a>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+	</body>
+</html>
